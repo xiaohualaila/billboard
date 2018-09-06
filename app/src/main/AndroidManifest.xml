@@ -86,7 +86,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
 
         <service android:name=".service.UpdateService" />
-
+        <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

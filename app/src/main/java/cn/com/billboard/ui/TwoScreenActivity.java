@@ -26,6 +26,7 @@ import cn.com.billboard.R;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
+import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -88,6 +89,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         dialog = new LoadingDialog(context, "数据加载中···");
         dialog.show();
         startService(new Intent(context, UpdateService.class));
+        startService(new Intent(context, GPIOService.class));
         getP().readGpio();
         /**启动电话监听服务*/
 //        Intent intent = new Intent(context, PhoneListenService.class);
