@@ -1,0 +1,7 @@
+{
+  "sid": "9C1688832B3BE20576A13BC1EC4DBAA1",
+  "screenip": "192.168.1.142",
+  "status": 1,
+  "createtime": "2018-07-23 10:27:33",
+  "message": "{\"polices\":[{\"createtime\":\"2018-07-21 15:05:28\",\"details\":\"/uploads/1807211505288560.mp4\",\"displaytime\":\"10\",\"name\":\"1\",\"screenid\":\"94CE96E763742F0492EC215DC15DCE73\",\"sid\":\"71225BE6925E7AAAADFCBC2F9AC3E367\",\"sort\":\"1\",\"source\":1,\"status\":0,\"type\":3},{\"createtime\":\"2018-07-21 14:45:46\",\"details\":\"/uploads/1807211445468259.jpg\",\"displaytime\":\"10\",\"name\":\"12\",\"screenid\":\"94CE96E763742F0492EC215DC15DCE73\",\"sid\":\"02A4A1A142B933D09BE52DC122CDA1C4\",\"sort\":\"2\",\"source\":1,\"status\":0,\"type\":2},{\"createtime\":\"2018-07-21 14:45:59\",\"details\":\"/uploads/1807211445595585.jpg\",\"displaytime\":\"10\",\"name\":\"3\",\"screenid\":\"94CE96E763742F0492EC215DC15DCE73\",\"sid\":\"175753F582DE4A22484F69FC09D81886\",\"sort\":\"3\",\"source\":1,\"status\":0,\"type\":2}],\"policetime\":\"30\",\"propertys\":[],\"propertytime\":\"30\",\"screenip\":\"94CE96E763742F0492EC215DC15DCE73\",\"yuanyangs\":[],\"yuanyangtime\":\"30\"}"
+}
