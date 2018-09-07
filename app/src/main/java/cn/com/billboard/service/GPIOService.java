@@ -30,17 +30,30 @@ public class GPIOService extends Service {
     private Thread thread;
 
     private SerialControl serialControlA;
+
+    private int gpioNum_ = 1;
+    private String isScanPhone = "0";
+
+    private boolean isCalling = false;
     private StringBuffer stringBuffer;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        serialControlA = new SerialControl();
+        serialControlA.setPort("/dev/ttyS0");//836 rs232
+        serialControlA.setBaudRate(9600);
+        OpenComPort(serialControlA);
+
+        executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
+        isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
+        if(isScanPhone.equals("1")){
+            sendPortData(serialControlA, "AT+COLP=1");//设置被叫回显
+        }
         thread = new Thread(task);
         thread.start();
 
-        serialControlA = new SerialControl();
-        serialControlA.setPort("/dev/ttyS1");//836 rs232
-        serialControlA.setBaudRate(9600);
-        OpenComPort(serialControlA);
     }
 
     @Override
@@ -48,6 +61,7 @@ public class GPIOService extends Service {
         super.onDestroy();
         isAuto = false;
         CloseComPort(serialControlA);
+        executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
     }
 
     Runnable task = new Runnable() {
@@ -57,29 +71,48 @@ public class GPIOService extends Service {
                 lock.lock();
                 String  strResult="";
                 try {
-                 if(gpioNum == 5){
+                 if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                        //电话
                        strResult = executer( "cat " + strCmd + gpioNum + "/data");
                        if(strResult.equals("1")){
 
+                          // sendPortData(serialControlA, "ATD17682301987");
                        }else {
 
+                           if(isCalling){
+                               sendPortData(serialControlA, "ATH"); //挂断电话
+                           }
                        }
+
+
                      Log.i("sss","当前gpioNum5是 "+strResult);
                      gpioNum = 7;
                  }else if(gpioNum == 7){
                      //监督
-                       strResult = executer( "cat " + strCmd + gpioNum + "/data");
-                     if(strResult.equals("0")){
-                         sendPortData(serialControlA,"");
+                     if(!isCalling){
+                           strResult = executer( "cat " + strCmd + gpioNum + "/data");
+                         if(strResult.equals("0")){
+
+
+                             // sendPortData(serialControlA, "ATD17682301987");
+
+                             isCalling = true;
+                         }
+
                      }
                      Log.i("sss","当前gpioNum7是 "+strResult);
                      gpioNum = 6;
                  }else {
                      //消防
-                     strResult = executer( "cat " + strCmd + gpioNum + "/data");
-                     if(strResult.equals("0")){
+                     if(!isCalling){
+                         strResult = executer( "cat " + strCmd + gpioNum + "/data");
+                         if(strResult.equals("0")){
 
+
+                             // sendPortData(serialControlA, "ATD17682301987");
+
+                             isCalling = true;
+                         }
                      }
                      Log.i("sss","当前gpioNum6是 "+strResult);
                      gpioNum = 5;
@@ -153,13 +186,24 @@ public class GPIOService extends Service {
         protected void onDataReceived(ComBean ComRecData) {
 
                 String call = ChangeTool.ByteArrToHex(ComRecData.bRec);
-                if (call.contains("A1")) {
-                    try {
-                        //          AppPhoneMgr.callPhone(getV(), "18729903883");
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                Log.i("sss","onDataReceived   "+call);
+                if(call.length()>0){
+                    stringBuffer.append(call) ;
+                    if (call.contains("NO CARRIER")) {
+                        try {
+                            isCalling = false;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
+//                    else if(call.contains("+COLP")){
+//
+//                    }
+
+                    stringBuffer.delete(0, stringBuffer.length());
                 }
+
+
         }
      }
 
