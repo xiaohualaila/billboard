@@ -19,7 +19,6 @@ public class UserInfoKey {
 
     public static String MAIN_VIDEO_FILE = "main_video_file"; //主屏视频(本地存储地址)
     public static String MAIN_PICTURE_FILE = "main_picture_file";//主屏图片(本地存储地址)
-    public static String MAIN_PICTURE_FILE_SMALL = "main_small_picture_file";//主屏小图片(本地存储地址)
     public static String SUB_VIDEO_FILE = "sub_video_file";//副屏视频(本地存储地址)
     public static String SUB_PICTURE_FILE = "sub_picture_file";//副屏图片(本地存储地址)
     public static String BIG_VIDEO_FILE = "big_video_file";//大屏视频(本地存储地址)

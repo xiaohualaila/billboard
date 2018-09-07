@@ -3,6 +3,9 @@ package cn.com.billboard.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -68,6 +71,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
     private List<String> images_small;
 
+    private List<String> images_big;
     private List<String> videos;
 
     DisplayManager displayManager;//屏幕管理类
@@ -89,7 +93,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         dialog = new LoadingDialog(context, "数据加载中···");
         dialog.show();
         startService(new Intent(context, UpdateService.class));
-        startService(new Intent(context, GPIOService.class));
+     //   startService(new Intent(context, GPIOService.class));
         getP().readGpio();
         /**启动电话监听服务*/
 //        Intent intent = new Intent(context, PhoneListenService.class);
@@ -98,6 +102,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
         getP().getScreenData(true, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
                 AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
+        images_big = new ArrayList<>();
+        images_small = new ArrayList<>();
     }
     /**请求失败返回*/
     public void showError(NetError error) {
@@ -131,16 +137,17 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     }
     /**展示主屏数据*/
     public void showData() {
+
         images = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_PICTURE_FILE, "[]").toString(), String.class);
-//        images_small = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_PICTURE_FILE_SMALL, "[]").toString(), String.class);
         videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_VIDEO_FILE, "[]").toString(), String.class);
+        selectPic(images);
 
         XLog.e("主屏图片===" + images);
         XLog.e("主屏视频===" + videos);
-        if (images.size() > 0 && videos.size() > 0) {
+        if (images_big.size() > 0 && videos.size() > 0) {
             type = 3;
             playVideo();
-        } else if (images.size() > 0) {
+        } else if (images_big.size() > 0) {
             type = 1;
             playBanner();
         } else if (videos.size() > 0) {
@@ -150,6 +157,36 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             ToastManager.showShort(context, "暂无数据");
         }
     }
+
+    private void selectPic(List<String> urls) {
+        images_big = new ArrayList<>();
+        images_small = new ArrayList<>();
+        for (int i = 0; i < urls.size(); i++) {
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;//这个参数设置为true才有效，
+            Bitmap bmp = BitmapFactory.decodeFile(urls.get(i), options);//这里的bitmap是个空
+            if(bmp==null){
+                Log.e("通过options获取到的bitmap为空","===");
+            }
+
+            float image_height = options.outHeight;
+            float image_widht = options.outWidth;
+
+            Log.i("sss","image_height " +image_height + "  image_widht" + image_widht + "image_height/image_widht" + (image_height/image_widht));
+
+            if(image_height/image_widht > 1.2){
+                images_big.add(urls.get(i));
+                Log.i("sss",">>>" +images_big.size());
+            }else {
+                images_small.add(urls.get(i));
+                Log.i("sss",">>>" +images_small.size());
+            }
+
+        }
+    }
+
+
     /**展示副屏数据*/
     public void showSubData(){
         XLog.e("屏幕数量===" + displays.length);
@@ -184,7 +221,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         pic_banner.stopScroll();
         videoView.setVisibility(View.GONE);
         banner.setVisibility(View.VISIBLE);
-        banner.setAdapter(new BannersAdapter(initBanner(images)));
+        banner.setAdapter(new BannersAdapter(initBanner(images_big)));
         banner.setIsOutScroll(true);
         banner.startScroll();
         banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -195,7 +232,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == images.size() - 1 && type == 3) {
+                if (position == images_big.size() - 1 && type == 3) {
                     XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
                     Observable.timer(10, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
                         @Override
@@ -232,7 +269,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     private void playSmallBanner(){
         pic_banner.setVisibility(View.VISIBLE);
         videoImg.setVisibility(View.GONE);
-        pic_banner.setAdapter(new BannersAdapter(initBanner(images)));
+        pic_banner.setAdapter(new BannersAdapter(initBanner(images_small)));
         pic_banner.setIsOutScroll(true);
         pic_banner.startScroll();
 
@@ -251,7 +288,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
         banner.stopScroll();
         //////////////////////////////
-        if(images.size()>0){
+        if(images_small.size()>0){
             //底部图片滚动
             playSmallBanner();
         }else {

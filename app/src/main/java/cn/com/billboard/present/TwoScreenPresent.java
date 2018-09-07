@@ -1,14 +1,12 @@
 package cn.com.billboard.present;
 
+
 import android.text.TextUtils;
-
 import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
 import cn.com.billboard.model.ScreenShowModel;
@@ -29,6 +27,7 @@ import cn.com.library.net.XApi;
 public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
     private ReadGpioState state;
+
 
     /**
      * 回调页面展示数据、启动及时服务、上报状态
@@ -125,7 +124,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
             List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
             XLog.e("main_lists===" + new Gson().toJson(lists));
             AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_PICTURE_URL, new Gson().toJson(lists[0]));
-       //     AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_PICTURE_FILE_SMALL, new Gson().toJson(lists[0]));//临时
             AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_VIDEO_URL, new Gson().toJson(lists[1]));
             DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists[0], lists[1], callBack);
         } else {//副屏的
@@ -137,6 +135,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
             DownloadFileUtil.getInstance().downSubLoadPicture(getV(), lists[0], lists[1], callBack);
         }
     }
+
 
     /**
      * 上报状态
