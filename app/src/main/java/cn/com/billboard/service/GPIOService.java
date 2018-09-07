@@ -76,15 +76,13 @@ public class GPIOService extends Service {
                        strResult = executer( "cat " + strCmd + gpioNum + "/data");
                        if(strResult.equals("1")){
 
-                          // sendPortData(serialControlA, "ATD17682301987");
                        }else {
 
                            if(isCalling){
                                sendPortData(serialControlA, "ATH"); //挂断电话
+                               isCalling = false;
                            }
                        }
-
-
                      Log.i("sss","当前gpioNum5是 "+strResult);
                      gpioNum = 7;
                  }else if(gpioNum == 7){
