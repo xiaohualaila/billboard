@@ -8,8 +8,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,7 +201,10 @@ public class SubScreenActivity extends Presentation {
             ImageView guidView = (ImageView) LayoutInflater.from(App.getContext()).inflate(R.layout.item_image, null);
             Matrix matrix = new Matrix();
             Bitmap bitmap = BitmapFactory.decodeFile(urls.get(i));
-         //   matrix.setRotate(-90);// 设置旋转角度
+            String model = Build.MODEL;
+            if(model.equals("3280")){
+                   matrix.setRotate(-90);// 设置旋转角度
+            }
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);// 重新绘制Bitmap
             guidView.setImageBitmap(bitmap);
 //            ILFactory.getLoader().loadNet(guidView, urls.get(i), null);

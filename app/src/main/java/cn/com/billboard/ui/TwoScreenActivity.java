@@ -85,7 +85,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        params.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
         getWindow().setAttributes(params);
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
@@ -177,12 +177,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             if(image_height/image_widht > 1.2){
                 images_big.add(urls.get(i));
-                Log.i("sss",">>>" +images_big.size());
             }else {
                 images_small.add(urls.get(i));
-                Log.i("sss",">>>" +images_small.size());
             }
-
         }
     }
 
@@ -287,7 +284,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         XLog.e("videoImg.getHeight====" + pic_banner_arams.height);
 
         banner.stopScroll();
-        //////////////////////////////
         if(images_small.size()>0){
             //底部图片滚动
             playSmallBanner();
@@ -295,7 +291,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             videoImg.setVisibility(View.VISIBLE);
             pic_banner.setVisibility(View.GONE);
         }
-         ////////////////////////
+
 
         video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
