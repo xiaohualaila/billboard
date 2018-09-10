@@ -20,7 +20,6 @@ import cn.com.billboard.ui.OpenDoorActivity;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.ChangeTool;
-import cn.com.billboard.util.SerialPortHelper;
 import cn.com.library.encrpt.Base64Utils;
 import cn.com.library.encrpt.TDESUtils;
 import cn.com.library.kit.ToastManager;

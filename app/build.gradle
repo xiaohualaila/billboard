@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-//apply plugin: 'com.neenbedankt.android-apt'
+
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
@@ -11,27 +11,22 @@ android {
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
-        //为了开启Java8
-//        jackOptions{
-//            enabled true
-//        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-        sourceSets {
-            main {
-                jniLibs.srcDir 'src/main/jniLibs'
-                jni.srcDirs = []
-            }
-        }
     }
     //开启Java1.8 能够使用lambda表达式
     compileOptions{
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 
@@ -41,4 +36,6 @@ dependencies {
     annotationProcessor rootProject.ext.dependencies["butterknife-apt"]
     implementation rootProject.ext.dependencies["avi-loading"]
     implementation project(':mvp')
+    //串口
+    implementation(name: 'serialport-1.0.1', ext: 'aar')
 }

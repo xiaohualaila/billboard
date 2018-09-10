@@ -172,7 +172,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             float image_height = options.outHeight;
             float image_widht = options.outWidth;
-//            Log.i("sss","image_height " +image_height + "  image_widht" + image_widht + "image_height/image_widht" + (image_height/image_widht));
             if(image_height/image_widht > 1.2){
                 images_big.add(urls.get(i));
             }else {

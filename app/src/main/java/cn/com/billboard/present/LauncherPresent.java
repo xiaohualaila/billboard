@@ -2,7 +2,6 @@ package cn.com.billboard.present;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Intent;
 
 import com.blankj.utilcode.util.PermissionUtils;
 import com.google.gson.Gson;
@@ -15,14 +14,9 @@ import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.VersionModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.AccessDoorActivity;
-import cn.com.billboard.ui.CameraActivity;
 import cn.com.billboard.ui.CreateParamsActivity;
 import cn.com.billboard.ui.FaceActivity;
 import cn.com.billboard.ui.LauncherActivity;
-import cn.com.billboard.ui.OpenDoorActivity;
-import cn.com.billboard.ui.RecordingActivity;
-import cn.com.billboard.ui.RecordingActivity2;
 import cn.com.billboard.ui.VideoActivity;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.PermissionsUtil;
