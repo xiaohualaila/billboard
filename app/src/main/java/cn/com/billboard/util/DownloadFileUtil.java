@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
@@ -17,6 +19,10 @@ import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.log.XLog;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class DownloadFileUtil {
 
@@ -58,7 +64,32 @@ public class DownloadFileUtil {
                         super.onNext(value);
                         XLog.e("url==" + images.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
                    //     Log.i("xxx"," 进度>>>>>>>>" + value.getProgress() +" 总进度>>>>>>>>" +value.getTotal() );
-                        BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI,images.size(),value.getFileName(),"图片"));
+
+                        //TODO 启动计时服务
+                        Observable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                XLog.e("更新数据倒计时开始");
+                            }
+
+                            @Override
+                            public void onNext(Long l) {
+                                BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,images.size(),value.getFileName(),"图片"));
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                XLog.e("倒计时结束，开始获取数据");
+                            }
+                        });
+
                     }
 
                     @Override
@@ -112,8 +143,30 @@ public class DownloadFileUtil {
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
                     XLog.e("url==" + videos.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
+                    //TODO 启动计时服务
+                    Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
 
-                    BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI,videos.size(),value.getFileName(),"视频"));
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            XLog.e("更新数据倒计时开始");
+                        }
+
+                        @Override
+                        public void onNext(Long l) {
+                            BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,videos.size(),value.getFileName(),"视频"));
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            XLog.e("倒计时结束，开始获取数据");
+                        }
+                    });
+
                 }
 
                 @Override
