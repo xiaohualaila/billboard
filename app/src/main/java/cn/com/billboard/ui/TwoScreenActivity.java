@@ -38,7 +38,7 @@ import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
-import cn.com.billboard.widget.DownDialog;
+
 import cn.com.library.event.BusProvider;
 import cn.com.library.imageloader.ILFactory;
 import cn.com.library.kit.ToastManager;

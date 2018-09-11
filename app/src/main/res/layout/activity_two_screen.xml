@@ -54,4 +54,65 @@
 
     </cn.com.billboard.widget.BaseViewPager>
 
+    <RelativeLayout
+        android:id="@+id/rl_pro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="30dp">
+
+        <LinearLayout
+            android:layout_above="@+id/progressBarHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="正在下载："
+                android:textColor="@color/x_red"
+                android:textSize="15sp" />
+            <TextView
+                android:id="@+id/loading_file_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="文件名"
+                android:textColor="@color/x_red"
+                android:textSize="15sp" />
+            <TextView
+                android:id="@+id/loading_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:gravity="center"
+                android:text="1/5"
+                android:textColor="@color/x_red"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBarHorizontal"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:indeterminateTint="@color/colorPrimary"
+            android:max="100" />
+
+        <TextView
+            android:id="@+id/loading_pro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/progressBarHorizontal"
+
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:text="20%"
+            android:textColor="@color/x_red"
+            android:textSize="15sp" />
+
+    </RelativeLayout>
 </LinearLayout>
