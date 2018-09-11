@@ -35,7 +35,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     CallBack callBack = new CallBack() {
         @Override
         public void onMainChangeUI() {
-            getV().dialog.dismiss();
+//            getV().dialog.dismiss();
             getV().showData();
             UpdateService.getInstance().startTimer();
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_ID, "").toString());
@@ -43,7 +43,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
         @Override
         public void onSubChangeUI() {
-            getV().dialog.dismiss();
+//            getV().dialog.dismiss();
             getV().showSubData();
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.SUB_SCREEN_ID, "").toString());
         }
@@ -84,7 +84,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     .subscribe(new ApiSubscriber<BaseBean<ScreenDataModel>>() {
                         @Override
                         protected void onFail(NetError error) {
-                            getV().dialog.dismiss();
+                          //  getV().dialog.dismiss();
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
@@ -125,7 +125,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
             XLog.e("main_lists===" + new Gson().toJson(lists));
             AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_PICTURE_URL, new Gson().toJson(lists[0]));
             AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_VIDEO_URL, new Gson().toJson(lists[1]));
-            DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists[0], lists[1], callBack);
+            DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists[0], lists[1], callBack);//下载
         } else {//副屏的
             AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SCREEN_ID, model.getSid());
             List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));

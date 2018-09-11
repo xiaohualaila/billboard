@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -18,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.VideoView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,16 +28,17 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventModel;
+import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
-import cn.com.billboard.util.GsonProvider;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
-import cn.com.billboard.widget.LoadingDialog;
+import cn.com.billboard.widget.DownDialog;
 import cn.com.library.event.BusProvider;
 import cn.com.library.imageloader.ILFactory;
 import cn.com.library.kit.ToastManager;
@@ -62,10 +64,20 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     BaseViewPager pic_banner;
     @BindView(R.id.video_img)
     ImageView videoImg;
+    @BindView(R.id.rl_pro)
+    RelativeLayout rl_pro;
 
+    @BindView(R.id.progressBarHorizontal)
+    ProgressBar progressBarHorizontal;
+    @BindView(R.id.loading_file_name)
+    TextView loading_file_name;
+    @BindView(R.id.loading_num)
+    TextView loading_num;
+    @BindView(R.id.loading_pro)
+    TextView loading_pro;
     private int type = 0, videoIndex = 0;
 
-    public LoadingDialog dialog;
+//    public DownDialog dialog;
 
     private List<String> images;
 
@@ -90,8 +102,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
-        dialog = new LoadingDialog(context, "数据加载中···");
-        dialog.show();
+//        dialog = new DownDialog(context, "数据加载中···");//对话框不显示
+//        dialog.show();
+
+        rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
      //   startService(new Intent(context, GPIOService.class));
         getP().readGpio();
@@ -104,6 +118,20 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
         images_big = new ArrayList<>();
         images_small = new ArrayList<>();
+
+        BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                progressModel -> {
+
+                    int pp = (int) ((float)progressModel.progress/(float)progressModel.total*100);
+
+                   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
+                    loading_file_name.setText(progressModel.type+progressModel.fileName);
+                    loading_num.setText(progressModel.index+"/"+progressModel.num);
+                    progressBarHorizontal.setProgress(pp);
+                    loading_pro.setText(pp+"%");
+//                    dialog.setProgressBarHorizontal(pp);
+                }
+        );
     }
     /**请求失败返回*/
     public void showError(NetError error) {
@@ -137,13 +165,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     }
     /**展示主屏数据*/
     public void showData() {
-
-        images = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_PICTURE_FILE, "[]").toString(), String.class);
-        videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_VIDEO_FILE, "[]").toString(), String.class);
+        rl_pro.setVisibility(View.GONE);
+        videos =  FileUtil.getFilePath(UserInfoKey.FILE_MAIN_VIDEO);
+        images = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_PICTURE);
         selectPic(images);
 
         XLog.e("主屏图片===" + images);
         XLog.e("主屏视频===" + videos);
+        Log.i("sss","主屏视频===" + videos);
         if (images_big.size() > 0 && videos.size() > 0) {
             type = 3;
             playVideo();
@@ -157,6 +186,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             ToastManager.showShort(context, "暂无数据");
         }
     }
+
 
     private void selectPic(List<String> urls) {
         images_big = new ArrayList<>();
@@ -172,6 +202,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             float image_height = options.outHeight;
             float image_widht = options.outWidth;
+
+            Log.i("sss","image_height " +image_height + "  image_widht" + image_widht + "image_height/image_widht" + (image_height/image_widht));
+
             if(image_height/image_widht > 1.2){
                 images_big.add(urls.get(i));
             }else {

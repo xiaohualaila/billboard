@@ -29,6 +29,7 @@ import cn.com.billboard.App;
 import cn.com.billboard.R;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.GsonProvider;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
@@ -69,8 +70,11 @@ public class SubScreenActivity extends Presentation {
     }
     /**展示副屏数据*/
     public void showData() {
-        images = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_PICTURE_FILE, "[]").toString(), String.class);
-        videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_VIDEO_FILE, "[]").toString(), String.class);
+//        images = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_PICTURE_FILE, "[]").toString(), String.class);
+//        videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_VIDEO_FILE, "[]").toString(), String.class);
+        images = FileUtil.getFilePath(UserInfoKey.FILE_SUB_PICTURE);
+        videos = FileUtil.getFilePath(UserInfoKey.FILE_SUB_VIDEO);
+
         XLog.e("副屏图片===" + images);
         XLog.e("副屏视频===" + videos);
         if (images.size() > 0 && videos.size() > 0) {
