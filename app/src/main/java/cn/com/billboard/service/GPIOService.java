@@ -60,7 +60,7 @@ public class GPIOService extends Service {
                     sendTest("ATH\r\n");
                 }
 
-               Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
+    //           Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
 
             }
         };
@@ -73,7 +73,7 @@ public class GPIOService extends Service {
 
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("sss",e.getMessage());
+    //        Log.i("sss",e.getMessage());
             //Toast.makeText(getBaseContext(),"串口打开失败", Toast.LENGTH_SHORT).show();
         }
     }
@@ -95,7 +95,7 @@ public class GPIOService extends Service {
                            isCalling = false;
                        }
                    }
-                 Log.i("sss","当前gpioNum5是 "+strResult);
+                Log.i("sss","当前gpioNum5是 "+strResult);
                  gpioNum = 7;
              }else if(gpioNum == 7){
                  if(!isCalling){
@@ -109,7 +109,7 @@ public class GPIOService extends Service {
                              }
                          }
                      }
-                 Log.i("sss","当前gpioNum7是 "+strResult);
+     //            Log.i("sss","当前gpioNum7是 "+strResult);
                  gpioNum = 6;
              }else {
                  //监督
@@ -123,7 +123,7 @@ public class GPIOService extends Service {
                          }
                      }
                  }
-                 Log.i("sss","当前gpioNum6是 "+strResult);
+    //             Log.i("sss","当前gpioNum6是 "+strResult);
                  gpioNum = 5;
              }
 

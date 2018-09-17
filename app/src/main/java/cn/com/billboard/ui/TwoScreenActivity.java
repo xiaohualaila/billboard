@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,8 +81,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     TextView loading_pro;
     private int type = 0, videoIndex = 0;
 
-//    public DownDialog dialog;
-
     private List<String> images;
 
     private List<String> images_small;
@@ -105,17 +104,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
-//        dialog = new DownDialog(context, "数据加载中···");//对话框不显示
-//        dialog.show();
 
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
         startService(new Intent(context, GPIOService.class));
-        getP().readGpio();
-        /**启动电话监听服务*/
-//        Intent intent = new Intent(context, PhoneListenService.class);
-//        intent.setAction(PhoneListenService.ACTION_REGISTER_LISTENER);
-//        startService(intent);
+
 
         getP().getScreenData(true, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
                 AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
@@ -132,7 +125,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     loading_num.setText(progressModel.index+"/"+progressModel.num);
                     progressBarHorizontal.setProgress(pp);
                     loading_pro.setText(pp+"%");
-//                    dialog.setProgressBarHorizontal(pp);
                 }
         );
         smdt = SmdtManager.create(this);
@@ -144,7 +136,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
-            Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
+        //    Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
         }
     };
 
@@ -338,38 +330,29 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         }
 
 
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
+        video.setOnPreparedListener(mp -> {
 
-            }
         });
-        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                videoIndex++;
-                if (videoIndex != videos.size()) {
-                    //继续播放视频
-                    playVideo();
-                } else {
-                    //视频播放结束  开始播放图片  复位视频索引
-                    videoIndex = 0;
+        video.setOnCompletionListener(mp -> {
+            videoIndex++;
+            if (videoIndex != videos.size()) {
+                //继续播放视频
+                playVideo();
+            } else {
+                //视频播放结束  开始播放图片  复位视频索引
+                videoIndex = 0;
 //                    mp.release();
-                    //如果类型未全部是视频时接着循环
-                    if (type == 2) {
-                        playVideo();
-                        return;
-                    }
-                    playBanner();
+                //如果类型未全部是视频时接着循环
+                if (type == 2) {
+                    playVideo();
+                    return;
                 }
+                playBanner();
             }
         });
-        video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                video.stopPlayback();
-                return true;
-            }
+        video.setOnErrorListener((mp, what, extra) -> {
+            video.stopPlayback();
+            return true;
         });
         video.setVideoPath(videos.get(videoIndex));
         Log.i("sss",videos.get(videoIndex));
@@ -389,13 +372,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     @Override
     public boolean useEventBus() {
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                new Consumer<EventModel>() {
-                    @Override
-                    public void accept(EventModel eventModel) throws Exception {
-                        XLog.e("EventModel===" + eventModel.value);
-                        getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
-                                AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
-                    }
+                eventModel -> {
+                    XLog.e("EventModel===" + eventModel.value);
+                    getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
+                            AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
                 }
         );
         return true;
@@ -420,7 +400,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     firstTime = secondTime;
                     return true;
                 } else {
-                    System.exit(0);
+                    finish();
                 }
                 return true;
             }
@@ -438,11 +418,12 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         return new TwoScreenPresent();
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(context, GPIOService.class));
         smdt.smdtWatchDogEnable((char)0);
+        stopService(new Intent(context, GPIOService.class));
     }
+
+
 }

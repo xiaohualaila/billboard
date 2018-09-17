@@ -1,11 +1,7 @@
 package cn.com.billboard.present;
 
 
-import android.text.TextUtils;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
@@ -14,7 +10,6 @@ import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.TwoScreenActivity;
-import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
 import cn.com.billboard.util.ReaderJsonUtil;
@@ -26,16 +21,12 @@ import cn.com.library.net.XApi;
 
 public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
-    private ReadGpioState state;
-
-
     /**
      * 回调页面展示数据、启动及时服务、上报状态
      */
     CallBack callBack = new CallBack() {
         @Override
         public void onMainChangeUI() {
-//            getV().dialog.dismiss();
             getV().showData();
             UpdateService.getInstance().startTimer();
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_ID, "").toString());
@@ -43,35 +34,12 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
         @Override
         public void onSubChangeUI() {
-//            getV().dialog.dismiss();
             getV().showSubData();
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.SUB_SCREEN_ID, "").toString());
         }
     };
 
-    /**
-     * 读取gpio状态
-     */
-    public void readGpio() {
-        state = new ReadGpioState();
-        state.start();
-    }
-    /**
-     * 暂停线程
-     */
-    public void stopThreadStart(){
-        if (state != null) {
-            state.setSuspendFlag();
-        }
-    }
-    /**
-     * 唤醒线程
-     */
-    public void notifyThreadStart(){
-        if (state != null) {
-            state.setResume();
-        }
-    }
+
     /**
      * 获取数据
      */
@@ -170,90 +138,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         void onMainChangeUI();//主屏回调
 
         void onSubChangeUI();//副屏回调
-    }
-
-    private class ReadGpioState extends Thread {
-
-        private boolean isReadState = true;
-
-        @Override
-        public void run() {
-            super.run();
-            while (isReadState) {
-//                XLog.e("gpio0" + readState("cat /sys/class/gpio_xrm/gpio0/data"));
-                if (!TextUtils.isEmpty(readState("cat /sys/class/gpio_xrm/gpio0/data")) && Integer.parseInt(readState("cat /sys/class/gpio_xrm/gpio0/data")) == 0) {
-                    setSuspendFlag();
-                    getV().stopPlayVideo();
-                    try {
-                        AppPhoneMgr.callPhone(getV(), "18729903883");
-//                        AppPhoneMgr.callPhone(getV(), "18291409525");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-//                XLog.e("gpio1" + readState("cat /sys/class/gpio_xrm/gpio1/data"));
-                if (!TextUtils.isEmpty(readState("cat /sys/class/gpio_xrm/gpio1/data")) && Integer.parseInt(readState("cat /sys/class/gpio_xrm/gpio1/data")) == 0) {
-                    setSuspendFlag();
-                    getV().stopPlayVideo();
-                    try {
-                        AppPhoneMgr.callPhone(getV(), "18729903883");
-//                        AppPhoneMgr.callPhone(getV(), "18291409525");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                }
-
-            }
-        }
-
-        //线程暂停
-        public void setSuspendFlag() {
-            this.isReadState = false;
-        }
-
-        //唤醒线程
-        public synchronized void setResume() {
-            this.isReadState = true;
-            notify();
-        }
-
-    }
-
-    //获取GPIO状态
-    private String readState(String command) {
-        StringBuffer output = new StringBuffer();
-        Process process = null;
-        DataOutputStream os = null;
-        try {
-            process = Runtime.getRuntime().exec("su");
-            os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(command + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            process.waitFor();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = "";
-            while ((line = reader.readLine()) != null) {
-                output.append(line + "\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (os != null)
-                    os.close();
-                process.destroy();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (output.toString().equals("")) {
-            return "";
-        }
-        String response = output.toString().trim().substring(0, output.length() - 1);
-        return response;
     }
 
 }

@@ -78,7 +78,12 @@
         <activity
             android:name=".ui.WebActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".ui.ActivityTest"
+            android:configChanges="orientation|screenSize|keyboardHidden" >
 
+
+        </activity>
         <service android:name=".service.UpdateService" />
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver">
