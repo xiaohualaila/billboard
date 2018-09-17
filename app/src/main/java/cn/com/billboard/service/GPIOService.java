@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 
@@ -14,45 +15,57 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import cn.com.billboard.util.ChangeTool;
 
 public class GPIOService extends Service {
 
     private String strCmd = "/sys/class/gpio_xrm/gpio";
     private int gpioNum = 5;//IO口电话5，监督7，消防6
-    private final int TIME = 300;
+    private final int TIME = 200;
     private boolean isAuto = true;
     private static Lock lock = new ReentrantLock();
+
     private Thread thread;
-    private SerialHelper serialHelper;
+
+
     private int gpioNum_ = 1;
     private String isScanPhone = "0";
-    private boolean isCalling = false;
 
+    private boolean isCalling = false;
+    private int send_type = 0;
+
+    String  strResult_5="";
+    private SerialHelper serialHelper;
     @Override
     public void onCreate() {
         super.onCreate();
-        init();
+
+        iniview();
         executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
-        isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800可以打电话
-        if(isScanPhone.equals("1")){
-            sendTest( "AT+COLP=1\r\n");//设置被叫回显
-        }
+        isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
         thread = new Thread(task);
         thread.start();
+
     }
 
-    private void init() {
+    private void iniview() {
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
-              Log.i("sss",ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
+                String back= ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
+                if(back.contains("NO CARRIER")){
+                    isCalling = false;
+                }else if(back.contains("RING")){//不予许接外来电话
+                    sendTest("ATH\r\n");
+                }
 
-                // TODO: 2018-09-10 判断返回结果
+               Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
+
             }
         };
         serialHelper.setPort("/dev/ttyS3");
-        serialHelper.setBaudRate(115200);
+        serialHelper.setBaudRate(9600);
 
         try {
             serialHelper.close();
@@ -61,55 +74,53 @@ public class GPIOService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
             Log.i("sss",e.getMessage());
+            //Toast.makeText(getBaseContext(),"串口打开失败", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        isAuto = false;
-        executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
-        serialHelper.close();
-    }
 
     Runnable task = () -> {
         while (isAuto) {
             lock.lock();
             String  strResult="";
+
             try {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
-                   strResult = executer( "cat " + strCmd + gpioNum + "/data");
-                   if(strResult.equals("1")){
-
-                   }else {
-
+                 strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
+                   if(strResult_5.equals("0")){
                        if(isCalling){
-                           sendTest( "ATH");//挂断电话
+                           sendTest("ATH\r\n"); //挂断电话
+                           send_type = 0;
                            isCalling = false;
                        }
                    }
                  Log.i("sss","当前gpioNum5是 "+strResult);
                  gpioNum = 7;
              }else if(gpioNum == 7){
-                 //监督
                  if(!isCalling){
-                       strResult = executer( "cat " + strCmd + gpioNum + "/data");
-                     if(strResult.equals("0")){
-                         sendTest("ATD17682301987;\r\n");
-                         isCalling = true;
+                     //消防
+                     strResult = executer( "cat " + strCmd + gpioNum + "/data");
+                         if(strResult.equals("0")){//打电话
+                             if(strResult_5.equals("1")) {
+                                 sendTest("ATD17682301987;\r\n");
+                                 send_type = 1;
+                                 isCalling = true;
+                             }
+                         }
                      }
-
-                 }
                  Log.i("sss","当前gpioNum7是 "+strResult);
                  gpioNum = 6;
              }else {
-                 //消防
+                 //监督
                  if(!isCalling){
                      strResult = executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
-                         sendTest("ATD17682301987;\r\n");
-                         isCalling = true;
+                         if(strResult_5.equals("1")){
+                             sendTest("ATD17682301987;\r\n");
+                             send_type = 2;
+                             isCalling = true;
+                         }
                      }
                  }
                  Log.i("sss","当前gpioNum6是 "+strResult);
@@ -131,6 +142,16 @@ public class GPIOService extends Service {
         return null;
     }
 
+    //发送Test
+    public void sendTest(String text){
+
+        serialHelper.sendTxt(text);
+    }
+
+    //发送Hex
+    public void sendHest(String text){
+        serialHelper.sendHex(text);
+    }
 
     private String executer(String command) {
 
@@ -168,18 +189,15 @@ public class GPIOService extends Service {
         return response;
     }
 
-
-
-    //发送Test
-    public void sendTest(String text){
-
-        serialHelper.sendTxt(text);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isAuto = false;
+        executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
+        serialHelper.close();
     }
 
-    //发送Hex
-    public void sendHest(String text){
-        serialHelper.sendHex(text);
-    }
+
 
 
 }

@@ -38,4 +38,5 @@ dependencies {
     implementation project(':mvp')
     //串口
     implementation(name: 'serialport-1.0.1', ext: 'aar')
+    implementation files('libs/smdt.jar')
 }

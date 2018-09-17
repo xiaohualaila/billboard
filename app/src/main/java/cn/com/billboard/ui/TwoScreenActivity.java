@@ -1,6 +1,7 @@
 package cn.com.billboard.ui;
 
 import android.app.Activity;
+import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,6 +24,8 @@ import android.widget.TextView;
 import android.widget.VideoView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -91,7 +94,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     Display[]  displays;//屏幕数组
 
     int height = 0;
-
+    private SmdtManager smdt;
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
@@ -107,7 +110,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
-     //   startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, GPIOService.class));
         getP().readGpio();
         /**启动电话监听服务*/
 //        Intent intent = new Intent(context, PhoneListenService.class);
@@ -132,7 +135,19 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 //                    dialog.setProgressBarHorizontal(pp);
                 }
         );
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char)1);//开启看门狗
+        new Timer().schedule(timerTask,0,5000);
     }
+
+    TimerTask timerTask = new TimerTask(){
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+            Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
+        }
+    };
+
     /**请求失败返回*/
     public void showError(NetError error) {
         if (error != null) {
@@ -421,5 +436,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     @Override
     public TwoScreenPresent newP() {
         return new TwoScreenPresent();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(context, GPIOService.class));
+        smdt.smdtWatchDogEnable((char)0);
     }
 }
