@@ -93,8 +93,10 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
                     ToastManager.showShort(context, "其他异常");
                     break;
             }
-            if (((int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1)) == 2)
-                OpenDoorActivity.launch(context);
+            if (((int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1)) == 2){
+                //                OpenDoorActivity.launch(context);
+            }
+
             else
                 CreateParamsActivity.launch(context);
             finish();

@@ -51,9 +51,6 @@
         </activity>
 
         <activity
-            android:name=".ui.OpenDoorActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
             android:name=".ui.CreateParamsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity

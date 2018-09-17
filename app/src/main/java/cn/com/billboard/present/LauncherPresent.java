@@ -91,7 +91,7 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
     public void checkVersion(VersionModel model){
         XLog.e(SDCardUtil.getStoragePath(getV()));
         if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 2) {
-            AccessDoorActivity.launch(getV());
+//            AccessDoorActivity.launch(getV());
 //            OpenDoorActivity.launch(getV());
             getV().finish();
         } else if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 3)  {
