@@ -2,20 +2,15 @@ package cn.com.billboard.ui;
 
 import android.os.Bundle;
 import android.view.View;
-
 import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnItemClickListener;
-import com.google.gson.Gson;
 
-import android_serialport_api.SerialPortFinder;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.R;
 import cn.com.billboard.present.LauncherPresent;
-import cn.com.billboard.util.LocationUtil;
 import cn.com.billboard.widget.LoadingDialog;
 import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 
@@ -50,16 +45,20 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
      * 选择屏幕
      */
     private void selectScreenNum() {
-        new AlertView("选择屏幕", null, null, null, new String[]{"Screen - 0", "Screen - 1", "开门系统", "拍照", "视频"}, this, AlertView.Style.ActionSheet,
-                new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(Object o, int position) {
-                        dialog.show();
-                        ToastManager.showShort(context, position == 0 ? "Screen - 0" : position == 1 ? "Screen - 1" : position == 2 ? "开门系统" : position == 3 ? "拍照" : "视频");
-                        AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
-                        getP().loadData(position);
-                    }
+        new AlertView("选择屏幕", null, null, null, new String[]{"Screen - 0", "Screen - 1",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
+                (o, position) -> {
+                    dialog.show();
+                    ToastManager.showShort(context, position == 0 ? "Screen - 0" : position == 1 ? "Screen - 1" : position == 2 ?  "拍照" : "视频");
+                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
+                    getP().loadData(position);
                 }).show();
+//        new AlertView("选择屏幕", null, null, null, new String[]{"Screen - 0", "Screen - 1"}, this, AlertView.Style.ActionSheet,
+//                (o, position) -> {
+//                    dialog.show();
+//                    ToastManager.showShort(context, position == 0 ? "Screen - 0" : "Screen - 1" );
+//                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
+//                    getP().loadData(position);
+//                }).show();
     }
 
     /**

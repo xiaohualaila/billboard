@@ -65,10 +65,16 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".ui.FaceActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden" >
+
+
+       </activity>
         <activity
             android:name=".ui.VideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden" >
+
+
+        </activity>
         <activity
             android:name=".ui.RecordingActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
@@ -81,7 +87,11 @@
         <activity
             android:name=".ui.ActivityTest"
             android:configChanges="orientation|screenSize|keyboardHidden" >
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
 
         </activity>
         <service android:name=".service.UpdateService" />
