@@ -42,7 +42,7 @@
 
         <activity
             android:name=".ui.LauncherActivity"
-            android:icon="@mipmap/ic_launcher">
+            android:configChanges="orientation|screenSize|keyboardHidden" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

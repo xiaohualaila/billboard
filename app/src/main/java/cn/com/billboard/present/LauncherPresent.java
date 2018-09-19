@@ -90,27 +90,14 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
     /**检查版本*/
     public void checkVersion(VersionModel model){
         XLog.e(SDCardUtil.getStoragePath(getV()));
-        if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 2) {
-//            AccessDoorActivity.launch(getV());
-//            OpenDoorActivity.launch(getV());
-            getV().finish();
-        } else if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 3)  {
-//            CameraActivity.launch(getV());
-            FaceActivity.launch(getV());
-            getV().finish();
-        } else if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 4)  {
+       if (((int) AppSharePreferenceMgr.get(getV(), UserInfoKey.SCREEN_NUM, -1)) == 3)  {
             VideoActivity.launch(getV());
             getV().finish();
         } else {
             CreateParamsActivity.launch(getV());
             getV().finish();
         }
-//        if (model.getVnumber() != BuildConfig.VERSION_CODE) {
-//            CreateParamsActivity.launch(getV());
-//            getV().finish();
-//        } else {
-//            downloadApp(model.getDownload());
-//        }
+
     }
     /**版本更新*/
     private void downloadApp(String downloadUrl){

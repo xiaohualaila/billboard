@@ -52,13 +52,6 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
                     AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
                     getP().loadData(position);
                 }).show();
-//        new AlertView("选择屏幕", null, null, null, new String[]{"Screen - 0", "Screen - 1"}, this, AlertView.Style.ActionSheet,
-//                (o, position) -> {
-//                    dialog.show();
-//                    ToastManager.showShort(context, position == 0 ? "Screen - 0" : "Screen - 1" );
-//                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
-//                    getP().loadData(position);
-//                }).show();
     }
 
     /**
@@ -92,13 +85,9 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
                     ToastManager.showShort(context, "其他异常");
                     break;
             }
-            if (((int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1)) == 2){
-                //                OpenDoorActivity.launch(context);
-            }
 
-            else
                 CreateParamsActivity.launch(context);
-            finish();
+                finish();
         }
     }
 
