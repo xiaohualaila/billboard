@@ -3,6 +3,7 @@ package cn.com.billboard.present;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
@@ -19,6 +20,9 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class OneScreenPresent extends XPresent<OneScreenActivity> {
 
@@ -74,9 +78,8 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
     private void downloadAndSaveData(ScreenDataModel model) {
         AppSharePreferenceMgr.put(getV(), UserInfoKey.BIG_SCREEN_ID, model.getSid());
         List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
-        XLog.e("lists===" + new Gson().toJson(lists));
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.BIG_SHOW_PICTURE_URL, new Gson().toJson(lists[0]));
-        AppSharePreferenceMgr.put(getV(), UserInfoKey.BIG_SHOW_VIDEO_URL, new Gson().toJson(lists[1]));
+//        XLog.e("lists===" + new Gson().toJson(lists));
+
         DownloadFileUtil.getInstance().downBigLoadPicture(getV(), lists[0], lists[1], callBack);
     }
 
@@ -105,6 +108,8 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
                     }
                 });
     }
+
+
 
     /**
      * 回调

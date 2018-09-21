@@ -70,8 +70,6 @@ public class SubScreenActivity extends Presentation {
     }
     /**展示副屏数据*/
     public void showData() {
-//        images = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_PICTURE_FILE, "[]").toString(), String.class);
-//        videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(App.getContext(), UserInfoKey.SUB_VIDEO_FILE, "[]").toString(), String.class);
         images = FileUtil.getFilePath(UserInfoKey.FILE_SUB_PICTURE);
         videos = FileUtil.getFilePath(UserInfoKey.FILE_SUB_VIDEO);
 

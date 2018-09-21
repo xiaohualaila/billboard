@@ -1,6 +1,7 @@
 package cn.com.billboard.ui;
 
 import android.app.Activity;
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -13,6 +14,8 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
@@ -22,7 +25,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppSharePreferenceMgr;
-import cn.com.billboard.util.GsonProvider;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.billboard.widget.LoadingDialog;
@@ -38,7 +41,6 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class OneScreenActivity extends XActivity<OneScreenPresent> {
 
@@ -56,6 +58,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     private List<String> images;
 
     private List<String> videos;
+    private SmdtManager smdt;
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -68,7 +71,19 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         dialog.show();
         startService(new Intent(context, UpdateService.class));
         getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), true);
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char)1);//开启看门狗
+        new Timer().schedule(timerTask,0,5000);
     }
+
+    TimerTask timerTask = new TimerTask(){
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+          // Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
+        }
+    };
+
     /**请求返回错误*/
     public void showError(NetError error) {
         if (error != null) {
@@ -101,8 +116,8 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     }
     /**展示数据*/
     public void showData() {
-        images = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_PICTURE_FILE, "[]").toString(), String.class);
-        videos = GsonProvider.stringToList(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_VIDEO_FILE, "[]").toString(), String.class);
+        videos =  FileUtil.getFilePath(UserInfoKey.FILE_BIG_VIDEO);
+        images = FileUtil.getFilePath(UserInfoKey.FILE_BIG_PICTURE);
         if (images.size() > 0 && videos.size() > 0) {
             type = 3;
             playVideo();
@@ -168,48 +183,37 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         banner.setVisibility(View.GONE);
         videoView.setVisibility(View.VISIBLE);
         banner.stopScroll();
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        video.setOnPreparedListener(mp -> mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
             @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
-                    @Override
-                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+            public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
 //                        //FixMe 获取视频资源的宽度
 //                        mVideoWidth = mp.getVideoWidth();
 //                        //FixMe 获取视频资源的高度
 //                        mVideoHeight = mp.getVideoHeight();
-                        XLog.e("mp.width== " + mp.getVideoWidth() + "\nmp.height====" + mp.getVideoHeight());
-                        video.onMeasureSize(mp.getVideoWidth(), mp.getVideoHeight());
-                    }
-                });
+                XLog.e("mp.width== " + mp.getVideoWidth() + "\nmp.height====" + mp.getVideoHeight());
+                video.onMeasureSize(mp.getVideoWidth(), mp.getVideoHeight());
             }
-        });
-        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                videoIndex++;
-                if (videoIndex != videos.size()) {
-                    //继续播放视频
-                    playVideo();
-                } else {
-                    //视频播放结束  开始播放图片  复位视频索引
-                    videoIndex = 0;
+        }));
+        video.setOnCompletionListener(mp -> {
+            videoIndex++;
+            if (videoIndex != videos.size()) {
+                //继续播放视频
+                playVideo();
+            } else {
+                //视频播放结束  开始播放图片  复位视频索引
+                videoIndex = 0;
 //                    mp.release();
-                    //如果类型未全部是视频时接着循环
-                    if (type == 2) {
-                        playVideo();
-                        return;
-                    }
-                    playBanner();
+                //如果类型未全部是视频时接着循环
+                if (type == 2) {
+                    playVideo();
+                    return;
                 }
+                playBanner();
             }
         });
-        video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                video.stopPlayback();
-                return true;
-            }
+        video.setOnErrorListener((mp, what, extra) -> {
+            video.stopPlayback();
+            return true;
         });
         video.setVideoPath(videos.get(videoIndex));
         video.start();
@@ -228,12 +232,9 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     @Override
     public boolean useEventBus() {
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                new Consumer<EventModel>() {
-                    @Override
-                    public void accept(EventModel eventModel) throws Exception {
-                        XLog.e("EventModel===" + eventModel.value);
-                        getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), false);
-                    }
+                eventModel -> {
+                    XLog.e("EventModel===" + eventModel.value);
+                    getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), false);
                 }
         );
         return true;
@@ -258,7 +259,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
                     firstTime = secondTime;
                     return true;
                 } else {
-                    System.exit(0);
+                    finish();
                 }
                 return true;
             }
@@ -275,4 +276,12 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     public OneScreenPresent newP() {
         return new OneScreenPresent();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(context, UpdateService.class));
+        smdt.smdtWatchDogEnable((char)0);
+    }
+
 }

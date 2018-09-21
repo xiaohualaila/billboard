@@ -3,26 +3,18 @@ package cn.com.billboard.util;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
-import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
 import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.library.event.BusProvider;
-import cn.com.library.kit.Kits;
 import cn.com.library.log.XLog;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 
 public class DownloadFileUtil {
 
@@ -49,8 +41,8 @@ public class DownloadFileUtil {
      * @param callBack 回调
      */
     public void downMainLoadPicture(Context context, List<String> images_url, List<String> videos_url, TwoScreenPresent.CallBack callBack) {
-        List<String> images  = FileUtil.getCommonFileNames(images_url,UserInfoKey.FILE_MAIN_PICTURE);
-        List<String>  videos  = FileUtil.getCommonFileNames(videos_url,UserInfoKey.FILE_MAIN_VIDEO);
+        List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_MAIN_PICTURE);
+        List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_MAIN_VIDEO);
 
         if (images.size() > 0) {
             List<String> files = new ArrayList<>();
@@ -64,32 +56,9 @@ public class DownloadFileUtil {
                         super.onNext(value);
                         XLog.e("url==" + images.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
                    //     Log.i("xxx"," 进度>>>>>>>>" + value.getProgress() +" 总进度>>>>>>>>" +value.getTotal() );
-
-                        //TODO 启动计时服务
-                        Observable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
-
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                XLog.e("更新数据倒计时开始");
-                            }
-
-                            @Override
-                            public void onNext(Long l) {
-                                BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,images.size(),value.getFileName(),"图片"));
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                XLog.e("倒计时结束，开始获取数据");
-                            }
-                        });
-
+                        BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),(finalI+1),images.size(),value.getFileName(),"图片"));
+                        Log.i("sss"," finalI  " +(finalI + 1 )+ " videos size " + images.size() + " FileName " +value.getFileName());
+                        Log.i("sss","++++++++++++++++++++++++++");
                     }
 
                     @Override
@@ -143,30 +112,8 @@ public class DownloadFileUtil {
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
                     XLog.e("url==" + videos.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
-                    //TODO 启动计时服务
-                    Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
-
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            XLog.e("更新数据倒计时开始");
-                        }
-
-                        @Override
-                        public void onNext(Long l) {
-                            BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,videos.size(),value.getFileName(),"视频"));
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            XLog.e("倒计时结束，开始获取数据");
-                        }
-                    });
-
+                    BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,videos.size(),value.getFileName(),"视频"));
+                    Log.i("sss"," finalI   " +(finalI+1) + "   videos size   " + videos.size() + "  FileName " +value.getFileName());
                 }
 
                 @Override
@@ -196,8 +143,8 @@ public class DownloadFileUtil {
      */
     public void downSubLoadPicture(Context context, List<String> images_url, List<String> videos_url, TwoScreenPresent.CallBack callBack) {
 
-        List<String> images  = FileUtil.getCommonFileNames(images_url,UserInfoKey.FILE_SUB_PICTURE);
-        List<String>  videos  = FileUtil.getCommonFileNames(videos_url,UserInfoKey.FILE_SUB_VIDEO);
+        List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_SUB_PICTURE);
+        List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_SUB_VIDEO);
 
         if (images.size() > 0) {
             List<String> files = new ArrayList<>();
@@ -282,13 +229,14 @@ public class DownloadFileUtil {
      * 下载大屏图片
      *
      * @param context
-     * @param images   图片下载的url
-     * @param videos   视频下载的url
      * @param callBack 回调
      */
-    public void downBigLoadPicture(Context context, List<String> images, List<String> videos, OneScreenPresent.CallBack callBack) {
-        Kits.File.deleteFile(UserInfoKey.FILE_BIG_PICTURE);
-        Kits.File.deleteFile(UserInfoKey.FILE_BIG_VIDEO);
+    public void downBigLoadPicture(Context context, List<String> images_url, List<String> videos_url, OneScreenPresent.CallBack callBack) {
+//        Kits.File.deleteFile(UserInfoKey.FILE_BIG_PICTURE);
+//        Kits.File.deleteFile(UserInfoKey.FILE_BIG_VIDEO);
+
+        List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_BIG_PICTURE);
+        List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_BIG_VIDEO);
         if (images.size() > 0) {
             List<String> files = new ArrayList<>();
             for (String url : images) {
@@ -309,11 +257,9 @@ public class DownloadFileUtil {
                                 for (String path : images){
                                     files.add(UserInfoKey.FILE_BIG_PICTURE + "/" + ReaderJsonUtil.getInstance().getUrlFileName(path));
                                 }
-                                AppSharePreferenceMgr.put(context, UserInfoKey.BIG_PICTURE_FILE, new Gson().toJson(files));//保存图片路径
                                 if (videos.size() > 0) {
                                     downBigLoadVideo(context, videos, callBack);
                                 } else {
-                                    AppSharePreferenceMgr.put(context, UserInfoKey.BIG_VIDEO_FILE, "[]");//保存视频路径
                                     callBack.onChangeUI();
                                 }
                             }
@@ -323,12 +269,12 @@ public class DownloadFileUtil {
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
+                        Log.i("sss",e.getMessage());
                     }
                 });
             }
         } else {
             if (videos.size() > 0) {
-                AppSharePreferenceMgr.put(context, UserInfoKey.BIG_PICTURE_FILE, "[]");//保存图片路径
                 downBigLoadVideo(context, videos, callBack);
             } else {
                 callBack.onChangeUI();
@@ -360,7 +306,7 @@ public class DownloadFileUtil {
                         files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
                         if (files.size() == videos.size()) {//判断视频是否下载完成
                             XLog.e("大屏视频下载完成！");
-                            AppSharePreferenceMgr.put(context, UserInfoKey.BIG_VIDEO_FILE, new Gson().toJson(files));//保存视频路径
+                          //  AppSharePreferenceMgr.put(context, UserInfoKey.BIG_VIDEO_FILE, new Gson().toJson(files));//保存视频路径
                             callBack.onChangeUI();
                         }
                     }

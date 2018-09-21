@@ -3,6 +3,8 @@ package cn.com.billboard.present;
 
 import com.google.gson.Gson;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
 import cn.com.billboard.model.ScreenShowModel;
@@ -18,6 +20,9 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
@@ -126,6 +131,41 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         } else {
                             XLog.e("状态上报失败");
                         }
+                    }
+                });
+    }
+
+    /**
+     * 心跳
+     */
+    public void sendState(String mac,String ip_addr){
+        //10秒
+        Observable.interval(10, TimeUnit.SECONDS).
+                subscribeOn(Schedulers.io()).
+                subscribe(new Consumer<Long>() {
+                    @Override public void accept(Long num) throws Exception {
+
+                        BillboardApi.getDataService().sendState(mac,ip_addr)
+                                .compose(XApi.<BaseBean>getApiTransformer())
+                                .compose(XApi.<BaseBean>getScheduler())
+                                .compose(getV().<BaseBean>bindToLifecycle())
+                                .subscribe(new ApiSubscriber<BaseBean>() {
+                                    @Override
+                                    protected void onFail(NetError error) {
+                                        getV().showError(error);
+                                    }
+
+                                    @Override
+                                    public void onNext(BaseBean model) {
+//                                        if (model.isSuccess()) {
+//                                            XLog.e("状态上报成功");
+//                                        } else {
+//                                            XLog.e("状态上报失败");
+//                                        }
+                                    }
+                                });
+
+
                     }
                 });
     }

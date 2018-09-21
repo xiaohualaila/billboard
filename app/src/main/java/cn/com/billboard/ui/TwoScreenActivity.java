@@ -94,6 +94,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
     int height = 0;
     private SmdtManager smdt;
+    private String mac = "";
+    private String ip_addr = "";
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
@@ -129,6 +131,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         );
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char)1);//开启看门狗
+        mac= smdt.smdtGetEthMacAddress();
+        ip_addr = smdt.smdtGetEthIPAddress();
+        getP().sendState(mac,ip_addr);
         new Timer().schedule(timerTask,0,5000);
     }
 
