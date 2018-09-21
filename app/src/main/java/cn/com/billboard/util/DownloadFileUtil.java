@@ -80,6 +80,7 @@ public class DownloadFileUtil {
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
+                        callBack.onErrorChangeUI(e.getMessage());
                     }
                 });
             }
@@ -130,6 +131,7 @@ public class DownloadFileUtil {
                 @Override
                 public void onError(Throwable e) {
                     super.onError(e);
+                    callBack.onErrorChangeUI(e.getMessage());
                 }
             });
         }
@@ -175,6 +177,7 @@ public class DownloadFileUtil {
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
+                        callBack.onErrorChangeUI(e.getMessage());
                     }
                 });
             }
@@ -220,6 +223,7 @@ public class DownloadFileUtil {
                 @Override
                 public void onError(Throwable e) {
                     super.onError(e);
+                    callBack.onErrorChangeUI(e.getMessage());
                 }
             });
         }
@@ -269,7 +273,7 @@ public class DownloadFileUtil {
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);
-                        Log.i("sss",e.getMessage());
+                        callBack.onErrorChangeUI(e.getMessage());
                     }
                 });
             }
@@ -315,6 +319,7 @@ public class DownloadFileUtil {
                 @Override
                 public void onError(Throwable e) {
                     super.onError(e);
+                    callBack.onErrorChangeUI(e.getMessage());
                 }
 
             });

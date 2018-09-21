@@ -42,6 +42,11 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
             getV().showSubData();
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.SUB_SCREEN_ID, "").toString());
         }
+
+        @Override
+        public void onErrorChangeUI(String error) {
+            getV().showToastManger(error);
+        }
     };
 
 
@@ -178,6 +183,8 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         void onMainChangeUI();//主屏回调
 
         void onSubChangeUI();//副屏回调
+
+        void onErrorChangeUI(String error);//下载失败无法下载
     }
 
 }

@@ -175,6 +175,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             }
         }
     }
+
+    public void showToastManger(String error){
+        ToastManager.showShort(context, error);
+    }
+
     /**展示主屏数据*/
     public void showData() {
         rl_pro.setVisibility(View.GONE);

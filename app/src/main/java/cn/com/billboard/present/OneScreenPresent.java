@@ -37,6 +37,11 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
             UpdateService.getInstance().startTimer();
             updateState();
         }
+
+        @Override
+        public void onErrorChangeUI(String message) {
+            getV().showToastManger(message);
+        }
     };
 
     /**
@@ -109,13 +114,13 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
                 });
     }
 
-
-
     /**
      * 回调
      */
     public interface CallBack {
         void onChangeUI();
+
+        void onErrorChangeUI(String message);
     }
 
 }

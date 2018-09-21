@@ -114,6 +114,12 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
             }
         }
     }
+
+    public void showToastManger(String error){
+        ToastManager.showShort(context, error);
+    }
+
+
     /**展示数据*/
     public void showData() {
         videos =  FileUtil.getFilePath(UserInfoKey.FILE_BIG_VIDEO);
@@ -178,6 +184,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
             }
         });
     }
+
     /**播放视频*/
     private void playVideo(){
         banner.setVisibility(View.GONE);
