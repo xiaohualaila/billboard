@@ -46,7 +46,6 @@ public class DownloadFileUtil {
 
         if (images.size() > 0) {
             List<String> files = new ArrayList<>();
-//            for (String url : images) {
             for (int i=0;i<images.size();i++) {
 
                 final int finalI = i;

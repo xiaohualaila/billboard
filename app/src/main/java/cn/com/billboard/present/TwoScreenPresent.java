@@ -101,15 +101,11 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
             AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SCREEN_ID, model.getSid());
             List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
             XLog.e("main_lists===" + new Gson().toJson(lists));
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_PICTURE_URL, new Gson().toJson(lists[0]));
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SHOW_VIDEO_URL, new Gson().toJson(lists[1]));
             DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists[0], lists[1], callBack);//下载
         } else {//副屏的
             AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SCREEN_ID, model.getSid());
             List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
             XLog.e("sub_lists===" + new Gson().toJson(lists));
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SHOW_PICTURE_URL, new Gson().toJson(lists[0]));
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SHOW_VIDEO_URL, new Gson().toJson(lists[1]));
             DownloadFileUtil.getInstance().downSubLoadPicture(getV(), lists[0], lists[1], callBack);
         }
     }

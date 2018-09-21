@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
@@ -21,8 +22,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -42,7 +43,6 @@ import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
-
 import cn.com.library.event.BusProvider;
 import cn.com.library.imageloader.ILFactory;
 import cn.com.library.kit.ToastManager;
@@ -93,8 +93,19 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     Display[]  displays;//屏幕数组
 
     int height = 0;
+
+    private String file_name = "";
+    private String  file_num = "";
+    private int file_pre ;
+
+    private Handler mHandler = new Handler();
+
+    private boolean isUPdate = true;
+
     private SmdtManager smdt;
+
     private String mac = "";
+
     private String ip_addr = "";
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -106,6 +117,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
+
 
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
@@ -121,29 +133,57 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 progressModel -> {
 
                     int pp = (int) ((float)progressModel.progress/(float)progressModel.total*100);
-
-                   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
-                    loading_file_name.setText(progressModel.type+progressModel.fileName);
-                    loading_num.setText(progressModel.index+"/"+progressModel.num);
-                    progressBarHorizontal.setProgress(pp);
-                    loading_pro.setText(pp+"%");
+                    file_pre = pp;
+                    file_num = progressModel.index+"/"+progressModel.num;
+                    file_name= progressModel.type+progressModel.fileName;
+                //   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
+                    if(isUPdate){
+                        isUPdate = false;
+                        mHandler.postDelayed(runnable,2000);
+                    }
                 }
         );
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char)1);//开启看门狗
+
         mac= smdt.smdtGetEthMacAddress();
         ip_addr = smdt.smdtGetEthIPAddress();
-        getP().sendState(mac,ip_addr);
+      //  getP().sendState(mac,ip_addr);
         new Timer().schedule(timerTask,0,5000);
     }
+
 
     TimerTask timerTask = new TimerTask(){
         @Override
         public void run() {
-            smdt.smdtWatchDogFeed();//喂狗
-        //    Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
+             smdt.smdtWatchDogFeed();//喂狗
         }
     };
+
+    public void showToastManger(String error){
+        ToastManager.showShort(context, error);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(context, GPIOService.class));
+        smdt.smdtWatchDogEnable((char)0);
+    }
+
+    Runnable runnable =  new Runnable() {
+        @Override
+        public void run()
+        {
+            loading_file_name.setText(file_name);
+            loading_num.setText(file_num);
+            progressBarHorizontal.setProgress(file_pre);
+            loading_pro.setText(file_pre+"%");
+            mHandler.postDelayed(runnable, 100);
+        }
+    };
+
+
 
     /**请求失败返回*/
     public void showError(NetError error) {
@@ -175,13 +215,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             }
         }
     }
-
-    public void showToastManger(String error){
-        ToastManager.showShort(context, error);
-    }
-
     /**展示主屏数据*/
     public void showData() {
+        mHandler.removeCallbacks(runnable);
         rl_pro.setVisibility(View.GONE);
         videos =  FileUtil.getFilePath(UserInfoKey.FILE_MAIN_VIDEO);
         images = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_PICTURE);
@@ -340,34 +376,44 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         }
 
 
-        video.setOnPreparedListener(mp -> {
+        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
 
-        });
-        video.setOnCompletionListener(mp -> {
-            videoIndex++;
-            if (videoIndex != videos.size()) {
-                //继续播放视频
-                playVideo();
-            } else {
-                //视频播放结束  开始播放图片  复位视频索引
-                videoIndex = 0;
-//                    mp.release();
-                //如果类型未全部是视频时接着循环
-                if (type == 2) {
-                    playVideo();
-                    return;
-                }
-                playBanner();
             }
         });
-        video.setOnErrorListener((mp, what, extra) -> {
-            video.stopPlayback();
-            return true;
+        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                videoIndex++;
+                if (videoIndex != videos.size()) {
+                    //继续播放视频
+                    playVideo();
+                } else {
+                    //视频播放结束  开始播放图片  复位视频索引
+                    videoIndex = 0;
+//                    mp.release();
+                    //如果类型未全部是视频时接着循环
+                    if (type == 2) {
+                        playVideo();
+                        return;
+                    }
+                    playBanner();
+                }
+            }
+        });
+        video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                video.stopPlayback();
+                return true;
+            }
         });
         video.setVideoPath(videos.get(videoIndex));
         Log.i("sss",videos.get(videoIndex));
         video.start();
     }
+
     /**初始化banner数据*/
     private List<View> initBanner(List<String> urls) {
         List<View> bannerView = new ArrayList<View>();
@@ -382,10 +428,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     @Override
     public boolean useEventBus() {
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                eventModel -> {
-                    XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
-                            AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
+                new Consumer<EventModel>() {
+                    @Override
+                    public void accept(EventModel eventModel) throws Exception {
+                        XLog.e("EventModel===" + eventModel.value);
+                        getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
+                                AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
+                    }
                 }
         );
         return true;
@@ -410,7 +459,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     firstTime = secondTime;
                     return true;
                 } else {
-                    finish();
+                   finish();
                 }
                 return true;
             }
@@ -427,13 +476,4 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     public TwoScreenPresent newP() {
         return new TwoScreenPresent();
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        smdt.smdtWatchDogEnable((char)0);
-        stopService(new Intent(context, GPIOService.class));
-    }
-
-
 }
