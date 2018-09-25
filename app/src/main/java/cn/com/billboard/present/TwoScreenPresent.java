@@ -62,7 +62,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     .subscribe(new ApiSubscriber<BaseBean<ScreenDataModel>>() {
                         @Override
                         protected void onFail(NetError error) {
-                          //  getV().dialog.dismiss();
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
@@ -75,6 +74,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         @Override
                         public void onNext(BaseBean<ScreenDataModel> model) {
                             if (model.isSuccess()) {
+                                getV().showDownFile();
                                 downloadAndSaveData(model.getMessageBody());
                             } else {
                                 if (isRefresh) {

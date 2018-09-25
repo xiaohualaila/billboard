@@ -139,10 +139,12 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 //   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
                     if(isUPdate){
                         isUPdate = false;
-                        mHandler.postDelayed(runnable,2000);
+                        mHandler.postDelayed(runnable,500);
                     }
                 }
         );
+
+
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char)1);//开启看门狗
 
@@ -238,6 +240,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         } else {
             ToastManager.showShort(context, "暂无数据");
         }
+    }
+
+    public void showDownFile(){
+        isUPdate = true;
+        rl_pro.setVisibility(View.VISIBLE);
+        videoView.setVisibility(View.GONE);
+        banner.setVisibility(View.GONE);
     }
 
 
@@ -424,6 +433,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         }
         return bannerView;
     }
+
     /**重新获取数据*/
     @Override
     public boolean useEventBus() {

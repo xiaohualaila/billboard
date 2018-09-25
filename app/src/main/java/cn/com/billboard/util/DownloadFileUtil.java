@@ -19,7 +19,7 @@ import cn.com.library.log.XLog;
 public class DownloadFileUtil {
 
     private static DownloadFileUtil downloadFileUtil;
-
+    int index =0;
 
     public static DownloadFileUtil getInstance() {
         if (downloadFileUtil == null) {
@@ -43,56 +43,93 @@ public class DownloadFileUtil {
     public void downMainLoadPicture(Context context, List<String> images_url, List<String> videos_url, TwoScreenPresent.CallBack callBack) {
         List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_MAIN_PICTURE);
         List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_MAIN_VIDEO);
-
+        index =0;
         if (images.size() > 0) {
-            List<String> files = new ArrayList<>();
-            for (int i=0;i<images.size();i++) {
-
-                final int finalI = i;
-                DownloadManager.getInstance().download(images.get(i), UserInfoKey.FILE_MAIN_PICTURE, new DownLoadObserver() {
-                    @Override
-                    public void onNext(DownloadInfo value) {
-                        super.onNext(value);
-                        XLog.e("url==" + images.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
-                   //     Log.i("xxx"," 进度>>>>>>>>" + value.getProgress() +" 总进度>>>>>>>>" +value.getTotal() );
-                        BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),(finalI+1),images.size(),value.getFileName(),"图片"));
-                        Log.i("sss"," finalI  " +(finalI + 1 )+ " videos size " + images.size() + " FileName " +value.getFileName());
-                        Log.i("sss","++++++++++++++++++++++++++");
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (downloadInfo != null) {
-                            files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                            if (files.size() == images.size()) {
-                                XLog.e("主屏图片下载完成！");
-                                files.clear();
-                                if (videos.size() > 0) {
-                                    downMainLoadVideo(context, videos, callBack);
-                                } else {
-                                    callBack.onMainChangeUI();
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        callBack.onErrorChangeUI(e.getMessage());
-                    }
-                });
-            }
+             downMainFilePic( images, callBack, videos);
         } else {
             if (videos.size() > 0) {
-                downMainLoadVideo(context, videos, callBack);
+                downMainFileVideo(videos, callBack);
             } else {
                 callBack.onMainChangeUI();
             }
         }
     }
 
+    /**
+     * 下载大屏图片
+     * @param images
+     * @param callBack
+     * @param videos
+     */
+    public void downMainFilePic( List<String> images,TwoScreenPresent.CallBack  callBack, List<String>  videos){
+        DownloadManager.getInstance().download(images.get(index), UserInfoKey.FILE_MAIN_PICTURE, new DownLoadObserver() {
+            @Override
+            public void onNext(DownloadInfo value) {
+                super.onNext(value);
+                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), "图片"));
+             //   Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
+            }
 
+            @Override
+            public void onComplete() {
+                if (downloadInfo != null) {
+                     index ++;
+                    if (index == images.size()) {
+                        XLog.e("主屏图片下载完成！");
+                        if (videos.size() > 0) {
+                            index = 0;
+                            downMainFileVideo( videos, callBack);
+                        } else {
+                            callBack.onMainChangeUI();
+                        }
+                    }else {
+                        downMainFilePic(images,callBack, videos);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                callBack.onErrorChangeUI(e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * 下载大屏视频
+     * @param voides
+     * @param callBack
+     */
+    public void downMainFileVideo(List<String> voides,TwoScreenPresent.CallBack  callBack){
+        DownloadManager.getInstance().download(voides.get(index), UserInfoKey.FILE_MAIN_VIDEO, new DownLoadObserver() {
+            @Override
+            public void onNext(DownloadInfo value) {
+                super.onNext(value);
+                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
+           //     Log.i("sss", " finalI  " + index+1 + " videos size " + voides.size() + " FileName " + value.getFileName());
+            }
+
+            @Override
+            public void onComplete() {
+                if (downloadInfo != null) {
+                    index ++;
+                    if (index == voides.size()) {//判断视频是否下载完成
+           //             XLog.e("主屏视频下载完成！");
+                        callBack.onMainChangeUI();
+                    }else {
+                        downMainFileVideo(voides,callBack);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                callBack.onErrorChangeUI(e.getMessage());
+            }
+        });
+    }
 
 
     /**
@@ -102,39 +139,38 @@ public class DownloadFileUtil {
      * @param videos   视频下载url
      * @param callBack 回调
      */
-    public void downMainLoadVideo(Context context, List<String> videos, TwoScreenPresent.CallBack callBack) {
-        List<String> files = new ArrayList<>();
-//        for (String url : videos) {
-        for (int i=0;i<videos.size();i++) {
-            final int finalI = i;
-            DownloadManager.getInstance().download(videos.get(i), UserInfoKey.FILE_MAIN_VIDEO, new DownLoadObserver() {
-                @Override
-                public void onNext(DownloadInfo value) {
-                    super.onNext(value);
-                    XLog.e("url==" + videos.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
-                    BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,videos.size(),value.getFileName(),"视频"));
-                    Log.i("sss"," finalI   " +(finalI+1) + "   videos size   " + videos.size() + "  FileName " +value.getFileName());
-                }
-
-                @Override
-                public void onComplete() {
-                    if (downloadInfo != null) {
-                        files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                        if (files.size() == videos.size()) {//判断视频是否下载完成
-                            XLog.e("主屏视频下载完成！");
-                            callBack.onMainChangeUI();
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    super.onError(e);
-                    callBack.onErrorChangeUI(e.getMessage());
-                }
-            });
-        }
-    }
+//    public void downMainLoadVideo(Context context, List<String> videos, TwoScreenPresent.CallBack callBack) {
+//        List<String> files = new ArrayList<>();
+//        for (int i=0;i<videos.size();i++) {
+//            final int finalI = i;
+//            DownloadManager.getInstance().download(videos.get(i), UserInfoKey.FILE_MAIN_VIDEO, new DownLoadObserver() {
+//                @Override
+//                public void onNext(DownloadInfo value) {
+//                    super.onNext(value);
+//                    XLog.e("url==" + videos.get(finalI) + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
+//                    BusProvider.getBus().post(new ProgressModel( value.getProgress(), value.getTotal(),finalI+1,videos.size(),value.getFileName(),"视频"));
+//                    Log.i("sss"," finalI   " +(finalI+1) + "   videos size   " + videos.size() + "  FileName " +value.getFileName());
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//                    if (downloadInfo != null) {
+//                        files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
+//                        if (files.size() == videos.size()) {//判断视频是否下载完成
+//                            XLog.e("主屏视频下载完成！");
+//                            callBack.onMainChangeUI();
+//                        }
+//                    }
+//                }
+//
+//                @Override
+//                public void onError(Throwable e) {
+//                    super.onError(e);
+//                    callBack.onErrorChangeUI(e.getMessage());
+//                }
+//            });
+//        }
+//    }
 
     /**
      * 下载副屏图片
@@ -190,6 +226,7 @@ public class DownloadFileUtil {
         }
 
     }
+
 
     /**
      * 下载副屏视频
