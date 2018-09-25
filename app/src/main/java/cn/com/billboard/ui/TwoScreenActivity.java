@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
@@ -121,7 +122,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
-        startService(new Intent(context, GPIOService.class));
+    //    startService(new Intent(context, GPIOService.class));
 
 
         getP().getScreenData(true, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
@@ -143,15 +144,20 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     }
                 }
         );
+        /**
+         * 老板子没有喂狗api
+         */
+        String model = Build.MODEL;
+        if(model.equals("3280")){
+            smdt = SmdtManager.create(this);
+            smdt.smdtWatchDogEnable((char)1);//开启看门狗
+            mac= smdt.smdtGetEthMacAddress();
+            ip_addr = smdt.smdtGetEthIPAddress();
 
+            new Timer().schedule(timerTask,0,5000);
+        }
+//  getP().sendState(mac,ip_addr);
 
-        smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char)1);//开启看门狗
-
-        mac= smdt.smdtGetEthMacAddress();
-        ip_addr = smdt.smdtGetEthIPAddress();
-      //  getP().sendState(mac,ip_addr);
-        new Timer().schedule(timerTask,0,5000);
     }
 
 
@@ -170,7 +176,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(context, GPIOService.class));
-        smdt.smdtWatchDogEnable((char)0);
+        String model = Build.MODEL;
+        if(model.equals("3280")) {
+            smdt.smdtWatchDogEnable((char) 0);
+        }
     }
 
     Runnable runnable =  new Runnable() {

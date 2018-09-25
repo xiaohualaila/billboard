@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -71,9 +72,12 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         dialog.show();
         startService(new Intent(context, UpdateService.class));
         getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), true);
-        smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char)1);//开启看门狗
-        new Timer().schedule(timerTask,0,5000);
+        String model = Build.MODEL;
+        if(model.equals("3280")) {
+            smdt = SmdtManager.create(this);
+            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+            new Timer().schedule(timerTask, 0, 5000);
+        }
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -288,7 +292,10 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(context, UpdateService.class));
-        smdt.smdtWatchDogEnable((char)0);
+        String model = Build.MODEL;
+        if(model.equals("3280")) {
+            smdt.smdtWatchDogEnable((char)0);
+        }
     }
 
 }

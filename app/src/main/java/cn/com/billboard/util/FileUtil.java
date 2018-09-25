@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.com.billboard.net.UserInfoKey;
 import cn.com.library.kit.Kits;
 
 public class FileUtil {
@@ -29,8 +30,9 @@ public class FileUtil {
 
 
     public static List<String>  getCommonFileNames(List<String> fs_url,String file_name){
+        List<String> old_videos = FileUtil.getFilePath(file_name);
         if(fs_url.size()>0 && fs_url!=null){
-            List<String> old_videos = FileUtil.getFilePath(file_name);
+
             File file1 = null;
             List<String> remove_v_list = new ArrayList<>();
             List<String> remove_v_list2 = new ArrayList<>();
@@ -62,10 +64,11 @@ public class FileUtil {
                     }
                 }
 
-            }else {
-                if(old_videos.size()>0){
-                    Kits.File.deleteFile(file_name);
-                }
+            }
+
+        }else {
+            if(old_videos.size()>0){
+                Kits.File.deleteFile(file_name);
             }
         }
         return fs_url;
