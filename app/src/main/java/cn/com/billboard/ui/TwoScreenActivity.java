@@ -140,7 +140,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 //   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
                     if(isUPdate){
                         isUPdate = false;
-                        mHandler.postDelayed(runnable,500);
+                        mHandler.postDelayed(runnable,50);
                     }
                 }
         );

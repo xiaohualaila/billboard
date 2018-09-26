@@ -83,8 +83,6 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
     private void downloadAndSaveData(ScreenDataModel model) {
         AppSharePreferenceMgr.put(getV(), UserInfoKey.BIG_SCREEN_ID, model.getSid());
         List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
-//        XLog.e("lists===" + new Gson().toJson(lists));
-
         DownloadFileUtil.getInstance().downBigLoadPicture(getV(), lists[0], lists[1], callBack);
     }
 

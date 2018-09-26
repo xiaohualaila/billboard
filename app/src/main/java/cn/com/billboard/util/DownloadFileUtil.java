@@ -277,45 +277,12 @@ public class DownloadFileUtil {
 
         List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_BIG_PICTURE);
         List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_BIG_VIDEO);
+        index =0;
         if (images.size() > 0) {
-            List<String> files = new ArrayList<>();
-            for (String url : images) {
-                DownloadManager.getInstance().download(url, UserInfoKey.FILE_BIG_PICTURE, new DownLoadObserver() {
-                    @Override
-                    public void onNext(DownloadInfo value) {
-                        super.onNext(value);
-                        XLog.e("url==" + url + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (downloadInfo != null) {
-                            files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                            if (files.size() == images.size()) {//判断图片是否下载完成
-                                XLog.e("大屏图片下载完成！");
-                                files.clear();
-                                for (String path : images){
-                                    files.add(UserInfoKey.FILE_BIG_PICTURE + "/" + ReaderJsonUtil.getInstance().getUrlFileName(path));
-                                }
-                                if (videos.size() > 0) {
-                                    downBigLoadVideo(context, videos, callBack);
-                                } else {
-                                    callBack.onChangeUI();
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        callBack.onErrorChangeUI(e.getMessage());
-                    }
-                });
-            }
+            downBigFilePic(images,callBack,videos);
         } else {
             if (videos.size() > 0) {
-                downBigLoadVideo(context, videos, callBack);
+                downBigFileVideo(videos,callBack);
             } else {
                 callBack.onChangeUI();
             }
@@ -323,31 +290,73 @@ public class DownloadFileUtil {
 
     }
 
+
+    /**
+     * 下载室外大屏图片
+     * @param images
+     * @param callBack
+     * @param videos
+     */
+    public void downBigFilePic( List<String> images,OneScreenPresent.CallBack  callBack, List<String>  videos){
+        DownloadManager.getInstance().download(images.get(index), UserInfoKey.FILE_BIG_PICTURE, new DownLoadObserver() {
+            @Override
+            public void onNext(DownloadInfo value) {
+                super.onNext(value);
+                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(),
+                        index+1, images.size(), value.getFileName(), "图片"));
+            }
+
+            @Override
+            public void onComplete() {
+                if (downloadInfo != null) {
+                    index ++;
+                    if (index == images.size()) {
+                        XLog.e("主屏图片下载完成！");
+                        if (videos.size() > 0) {
+                            index = 0;
+                            downBigFileVideo(videos,callBack);
+                        } else {
+                            callBack.onChangeUI();
+                        }
+                    }else {
+                        downBigFilePic(images,callBack, videos);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                super.onError(e);
+                callBack.onErrorChangeUI(e.getMessage());
+            }
+        });
+    }
+
+
     /**
      * 下载大屏视频
      *
-     * @param context
      * @param videos   视频下载url
      * @param callBack 回调
      */
-    public void downBigLoadVideo(Context context, List<String> videos, OneScreenPresent.CallBack callBack) {
-        List<String> files = new ArrayList<>();
-        for (String url : videos) {
-            DownloadManager.getInstance().download(url, UserInfoKey.FILE_BIG_VIDEO, new DownLoadObserver() {
+    public void downBigFileVideo(List<String> videos, OneScreenPresent.CallBack callBack) {
+
+            DownloadManager.getInstance().download(videos.get(index), UserInfoKey.FILE_BIG_VIDEO, new DownLoadObserver() {
                 @Override
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
-                    XLog.e("url==" + url + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
+                    BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(),
+                            index+1, videos.size(), value.getFileName(), "视频"));
                 }
 
                 @Override
                 public void onComplete() {
                     if (downloadInfo != null) {
-                        files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                        if (files.size() == videos.size()) {//判断视频是否下载完成
-                            XLog.e("大屏视频下载完成！");
-                          //  AppSharePreferenceMgr.put(context, UserInfoKey.BIG_VIDEO_FILE, new Gson().toJson(files));//保存视频路径
+                        index ++;
+                        if (index == videos.size()) {//判断视频是否下载完成
                             callBack.onChangeUI();
+                        }else {
+                            downBigFileVideo(videos,callBack);
                         }
                     }
                 }
@@ -359,7 +368,7 @@ public class DownloadFileUtil {
                 }
 
             });
-        }
+
     }
 
 }

@@ -45,10 +45,10 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
      * 选择屏幕
      */
     private void selectScreenNum() {
-        new AlertView("选择屏幕", null, null, null, new String[]{"Screen - 0", "Screen - 1",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
+        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
                 (o, position) -> {
                     dialog.show();
-                    ToastManager.showShort(context, position == 0 ? "Screen - 0" : position == 1 ? "Screen - 1" : position == 2 ?  "拍照" : "视频");
+                    ToastManager.showShort(context, position == 0 ? "室内双屏" : position == 1 ? "室外大屏" : position == 2 ?  "拍照" : "视频");
                     AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
                     getP().loadData(position);
                 }).show();

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,7 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import cn.com.billboard.R;
+import cn.com.billboard.dialog.DownloadDialog;
 import cn.com.billboard.model.EventModel;
+import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
 import cn.com.billboard.service.UpdateService;
@@ -54,13 +57,19 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
 
     private int type = 0, videoIndex = 0;
 
-    public LoadingDialog dialog;
+    //public LoadingDialog dialog;
+    public DownloadDialog dialog;
 
     private List<String> images;
 
     private List<String> videos;
     private SmdtManager smdt;
 
+    private String file_name = "";
+    private String  file_num = "";
+    private int file_pre ;
+    private boolean isUPdate = true;
+    private Handler mHandler = new Handler();
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
@@ -68,7 +77,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
         getWindow().setAttributes(params);
-        dialog = new LoadingDialog(context, "数据加载中···");
+        dialog = new DownloadDialog(context);
         dialog.show();
         startService(new Intent(context, UpdateService.class));
         getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), true);
@@ -78,7 +87,33 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             new Timer().schedule(timerTask, 0, 5000);
         }
+        BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                progressModel -> {
+
+                    int pp = (int) ((float)progressModel.progress/(float)progressModel.total*100);
+                    file_pre = pp;
+                    file_num = progressModel.index+"/"+progressModel.num;
+                    file_name= progressModel.type+progressModel.fileName;
+                    //   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
+                    if(isUPdate){
+                        isUPdate = false;
+                        mHandler.postDelayed(runnable,500);
+                    }
+                }
+        );
     }
+
+    Runnable runnable =  new Runnable() {
+        @Override
+        public void run()
+        {
+            dialog.getFile_name().setText(file_name);
+            dialog.getFile_num().setText(file_num);
+            dialog.getSeekBar().setProgress(file_pre);
+            dialog.getNumProBar().setText(file_pre+"%");
+            mHandler.postDelayed(runnable, 50);
+        }
+    };
 
     TimerTask timerTask = new TimerTask(){
         @Override
