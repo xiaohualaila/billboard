@@ -207,10 +207,13 @@ public class SubScreenActivity extends Presentation {
             if(model.equals("3280")){
                    matrix.setRotate(-90);// 设置旋转角度
             }
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);// 重新绘制Bitmap
-            guidView.setImageBitmap(bitmap);
+            if(bitmap != null){
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);// 重新绘制Bitmap
+                guidView.setImageBitmap(bitmap);
 //            ILFactory.getLoader().loadNet(guidView, urls.get(i), null);
-            bannerView.add(guidView);
+                bannerView.add(guidView);
+            }
+
         }
         return bannerView;
     }
