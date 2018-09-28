@@ -1,11 +1,21 @@
 package cn.com.billboard.ui;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnItemClickListener;
 
+import java.io.File;
+
+import cn.com.billboard.dialog.DownloadAPKDialog;
+import cn.com.billboard.dialog.DownloadDialog;
+import cn.com.billboard.model.VersionModel;
 import cn.com.billboard.net.UserInfoKey;
+import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.R;
 import cn.com.billboard.present.LauncherPresent;
@@ -14,9 +24,10 @@ import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 
-public class LauncherActivity extends XActivity<LauncherPresent> {
+public class LauncherActivity extends XActivity<LauncherPresent> implements AppDownload.Callback{
 
     public LoadingDialog dialog;
+    public DownloadAPKDialog dialog_app;
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -91,6 +102,17 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
         }
     }
 
+    public void updateVersion(VersionModel model){
+        dialog_app = new DownloadAPKDialog(this);
+        dialog_app.show();
+        dialog_app.setCancelable(false);
+        dialog_app.getFile_name().setText(model.getVdetails());
+        dialog_app.getFile_num().setText(model.getVnumber());
+        AppDownload appDownload = new AppDownload();
+        appDownload.setProgressInterface(this);
+        appDownload.downApk(model.getDownload(),this);
+    }
+
 
     @Override
     public int getLayoutId() {
@@ -101,4 +123,46 @@ public class LauncherActivity extends XActivity<LauncherPresent> {
     public LauncherPresent newP() {
         return new LauncherPresent();
     }
+
+    @Override
+    public void callProgress(int progress) {
+        if (progress >= 100) {
+            runOnUiThread(() -> {
+                dialog_app.dismiss();
+                String path = "/storage/emulated/0/download/" + "终端.apk";
+                install(path);
+            });
+
+        }else {
+            runOnUiThread(() -> {
+                dialog_app.getSeekBar().setProgress( progress );
+                dialog_app.getNum_progress().setText(progress+"%");
+            });
+        }
+    }
+
+    /**
+     * 开启安装过程
+     * @param fileName
+     */
+    private void install(String fileName) {
+
+        File file = new File(fileName);
+        Intent intent = new Intent();
+        intent.setAction( Intent.ACTION_VIEW );
+        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        //判读版本是否在7.0以上
+        Uri apkUri = null;
+        if (Build.VERSION.SDK_INT >= 24) {
+            intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK );
+            apkUri = FileProvider.getUriForFile( this, "cn.com.billboard.fileprovider", file );
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            apkUri = Uri.fromFile(file);
+
+        }
+        intent.setDataAndType( apkUri, "application/vnd.android.package-archive" );
+        startActivity( intent );
+    }
+
 }

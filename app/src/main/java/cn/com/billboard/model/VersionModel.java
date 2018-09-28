@@ -26,6 +26,8 @@ public class VersionModel  {
 
     private int genre;
 
+    private int build;
+
     public String getId() {
         return id;
     }
@@ -80,5 +82,13 @@ public class VersionModel  {
 
     public void setGenre(int genre) {
         this.genre = genre;
+    }
+
+    public int getBuild() {
+        return build;
+    }
+
+    public void setBuild(int build) {
+        this.build = build;
     }
 }

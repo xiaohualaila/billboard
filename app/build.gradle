@@ -28,6 +28,15 @@ android {
             dirs 'libs'
         }
     }
+
+    signingConfigs {
+        sign {
+            keyAlias 'key0.jks'
+            keyPassword '123456'
+            storeFile file('key.jks')
+            storePassword '123456'
+        }
+    }
 }
 
 

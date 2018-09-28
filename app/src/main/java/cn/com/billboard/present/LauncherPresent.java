@@ -18,6 +18,7 @@ import cn.com.billboard.ui.CreateParamsActivity;
 import cn.com.billboard.ui.FaceActivity;
 import cn.com.billboard.ui.LauncherActivity;
 import cn.com.billboard.ui.VideoActivity;
+import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.PermissionsUtil;
 import cn.com.billboard.util.SDCardUtil;
@@ -35,6 +36,7 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
         PermissionsUtil.requestPermission(mPermission, new RxPermissions(getV()),
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.READ_PHONE_STATE,
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO);
@@ -77,9 +79,15 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
                     public void onNext(BaseBean<VersionModel> model) {
                         getV().dialog.dismiss();
                         if (model.isSuccess()) {
-                            XLog.e("model========" + new Gson().toJson(model));
+//                            XLog.e("model========" + new Gson().toJson(model));
 //                            getV().showData(model.getMessageBody());
-                            checkVersion(model.getMessageBody());
+                            VersionModel model1 = model.getMessageBody();
+                            int v_no = APKVersionCodeUtils.getVersionCode(getV());
+                            if(model1.getBuild()> v_no){
+                                   getV().updateVersion(model1);
+                            }else {
+                                checkVersion(model.getMessageBody());
+                            }
                         } else {
                             ToastManager.showShort(getV(), model.getDescribe());
                             checkVersion(model.getMessageBody());
