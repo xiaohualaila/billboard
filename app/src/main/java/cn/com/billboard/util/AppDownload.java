@@ -27,7 +27,6 @@ public class AppDownload {
         //创建下载任务,downloadUrl就是下载链接
         DownloadManager.Request request = new DownloadManager.Request( Uri.parse( url ) );
         //指定下载路径和下载文件名
-       request.setDestinationInExternalPublicDir( Environment.DIRECTORY_DOWNLOADS,  "zhsq.apk" );
         request.setDestinationInExternalPublicDir( "/download/",  "zhsq.apk" );
        //获取下载管理器
         downloadManager = (DownloadManager) context.getSystemService( Context.DOWNLOAD_SERVICE );
