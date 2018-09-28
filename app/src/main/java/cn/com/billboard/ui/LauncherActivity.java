@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import com.bigkoo.alertview.AlertView;
@@ -129,7 +130,8 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
         if (progress >= 100) {
             runOnUiThread(() -> {
                 dialog_app.dismiss();
-                String path = "/storage/emulated/0/download/" + "终端.apk";
+               // String path = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS )+ "zhsq.apk";
+                 String path = "/storage/emulated/0/download/"+"zhsq.apk";
                 install(path);
             });
 
@@ -146,23 +148,30 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
      * @param fileName
      */
     private void install(String fileName) {
+        //承接我的代码，filename指获取到了我的文件相应路径
+         if (fileName != null) {
+             if (fileName.endsWith(".apk")) {
+                 if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+                       File file= new File(fileName);
+                       Uri apkUri = FileProvider.getUriForFile(context, "cn.com.billboard.fileprovider", file);
+                       //在AndroidManifest中的android:authorities值
+                        Intent install = new Intent(Intent.ACTION_VIEW);
+                        install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+                              install.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                              context.startActivity(install);
+                 } else{
+                     Intent install = new Intent(Intent.ACTION_VIEW);
+                     install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                     context.startActivity(install);
+                 }
+             }
+         }
 
-        File file = new File(fileName);
-        Intent intent = new Intent();
-        intent.setAction( Intent.ACTION_VIEW );
-        intent.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
-        //判读版本是否在7.0以上
-        Uri apkUri = null;
-        if (Build.VERSION.SDK_INT >= 24) {
-            intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK );
-            apkUri = FileProvider.getUriForFile( this, "cn.com.billboard.fileprovider", file );
-            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        } else {
-            apkUri = Uri.fromFile(file);
 
-        }
-        intent.setDataAndType( apkUri, "application/vnd.android.package-archive" );
-        startActivity( intent );
     }
+
+
 
 }
