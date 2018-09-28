@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import java.util.Timer;
@@ -26,8 +27,8 @@ public class AppDownload {
         //创建下载任务,downloadUrl就是下载链接
         DownloadManager.Request request = new DownloadManager.Request( Uri.parse( url ) );
         //指定下载路径和下载文件名
-
-        request.setDestinationInExternalPublicDir( "/download/",  "智慧社区.apk" );
+       request.setDestinationInExternalPublicDir( Environment.DIRECTORY_DOWNLOADS,  "zhsq.apk" );
+        request.setDestinationInExternalPublicDir( "/download/",  "zhsq.apk" );
        //获取下载管理器
         downloadManager = (DownloadManager) context.getSystemService( Context.DOWNLOAD_SERVICE );
        //将下载任务加入下载队列，否则不会进行下载
