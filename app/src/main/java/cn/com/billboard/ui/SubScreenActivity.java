@@ -203,11 +203,11 @@ public class SubScreenActivity extends Presentation {
             ImageView guidView = (ImageView) LayoutInflater.from(App.getContext()).inflate(R.layout.item_image, null);
             Matrix matrix = new Matrix();
             Bitmap bitmap = BitmapFactory.decodeFile(urls.get(i));
+            if(bitmap != null){
             String model = Build.MODEL;
             if(model.equals("3280")){
                    matrix.setRotate(-90);// 设置旋转角度
             }
-            if(bitmap != null){
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),bitmap.getHeight(), matrix, true);// 重新绘制Bitmap
                 guidView.setImageBitmap(bitmap);
 //            ILFactory.getLoader().loadNet(guidView, urls.get(i), null);

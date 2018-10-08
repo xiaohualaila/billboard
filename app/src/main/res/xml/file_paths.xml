@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <paths>
-        <external-path path="" name="download"/>
+           <!-- Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";-->
+        <external-path path="download" name="download"/>
     </paths>
 </resources>

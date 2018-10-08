@@ -8,12 +8,8 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.view.View;
 import com.bigkoo.alertview.AlertView;
-import com.bigkoo.alertview.OnItemClickListener;
-
 import java.io.File;
-
 import cn.com.billboard.dialog.DownloadAPKDialog;
-import cn.com.billboard.dialog.DownloadDialog;
 import cn.com.billboard.model.VersionModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.AppDownload;
@@ -56,11 +52,21 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
     /**
      * 选择屏幕
      */
+//    private void selectScreenNum() {
+//        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
+//                (o, position) -> {
+//                    dialog.show();
+//                    ToastManager.showShort(context, position == 0 ? "室内双屏" : position == 1 ? "室外大屏" : position == 2 ?  "拍照" : "视频");
+//                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
+//                    getP().loadData(position);
+//                }).show();
+//    }
+
     private void selectScreenNum() {
-        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
+        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏"}, this, AlertView.Style.ActionSheet,
                 (o, position) -> {
                     dialog.show();
-                    ToastManager.showShort(context, position == 0 ? "室内双屏" : position == 1 ? "室外大屏" : position == 2 ?  "拍照" : "视频");
+                    ToastManager.showShort(context, position == 0 ? "室内双屏" : "室外大屏");
                     AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
                     getP().loadData(position);
                 }).show();
@@ -130,9 +136,8 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
         if (progress >= 100) {
             runOnUiThread(() -> {
                 dialog_app.dismiss();
-               // String path = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS )+ "zhsq.apk";
-                 String path = "/storage/emulated/0/download/"+"zhsq.apk";
-                install(path);
+                String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";
+                install(sdcardDir);
             });
 
         }else {

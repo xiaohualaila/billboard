@@ -3,8 +3,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
-    buildToolsVersion rootProject.ext.android.buildToolsVersion
-
     defaultConfig {
         applicationId 'cn.com.billboard'
         minSdkVersion rootProject.ext.android.minSdkVersion
@@ -40,6 +38,7 @@ android {
             }
         }
     }
+    buildToolsVersion '28.0.2'
 }
 
 
