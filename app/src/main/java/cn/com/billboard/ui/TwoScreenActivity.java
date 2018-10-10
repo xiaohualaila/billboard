@@ -322,38 +322,19 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         banner.setAdapter(new BannersAdapter(initBanner(images_big)));
         banner.setIsOutScroll(true);
         banner.startScroll();
-        banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                if (position == images_big.size() - 1 && type == 3) {
+                    banner.stopScroll();
+                    //图片播放完毕,休眠图片播放时长后播放视频
+                    mHandler.postDelayed(() -> playVideo(),10000);
+                }
             }
 
             @Override
             public void onPageSelected(int position) {
-                if (position == images_big.size() - 1 && type == 3) {
-                    XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
-                    Observable.timer(10, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            XLog.e("开始倒计时");
-                        }
 
-                        @Override
-                        public void onNext(Long value) {
-                            playVideo();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            XLog.e("结束倒计时");
-                        }
-                    });
-                }
             }
 
             @Override
@@ -383,8 +364,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         XLog.e("videoImg.getHeight====" + imgParams.height);
         ViewGroup.LayoutParams pic_banner_arams = pic_banner.getLayoutParams();
         XLog.e("videoImg.getHeight====" + pic_banner_arams.height);
-
-        banner.stopScroll();
         if(images_small.size()>0){
             //底部图片滚动
             playSmallBanner();

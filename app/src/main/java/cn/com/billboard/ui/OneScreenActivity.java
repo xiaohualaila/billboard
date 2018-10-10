@@ -75,7 +75,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        params.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         getWindow().setAttributes(params);
         dialog = new DownloadDialog(context);
         dialog.show();
@@ -183,38 +183,25 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         banner.setAdapter(new BannersAdapter(initBanner(images)));
         banner.setIsOutScroll(true);
         banner.startScroll();
-        banner.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (position == images.size() - 1 && type == 3) {
+                    banner.stopScroll();
+                    XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
 
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            playVideo();
+                        }
+                    },10000);
+                }
             }
 
             @Override
             public void onPageSelected(int position) {
-                if (position == images.size() - 1 && type == 3) {
-                    XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
-                    Observable.timer(10, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            XLog.e("开始倒计时");
-                        }
 
-                        @Override
-                        public void onNext(Long value) {
-                            playVideo();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            XLog.e("结束倒计时");
-                        }
-                    });
-                }
             }
 
             @Override
@@ -228,7 +215,6 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     private void playVideo(){
         banner.setVisibility(View.GONE);
         videoView.setVisibility(View.VISIBLE);
-        banner.stopScroll();
         video.setOnPreparedListener(mp -> mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
