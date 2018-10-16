@@ -108,6 +108,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     private String mac = "";
 
     private String ip_addr = "";
+
+    private boolean isVideoAgain = false;
+    private boolean isSmallPicFis = false;
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
@@ -274,8 +277,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             float image_height = options.outHeight;
             float image_widht = options.outWidth;
 
-            Log.i("sss","image_height " +image_height + "  image_widht" + image_widht + "image_height/image_widht" + (image_height/image_widht));
-
             if(image_height/image_widht > 1.2){
                 images_big.add(urls.get(i));
             }else {
@@ -296,26 +297,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         }
     }
 
-    /**video停止播放或者banner停止滚动*/
-    public void stopPlayVideo(){
-        if (videoView.getVisibility() == View.VISIBLE) {
-            video.pause();
-        } else {
-            banner.stopScroll();
-        }
-    }
-
-    /**video开始播放或者banner开始滚动*/
-    public void startPlayVideo(){
-        if (videoView.getVisibility() == View.VISIBLE) {
-            video.start();
-        } else {
-            banner.startScroll();
-        }
-    }
-
     /**播放图片轮播*/
     private void playBanner(){
+        isSmallPicFis = false;
+        isVideoAgain = false;
         pic_banner.stopScroll();
         videoView.setVisibility(View.GONE);
         banner.setVisibility(View.VISIBLE);
@@ -328,7 +313,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 if (position == images_big.size() - 1 && type == 3) {
                     banner.stopScroll();
                     //图片播放完毕,休眠图片播放时长后播放视频
-                    mHandler.postDelayed(() -> playVideo(),5000);
+                    mHandler.postDelayed(() ->
+                                    playVideo()
+                            ,5000);
                 }
             }
 
@@ -354,7 +341,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         pic_banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+               int n = position+1;
+                if(n == images_small.size()){
+                    isSmallPicFis = true;
+                    if(isVideoAgain){//判断视频是否重复播放了,如果视频重复播放了，直接播放大图片
+                        playBanner();
+                    }
+                }
             }
 
             @Override
@@ -373,20 +366,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     private void playVideo(){
         banner.setVisibility(View.GONE);
         videoView.setVisibility(View.VISIBLE);
-        ViewGroup.LayoutParams videoParams = video.getLayoutParams();
-        XLog.e("video.getHeight====" + videoParams.height);
-        ViewGroup.LayoutParams imgParams = videoImg.getLayoutParams();
-        XLog.e("videoImg.getHeight====" + imgParams.height);
-        ViewGroup.LayoutParams pic_banner_arams = pic_banner.getLayoutParams();
-        XLog.e("videoImg.getHeight====" + pic_banner_arams.height);
-        if(images_small.size()>0){
-            //底部图片滚动
-            playSmallBanner();
-        }else {
-            videoImg.setVisibility(View.VISIBLE);
-            pic_banner.setVisibility(View.GONE);
-        }
-
 
         video.setOnPreparedListener(mp -> {
 
@@ -399,25 +378,39 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             } else {
                 //视频播放结束  开始播放图片  复位视频索引
                 videoIndex = 0;
-//                    mp.release();
                 //如果类型未全部是视频时接着循环
                 if (type == 2) {
                     playVideo();
                     return;
                 }
+                //判断视频下方的小图片是否播放完成，没有继续播放视频
+                if(!isSmallPicFis){
+                    playVideo();
+                    isVideoAgain = true;
+                    return;
+                }
                 playBanner();
             }
         });
-        video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                video.stopPlayback();
-                return true;
-            }
+        video.setOnErrorListener((mp, what, extra) -> {
+            video.stopPlayback();
+            return true;
         });
         video.setVideoPath(videos.get(videoIndex));
-        Log.i("sss",videos.get(videoIndex));
         video.start();
+        playDownPic();
+    }
+
+   private void  playDownPic(){
+       if(images_small.size()>0){
+           //底部图片滚动
+           if(!isVideoAgain){//如果视频不否是重复播放的视频，是说明下面小图片没有播放完毕
+               playSmallBanner();
+           }
+       }else {
+           videoImg.setVisibility(View.VISIBLE);
+           pic_banner.setVisibility(View.GONE);
+       }
     }
 
     /**初始化banner数据*/
@@ -435,13 +428,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     @Override
     public boolean useEventBus() {
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                new Consumer<EventModel>() {
-                    @Override
-                    public void accept(EventModel eventModel) throws Exception {
-                        XLog.e("EventModel===" + eventModel.value);
-                        getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
-                                AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
-                    }
+                eventModel -> {
+                    XLog.e("EventModel===" + eventModel.value);
+                    getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
+                            AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
                 }
         );
         return true;

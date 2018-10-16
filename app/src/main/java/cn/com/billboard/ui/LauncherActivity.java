@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -25,52 +26,18 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
 
     public LoadingDialog dialog;
     public DownloadAPKDialog dialog_app;
-
+    private SmdtManager smdt;
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         dialog = new LoadingDialog(context, "请稍后···");
-//        XLog.e("getAllDevices====" + new Gson().toJson(new SerialPortFinder().getAllDevices()));
-//        XLog.e("getAllDevicesPath====" + new Gson().toJson(new SerialPortFinder().getAllDevicesPath()));
-//        LocationUtil.getInstance().startLocation(context);
-        getP().checkPermissions();
+        smdt = SmdtManager.create(this);
+        String mac= smdt.smdtGetEthMacAddress();
+        getP().checkPermissions(mac);
     }
 
-    /**
-     * 判断是否选择过屏
-     */
-    public void nextAction() {
-        if (((int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1)) == -1)
-            selectScreenNum();
-        else {
-            dialog.show();
-            getP().loadData((int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1));
-        }
-    }
 
-    /**
-     * 选择屏幕
-     */
-//    private void selectScreenNum() {
-//        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏",  "拍照", "视频"}, this, AlertView.Style.ActionSheet,
-//                (o, position) -> {
-//                    dialog.show();
-//                    ToastManager.showShort(context, position == 0 ? "室内双屏" : position == 1 ? "室外大屏" : position == 2 ?  "拍照" : "视频");
-//                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
-//                    getP().loadData(position);
-//                }).show();
-//    }
-
-    private void selectScreenNum() {
-        new AlertView("选择屏幕", null, null, null, new String[]{"室内双屏", "室外大屏"}, this, AlertView.Style.ActionSheet,
-                (o, position) -> {
-                    dialog.show();
-                    ToastManager.showShort(context, position == 0 ? "室内双屏" : "室外大屏");
-                    AppSharePreferenceMgr.put(context, UserInfoKey.SCREEN_NUM, position);
-                    getP().loadData(position);
-                }).show();
-    }
 
     /**
      * 请求返回错误

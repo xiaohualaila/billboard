@@ -18,7 +18,9 @@ public interface BillBoardService {
      * @return
      */
     @POST("app/version/selectNewVersion")
-    Flowable<BaseBean<VersionModel>> checkVersion(@Query("genre") int code);
+    Flowable<BaseBean<VersionModel>> checkVersion(
+            @Query("mac") String mac,
+            @Query("genre") int code);
 
     /**
      * 获取数据
