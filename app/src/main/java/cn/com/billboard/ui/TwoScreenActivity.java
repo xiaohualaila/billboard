@@ -328,7 +328,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 if (position == images_big.size() - 1 && type == 3) {
                     banner.stopScroll();
                     //图片播放完毕,休眠图片播放时长后播放视频
-                    mHandler.postDelayed(() -> playVideo(),10000);
+                    mHandler.postDelayed(() -> playVideo(),5000);
                 }
             }
 
@@ -351,7 +351,22 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         pic_banner.setAdapter(new BannersAdapter(initBanner(images_small)));
         pic_banner.setIsOutScroll(true);
         pic_banner.startScroll();
+        pic_banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**播放视频*/
@@ -373,30 +388,24 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         }
 
 
-        video.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
+        video.setOnPreparedListener(mp -> {
 
-            }
         });
-        video.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                videoIndex++;
-                if (videoIndex != videos.size()) {
-                    //继续播放视频
-                    playVideo();
-                } else {
-                    //视频播放结束  开始播放图片  复位视频索引
-                    videoIndex = 0;
+        video.setOnCompletionListener(mp -> {
+            videoIndex++;
+            if (videoIndex != videos.size()) {
+                //继续播放视频
+                playVideo();
+            } else {
+                //视频播放结束  开始播放图片  复位视频索引
+                videoIndex = 0;
 //                    mp.release();
-                    //如果类型未全部是视频时接着循环
-                    if (type == 2) {
-                        playVideo();
-                        return;
-                    }
-                    playBanner();
+                //如果类型未全部是视频时接着循环
+                if (type == 2) {
+                    playVideo();
+                    return;
                 }
+                playBanner();
             }
         });
         video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
