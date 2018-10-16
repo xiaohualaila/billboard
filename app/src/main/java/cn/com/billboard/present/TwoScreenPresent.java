@@ -139,14 +139,14 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     /**
      * 心跳
      */
-    public void sendState(String mac,String ip_addr){
+    public void sendState(String mac){
         //10秒
         Observable.interval(10, TimeUnit.SECONDS).
                 subscribeOn(Schedulers.io()).
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
 
-                        BillboardApi.getDataService().sendState(mac,ip_addr)
+                        BillboardApi.getDataService().sendState(mac)
                                 .compose(XApi.<BaseBean>getApiTransformer())
                                 .compose(XApi.<BaseBean>getScheduler())
                                 .compose(getV().<BaseBean>bindToLifecycle())

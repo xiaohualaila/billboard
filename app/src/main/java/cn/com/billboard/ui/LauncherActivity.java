@@ -1,6 +1,5 @@
 package cn.com.billboard.ui;
 
-import android.app.smdt.SmdtManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -8,13 +7,10 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.view.View;
-import com.bigkoo.alertview.AlertView;
 import java.io.File;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.VersionModel;
-import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.AppDownload;
-import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.R;
 import cn.com.billboard.present.LauncherPresent;
 import cn.com.billboard.widget.LoadingDialog;
@@ -26,18 +22,14 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
 
     public LoadingDialog dialog;
     public DownloadAPKDialog dialog_app;
-    private SmdtManager smdt;
+
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         dialog = new LoadingDialog(context, "请稍后···");
-        smdt = SmdtManager.create(this);
-        String mac= smdt.smdtGetEthMacAddress();
-        getP().checkPermissions(mac);
+        getP().checkPermissions();
     }
-
-
 
     /**
      * 请求返回错误

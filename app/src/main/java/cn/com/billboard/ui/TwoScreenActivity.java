@@ -107,7 +107,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
     private String mac = "";
 
-    private String ip_addr = "";
+//    private String ip_addr = "";
 
     private boolean isVideoAgain = false;
     private boolean isSmallPicFis = false;
@@ -155,11 +155,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             smdt = SmdtManager.create(this);
             smdt.smdtWatchDogEnable((char)1);//开启看门狗
             mac= smdt.smdtGetEthMacAddress();
-            ip_addr = smdt.smdtGetEthIPAddress();
+//            ip_addr = smdt.smdtGetEthIPAddress();
 
             new Timer().schedule(timerTask,0,5000);
         }
-//  getP().sendState(mac,ip_addr);
+        getP().sendState(mac);
 
     }
 
