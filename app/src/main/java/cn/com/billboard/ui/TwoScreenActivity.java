@@ -98,7 +98,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
     private String mac = "";
 
-//    private String ip_addr = "";
 
     private boolean isVideoAgain = false;
     private boolean isSmallPicFis = false;
@@ -131,7 +130,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     file_pre = pp;
                     file_num = progressModel.index+"/"+progressModel.num;
                     file_name= progressModel.type+progressModel.fileName;
-                //   Log.i("xxx"," 进度>>>>>>>>" + progressModel.progress +" 总进度>>>>>>>>" +progressModel.total+" progress>>>>>>>>" + pp );
                     if(isUPdate){
                         isUPdate = false;
                         mHandler.postDelayed(runnable,50);
@@ -146,14 +144,12 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             smdt = SmdtManager.create(this);
             smdt.smdtWatchDogEnable((char)1);//开启看门狗
             mac= smdt.smdtGetEthMacAddress();
-//            ip_addr = smdt.smdtGetEthIPAddress();
 
             new Timer().schedule(timerTask,0,5000);
         }
         getP().sendState(mac);
 
     }
-
 
     TimerTask timerTask = new TimerTask(){
         @Override
@@ -187,8 +183,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             mHandler.postDelayed(runnable, 100);
         }
     };
-
-
 
     /**请求失败返回*/
     public void showError(NetError error) {
@@ -228,9 +222,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         images = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_PICTURE);
         selectPic(images);
 
-        XLog.e("主屏图片===" + images);
-        XLog.e("主屏视频===" + videos);
-        Log.i("sss","主屏视频===" + videos);
         if (images_big.size() > 0 && videos.size() > 0) {
             type = 3;
             playVideo();
