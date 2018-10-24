@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +90,6 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         }
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
-
                     int pp = (int) ((float)progressModel.progress/(float)progressModel.total*100);
                     file_pre = pp;
                     file_num = progressModel.index+"/"+progressModel.num;
@@ -119,7 +119,6 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
-          // Log.i("sss",">>>>>>>>>>>>>>>>>>>喂狗");
         }
     };
 
@@ -176,6 +175,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
             ToastManager.showShort(context, "暂无数据");
         }
     }
+
     /**播放图片轮播*/
     private void playBanner(){
         videoView.setVisibility(View.GONE);
@@ -186,27 +186,18 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if (position == images.size() - 1 && type == 3) {
-                    banner.stopScroll();
-                    XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
-
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            playVideo();
-                        }
-                    },10000);
-                }
             }
 
             @Override
             public void onPageSelected(int position) {
-
+                if (position == images.size() - 1 && type == 3) {
+                    banner.stopScroll();
+                    mHandler.postDelayed(() -> playVideo(),10000);
+                }
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-
             }
         });
     }

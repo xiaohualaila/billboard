@@ -292,6 +292,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
                 if (position == images_big.size() - 1 && type == 3) {
                     banner.stopScroll();
                     //图片播放完毕,休眠图片播放时长后播放视频
@@ -299,11 +304,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                                     playVideo()
                             ,5000);
                 }
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
             }
 
             @Override

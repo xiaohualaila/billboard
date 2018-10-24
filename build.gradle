@@ -3,7 +3,7 @@ apply from: "conf.gradle"
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     dependencies {
