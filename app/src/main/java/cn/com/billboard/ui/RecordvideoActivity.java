@@ -49,14 +49,11 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     public void initData(Bundle savedInstanceState) {
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
-        // setType必须设置，要不出错.
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
         Intent intent = getIntent();
-        mac = intent.getStringExtra("mac");
         phoneType = intent.getIntExtra("phoneType",0);
+        mac = intent.getStringExtra("mac");
         mRecorder = new MediaRecorder();
-
         handler.postDelayed(() -> {
             startRecord();
             handler.postDelayed(runnable, 1000);
@@ -68,7 +65,6 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                         stopRecordVideo();
                         finish();
                     }
-                    Log.i("ddd","+++++stopRecordVideo");
                 }
         );
     }

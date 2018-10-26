@@ -1,12 +1,9 @@
 package cn.com.billboard.util;
 
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import cn.com.billboard.net.UserInfoKey;
 import cn.com.library.kit.Kits;
 
 public class FileUtil {
@@ -20,7 +17,6 @@ public class FileUtil {
                 for(File f:fs) {
                     if (!f.isDirectory()) {
                         list.add(f.getAbsolutePath());
-                        Log.i("sss", "f.getAbsolutePath()  >> " + f.getAbsolutePath());
                     }
                 }
             }
@@ -63,7 +59,6 @@ public class FileUtil {
                         }
                     }
                 }
-
             }
 
         }else {

@@ -146,25 +146,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                 subscribe(new Consumer<Long>() {
                     @Override public void accept(Long num) throws Exception {
 
-                        BillboardApi.getDataService().sendState(mac)
-                                .compose(XApi.<BaseBean>getApiTransformer())
-                                .compose(XApi.<BaseBean>getScheduler())
-                                .compose(getV().<BaseBean>bindToLifecycle())
-                                .subscribe(new ApiSubscriber<BaseBean>() {
-                                    @Override
-                                    protected void onFail(NetError error) {
-                                        getV().showError(error);
-                                    }
-
-                                    @Override
-                                    public void onNext(BaseBean model) {
-//                                        if (model.isSuccess()) {
-//                                            XLog.e("状态上报成功");
-//                                        } else {
-//                                            XLog.e("状态上报失败");
-//                                        }
-                                    }
-                                });
 
 
                     }

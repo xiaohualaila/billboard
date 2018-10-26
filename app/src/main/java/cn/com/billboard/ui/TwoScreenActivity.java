@@ -159,7 +159,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             new Timer().schedule(timerTask,0,5000);
         }
-      //  getP().sendState(mac);
 
     }
 
@@ -173,7 +172,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         @Override
         public void run() {
              smdt.smdtWatchDogFeed();//喂狗
-          //  Log.i("sss","喂狗 ++++++");
         }
     };
 
