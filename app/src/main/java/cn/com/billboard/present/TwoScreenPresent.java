@@ -139,18 +139,18 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     /**
      * 心跳
      */
-    public void sendState(String mac){
-        //10秒
-        Observable.interval(10, TimeUnit.SECONDS).
-                subscribeOn(Schedulers.io()).
-                subscribe(new Consumer<Long>() {
-                    @Override public void accept(Long num) throws Exception {
-
-
-
-                    }
-                });
-    }
+//    public void sendState(String mac){
+//        //10秒
+//        Observable.interval(10, TimeUnit.SECONDS).
+//                subscribeOn(Schedulers.io()).
+//                subscribe(new Consumer<Long>() {
+//                    @Override public void accept(Long num) throws Exception {
+//
+//
+//
+//                    }
+//                });
+//    }
 
     /**
      * 回调

@@ -84,7 +84,7 @@ public class GPIOService extends Service {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
-                 Log.i("sss","strResult_5" + strResult_5);
+            //     Log.i("sss","strResult_5" + strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                            sendTest("ATH\r\n"); //挂断电话
@@ -94,7 +94,6 @@ public class GPIOService extends Service {
                            BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
                        }
                    }
-                Log.i("sss","当前gpioNum5是 "+strResult);
                  gpioNum = 6;
              }else if(gpioNum == 6){
                  if(!isCalling){
@@ -125,7 +124,6 @@ public class GPIOService extends Service {
                  }
                  gpioNum = 5;
              }
-
                 Thread.sleep(TIME);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -195,8 +193,4 @@ public class GPIOService extends Service {
             serialHelper.close();
         }
     }
-
-
-
-
 }

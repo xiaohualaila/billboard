@@ -9,6 +9,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import java.io.File;
 import java.util.Date;
@@ -19,6 +21,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordvideoScreenPresent;
 import cn.com.billboard.util.MyUtil;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -47,6 +50,11 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     private int phoneType;
     @Override
     public void initData(Bundle savedInstanceState) {
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        getWindow().setAttributes(params);
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
 
@@ -63,7 +71,7 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                 model -> {
                     if(!model.isCalling){
                         stopRecordVideo();
-                        finish();
+
                     }
                 }
         );
@@ -187,8 +195,10 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                     camera = null;
                 }
                 File file = new File(path);
-                if (!file.exists()) {
+                if (file.exists()) {
                     getP().uploadVideo(mac,beginDate,endDate,phoneType,"two",file);
+                }else {
+                    finish();
                 }
 
             } catch (Exception e) {
@@ -196,5 +206,10 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
             }
         }
         mStartedFlg = false;
+    }
+
+    public void uploadFinish() {
+        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+        finish();
     }
 }
