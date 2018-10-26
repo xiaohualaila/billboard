@@ -80,11 +80,11 @@ public class CameraPresent extends XPresent<CameraActivity> {
             }
             String pictureName = AppDateMgr.todayYyyyMmDdHhMmSsTrim();
             ToastManager.showShort(getV(), "视频正在保存……");
-            File folder = new File(UserInfoKey.BILLBOARD_VIDEO_PATH);
+            File folder = new File(UserInfoKey.RECORD_VIDEO_PATH);
             if (!folder.exists()){
                 folder.mkdirs();
             }
-            File file = new File(UserInfoKey.BILLBOARD_VIDEO_PATH + "/" +  pictureName + ".mp4");
+            File file = new File(UserInfoKey.RECORD_VIDEO_PATH + "/" +  pictureName + ".mp4");
             try {
 //                file.createNewFile();
                 FileOutputStream fos = new FileOutputStream(file);

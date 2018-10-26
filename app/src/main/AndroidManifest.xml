@@ -87,7 +87,9 @@
         <activity
             android:name=".ui.WebActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
-
+        <activity
+            android:name=".ui.RecordvideoActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <service android:name=".service.UpdateService" />
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver"

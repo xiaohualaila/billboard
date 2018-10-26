@@ -17,19 +17,10 @@ public class UserInfoKey {
     public static String SUB_SCREEN_ID = "sub_screen_id"; // 副屏id
     public static String BIG_SCREEN_ID = "sub_screen_id"; // 大屏id
 
-    public static String MAIN_VIDEO_FILE = "main_video_file"; //主屏视频(本地存储地址)
-    public static String MAIN_PICTURE_FILE = "main_picture_file";//主屏图片(本地存储地址)
-    public static String SUB_VIDEO_FILE = "sub_video_file";//副屏视频(本地存储地址)
-    public static String SUB_PICTURE_FILE = "sub_picture_file";//副屏图片(本地存储地址)
-    public static String BIG_VIDEO_FILE = "big_video_file";//大屏视频(本地存储地址)
-    public static String BIG_PICTURE_FILE = "big_picture_file";//大屏图片(本地存储地址)
 
-    public static String MAIN_SHOW_VIDEO_URL = "main_show_video_url";//主屏视频(本地存储URL)
-    public static String MAIN_SHOW_PICTURE_URL = "main_show_picture_url";//主屏图片(本地存储URL)
-    public static String SUB_SHOW_VIDEO_URL = "sub_show_video_url"; //副屏视频(本地存储URL)
-    public static String SUB_SHOW_PICTURE_URL = "sub_show_picture_url"; //副屏图片(本地存储URL)
-    public static String BIG_SHOW_VIDEO_URL = "big_show_video_url"; //大屏视频(本地存储URL)
-    public static String BIG_SHOW_PICTURE_URL = "big_show_picture_url"; //大屏图片(本地存储URL)
+    public static String SUB_PICTURE_FILE = "sub_picture_file";//副屏图片(本地存储地址)
+
+
 
     public static String FILE_APK = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/apk";
     public static String FILE_MAIN_VIDEO = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/main/video";
@@ -40,8 +31,7 @@ public class UserInfoKey {
     public static String FILE_BIG_PICTURE = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/big/picture";
 
 
-
     /**拍照保存路径*/
     public static String BILLBOARD_PICTURE_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/camera"; // 拍照保存路径
-    public static String BILLBOARD_VIDEO_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/video"; // 视频保存路径
+    public static String RECORD_VIDEO_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/recordvideo"; // 视频保存路径
 }

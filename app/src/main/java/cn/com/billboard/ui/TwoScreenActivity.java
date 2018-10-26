@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventModel;
+import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
@@ -115,7 +116,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
-    //    startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, GPIOService.class));
 
 
         getP().getScreenData(true, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
@@ -136,6 +137,17 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     }
                 }
         );
+
+        BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                model -> {
+                    if(model.isCalling){
+                        Intent intent = new Intent(this,RecordvideoActivity.class);
+                        intent.putExtra("mac",mac);
+                        intent.putExtra("phoneType",model.phoneType);
+                        startActivity(intent);
+                    }
+                }
+        );
         /**
          * 老板子没有喂狗api
          */
@@ -147,14 +159,21 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
             new Timer().schedule(timerTask,0,5000);
         }
-        getP().sendState(mac);
+      //  getP().sendState(mac);
 
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        showData();
     }
 
     TimerTask timerTask = new TimerTask(){
         @Override
         public void run() {
              smdt.smdtWatchDogFeed();//喂狗
+          //  Log.i("sss","喂狗 ++++++");
         }
     };
 
@@ -183,6 +202,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
             mHandler.postDelayed(runnable, 100);
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
     /**请求失败返回*/
     public void showError(NetError error) {

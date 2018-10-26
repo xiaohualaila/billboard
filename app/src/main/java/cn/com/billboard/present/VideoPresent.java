@@ -80,11 +80,11 @@ public class VideoPresent extends XPresent<VideoActivity> {
             recordConfig.setFrontCameraDirectionMode((frontDirection == 90 ? MediaConfig.DirectionMode.FLAG_DIRECTION_ROATATION_180 : MediaConfig.DirectionMode.FLAG_DIRECTION_ROATATION_0) | MediaConfig.DirectionMode.FLAG_DIRECTION_FLIP_HORIZONTAL);
         }
         //save video
-        File folder = new File(UserInfoKey.BILLBOARD_VIDEO_PATH);
+        File folder = new File(UserInfoKey.RECORD_VIDEO_PATH);
         if (!folder.exists()){
             folder.mkdirs();
         }
-        recordConfig.setSaveVideoPath(UserInfoKey.BILLBOARD_VIDEO_PATH + "/" + AppDateMgr.todayYyyyMmDdHhMmSsTrim() + ".mp4");
+        recordConfig.setSaveVideoPath(UserInfoKey.RECORD_VIDEO_PATH + "/" + AppDateMgr.todayYyyyMmDdHhMmSsTrim() + ".mp4");
 
         if (!mRecorderClient.prepare(getV(), recordConfig)) {
             mRecorderClient = null;

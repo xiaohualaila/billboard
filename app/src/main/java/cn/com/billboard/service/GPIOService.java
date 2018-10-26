@@ -16,7 +16,10 @@ import java.io.InputStreamReader;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import cn.com.billboard.model.EventModel;
+import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.ChangeTool;
+import cn.com.library.event.BusProvider;
 
 public class GPIOService extends Service {
 
@@ -93,6 +96,8 @@ public class GPIOService extends Service {
                            sendTest("ATH\r\n"); //挂断电话
                            send_type = 0;
                            isCalling = false;
+
+                           BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
                        }
                    }
                 Log.i("sss","当前gpioNum5是 "+strResult);
@@ -106,6 +111,9 @@ public class GPIOService extends Service {
                                  sendTest("ATD17682301987;\r\n");
                                  send_type = 1;
                                  isCalling = true;
+
+                                 BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
+
                              }
                          }
                      }
@@ -120,6 +128,7 @@ public class GPIOService extends Service {
                              sendTest("ATD17682301987;\r\n");
                              send_type = 2;
                              isCalling = true;
+                             BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
                          }
                      }
                  }
@@ -144,7 +153,6 @@ public class GPIOService extends Service {
 
     //发送Test
     public void sendTest(String text){
-
         serialHelper.sendTxt(text);
     }
 
