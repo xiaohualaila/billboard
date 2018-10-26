@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Button;
 import android.widget.TextView;
 import java.io.File;
 import java.util.Date;
@@ -32,11 +31,6 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
      @BindView(R.id.text)
      TextView textView;
 
-    @BindView(R.id.btnStartStop)
-    Button mBtnStartStop;
-    @BindView(R.id.btnPlayVideo)
-    Button mBtnPlay;
-
     private boolean mStartedFlg = false;//是否正在录像
     private MediaRecorder mRecorder;
     private SurfaceHolder mSurfaceHolder;
@@ -48,14 +42,6 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     private Date beginDate;
     private Date endDate;
     private Handler handler = new Handler();
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            text++;
-            textView.setText(text + "");
-            handler.postDelayed(this, 1000);
-        }
-    };
 
     private String mac="";
     private int phoneType;
@@ -70,13 +56,12 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
         mac = intent.getStringExtra("mac");
         phoneType = intent.getIntExtra("phoneType",0);
         mRecorder = new MediaRecorder();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startRecord();
-                handler.postDelayed(runnable, 1000);
-            }
+
+        handler.postDelayed(() -> {
+            startRecord();
+            handler.postDelayed(runnable, 1000);
         },1000);
+
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
@@ -87,6 +72,15 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                 }
         );
     }
+
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            text++;
+            textView.setText(text + "");
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     public int getLayoutId() {
@@ -174,8 +168,6 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                 mRecorder.prepare();
                 mRecorder.start();
                 mStartedFlg = true;
-                mBtnStartStop.setText("停止");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,7 +186,6 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                     mRecorder.release();
                     mRecorder = null;
                 }
-                mBtnStartStop.setText("开始");
                 if (camera != null) {
                     camera.release();
                     camera = null;
