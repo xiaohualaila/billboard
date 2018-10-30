@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 
-
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     defaultConfig {
@@ -41,7 +40,6 @@ android {
     buildToolsVersion '28.0.3'
 }
 
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     annotationProcessor rootProject.ext.dependencies["butterknife-apt"]
@@ -50,4 +48,5 @@ dependencies {
     //串口
     implementation(name: 'serialport-1.0.1', ext: 'aar')
     implementation files('libs/smdt.jar')
+    implementation project(':silicompressor')
 }

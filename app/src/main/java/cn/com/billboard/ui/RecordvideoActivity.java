@@ -12,7 +12,12 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import com.iceteck.silicompressorr.VideoCompress;
+
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import butterknife.BindView;
 import cn.com.billboard.R;
@@ -65,13 +70,12 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
         handler.postDelayed(() -> {
             startRecord();
             handler.postDelayed(runnable, 1000);
-        },1000);
+        },500);
 
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         stopRecordVideo();
-
                     }
                 }
         );
@@ -196,6 +200,8 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
                 }
                 File file = new File(path);
                 if (file.exists()) {
+                    //压缩后的视频
+                  //  compressVideo();
                     getP().uploadVideo(mac,beginDate,endDate,phoneType,"two",file);
                 }else {
                     finish();
@@ -209,7 +215,68 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     }
 
     public void uploadFinish() {
-        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+     //   Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
         finish();
     }
+
+    private long startTime;
+    private long endTime;
+    private String path2;
+
+    private void compressVideo() {
+        path2 = MyUtil.getSDPath();
+        if (path2 != null) {
+            File dir = new File(path2 + "/recordtest");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            path2 = dir + "/" + MyUtil.getDate() + "ys.mp4";
+
+            VideoCompress.compressVideoLow(path, path2, new VideoCompress.CompressListener() {
+                @Override
+                public void onStart() {
+                    startTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "开始时间" + startTime);
+
+                }
+
+                @Override
+                public void onSuccess() {
+                    endTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "结束时间 = " + endTime);
+                    Log.i(TAG, "压缩后大小 = " + getFileSize(path2));
+                    Log.i(TAG, "结束时间 = " + (endTime - startTime)+"ms " +(endTime - startTime)/1000 + "s");
+                }
+
+                @Override
+                public void onFail() {
+                    endTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "失败时间 = " + endTime);
+                }
+
+                @Override
+                public void onProgress(float percent) {
+                    Log.i(TAG, String.valueOf(percent) + "%");
+                }
+
+            });
+        }
+    }
+
+    private String getFileSize(String path) {
+        File f = new File(path);
+        if (!f.exists()) {
+            return "0 MB";
+        } else {
+            long size = f.length();
+            return (size / 1024f) / 1024f + "MB";
+        }
+    }
+
+
+
+
 }

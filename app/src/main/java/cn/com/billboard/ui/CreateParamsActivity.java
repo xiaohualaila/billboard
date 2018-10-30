@@ -37,15 +37,15 @@ public class CreateParamsActivity extends XActivity<ParamsPresent> {
     @Override
     public void initData(Bundle savedInstanceState) {
         initToolbar();
-        screenNum = (int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1);
-        if (screenNum == 0) {
+//        screenNum = (int) AppSharePreferenceMgr.get(context, UserInfoKey.SCREEN_NUM, -1);
+//        if (screenNum == 0) {
             initTwoView();
-        } else if (screenNum == 1) {
-            initOneView();
-        } else {
-            paramsView.setVisibility(View.GONE);
-            ToastManager.showShort(context, "设备类型未确定，请重新登录");
-        }
+//        } else if (screenNum == 1) {
+//            initOneView();
+//        } else {
+//            paramsView.setVisibility(View.GONE);
+//            ToastManager.showShort(context, "设备类型未确定，请重新登录");
+//        }
     }
     /**设置title*/
     private void initToolbar() {
