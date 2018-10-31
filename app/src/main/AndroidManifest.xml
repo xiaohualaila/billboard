@@ -46,13 +46,11 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:icon="@mipmap/ic_launcher">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <activity
@@ -88,6 +86,10 @@
         <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
+        <activity
+            android:name=".ui.OpenCVCameraActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" >
+        </activity>
         <service android:name=".service.UpdateService" />
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver"
@@ -98,7 +100,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>

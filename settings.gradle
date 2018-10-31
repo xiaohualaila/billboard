@@ -1,1 +1,1 @@
-include ':app', ':mvp', ':silicompressor'
+include ':app', ':mvp', ':silicompressor', ':openCVLibrary320'

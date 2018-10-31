@@ -34,4 +34,5 @@ public class UserInfoKey {
     /**拍照保存路径*/
     public static String BILLBOARD_PICTURE_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/camera"; // 拍照保存路径
     public static String RECORD_VIDEO_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/recordvideo"; // 视频保存路径
+    public static String BILLBOARD_PICTURE_FACE_PATH = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/face"; // OPENCV抓拍人脸照片
 }
