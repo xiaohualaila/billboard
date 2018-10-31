@@ -26,15 +26,35 @@ android {
         }
     }
 
+//    signingConfigs {
+//        signingConfigs {
+//            release {
+//                storeFile file("E:/MyCompanyProject/billboard/key.jks")
+//                storePassword '123456'
+//                keyAlias 'key0.jks'
+//                keyPassword '123456'
+//                v2SigningEnabled false
+//            }
+//        }
+//    }
     signingConfigs {
-        signingConfigs {
-            release {
-                storeFile file("key.jks")
-                storePassword '123456'
-                keyAlias 'key0.jks'
-                keyPassword '123456'
-                v2SigningEnabled false
-            }
+
+        def password = "123456"
+        def alias = "key0"
+        def filePath = "E:/MyCompanyProject/billboard/key.jks"  //如  ../facesharp.jks//签名文件路径
+
+        debug {
+            keyAlias alias
+            keyPassword password
+            storeFile file(filePath)
+            storePassword(password)
+        }
+        release {
+            keyAlias alias
+            keyPassword password
+            storeFile file(filePath)
+            storePassword(password)
+            v2SigningEnabled false
         }
     }
     buildToolsVersion '28.0.3'

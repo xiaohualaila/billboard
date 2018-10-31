@@ -12,12 +12,8 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-
-import com.iceteck.silicompressorr.VideoCompress;
-
+import com.iceteck.silicompressorr.VideoCompress;//视频压缩
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import butterknife.BindView;
 import cn.com.billboard.R;
@@ -223,6 +219,9 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     private long endTime;
     private String path2;
 
+    /**
+     * //视频压缩
+     */
     private void compressVideo() {
         path2 = MyUtil.getSDPath();
         if (path2 != null) {
