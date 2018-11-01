@@ -104,11 +104,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     private boolean isSmallPicFis = false;
     @Override
     public void initData(Bundle savedInstanceState) {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        getWindow().setAttributes(params);
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
