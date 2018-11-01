@@ -11,7 +11,7 @@ public class OpenCVPresent extends XPresent<OpenCVCameraActivity> {
     /**
      * 上传打电话人员的视频
      */
-    public void uploadVideo(String macAddress, Date date, int phone, String screenType, File file) {
+    public void uploadVideo(String macAddress, int phone, File file) {
         getV().uploadFinish();
 //        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 //        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);

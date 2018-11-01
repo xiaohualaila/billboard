@@ -90,7 +90,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
                     if(!model.isCalling){
                         File file =new File(fileName);
                         if(file != null){
-                            getP().uploadVideo(mac,new Date(),phoneType,"two",file);
+                            getP().uploadVideo(mac,phoneType,file);
                         }
                     }
                 }
@@ -153,7 +153,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     }
 
     public void uploadFinish() {
-          // Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+         //  Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
         finish();
     }
 
