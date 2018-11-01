@@ -3,9 +3,18 @@ package cn.com.billboard.present;
 import java.io.File;
 import java.util.Date;
 
+import cn.com.billboard.model.BaseBean;
+import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.ui.OpenCVCameraActivity;
 
+import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
+import cn.com.library.net.ApiSubscriber;
+import cn.com.library.net.NetError;
+import cn.com.library.net.XApi;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class OpenCVPresent extends XPresent<OpenCVCameraActivity> {
     /**
@@ -16,7 +25,7 @@ public class OpenCVPresent extends XPresent<OpenCVCameraActivity> {
 //        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 //        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
 //        builder.addFormDataPart("video", file.getName(), requestBody);
-//        BillboardApi.getDataService().uploadVideo(macAddress,beginDate,endData,phone,screenType,builder.build().parts())
+//        BillboardApi.getDataService().uploadFacePic(macAddress,phone,builder.build().parts())
 //                .compose(XApi.<BaseBean>getApiTransformer())
 //                .compose(XApi.<BaseBean>getScheduler())
 //                .compose(getV().<BaseBean>bindToLifecycle())

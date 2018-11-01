@@ -26,22 +26,11 @@ android {
         }
     }
 
-//    signingConfigs {
-//        signingConfigs {
-//            release {
-//                storeFile file("E:/MyCompanyProject/billboard/key.jks")
-//                storePassword '123456'
-//                keyAlias 'key0.jks'
-//                keyPassword '123456'
-//                v2SigningEnabled false
-//            }
-//        }
-//    }
     signingConfigs {
 
         def password = "123456"
         def alias = "key0"
-        def filePath = "E:/MyCompanyProject/billboard/key.jks"  //如  ../facesharp.jks//签名文件路径
+        def filePath = "E:/MyCompanyProject/billboard/key.jks"
 
         debug {
             keyAlias alias

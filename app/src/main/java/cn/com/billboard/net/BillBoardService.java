@@ -68,4 +68,17 @@ public interface BillBoardService {
             @Part List<MultipartBody.Part> file
     );
 
+    /**
+     * 上传视频
+     *
+     * @param
+     * @return    public void uploadVideo(String macAddress, Date beginDate, Date endData, int phone, String screenType, File file) {
+     */
+    @POST("")
+    Flowable<BaseBean> uploadFacePic(
+            @Query("mac") String macAddress,
+            @Query("phone") int phone,
+            @Part List<MultipartBody.Part> file
+    );
+
 }

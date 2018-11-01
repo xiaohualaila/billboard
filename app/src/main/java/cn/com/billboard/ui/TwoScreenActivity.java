@@ -144,7 +144,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
 
                 //      RecordvideoActivity.launch(this,mac,model.phoneType);
                         OpenCVCameraActivity.launch(this,mac,model.phoneType);
-                       // Intent intent = new Intent(this,OpenCVCameraActivity.class);
                     }
                 }
         );
