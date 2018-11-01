@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
-import android.view.View;
 import java.io.File;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.VersionModel;
@@ -27,8 +26,6 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
 
     @Override
     public void initData(Bundle savedInstanceState) {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         dialog = new LoadingDialog(context, "请稍后···");
         AppSharePreferenceMgr.put(LauncherActivity.this, UserInfoKey.SCREEN_NUM,0);//0是室内屏，1是室外大屏
         getP().checkPermissions();
@@ -135,10 +132,5 @@ public class LauncherActivity extends XActivity<LauncherPresent> implements AppD
                  }
              }
          }
-
-
     }
-
-
-
 }

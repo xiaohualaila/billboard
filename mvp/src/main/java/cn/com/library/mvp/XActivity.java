@@ -40,6 +40,9 @@ public abstract class XActivity<P extends IPresent> extends RxAppCompatActivity 
             bindUI(null);
             bindEvent();
         }
+        //全屏
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         initData(savedInstanceState);
 
     }

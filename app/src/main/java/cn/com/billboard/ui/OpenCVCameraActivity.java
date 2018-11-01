@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.Date;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
@@ -73,11 +72,6 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
 
     @Override
     public void initData(Bundle savedInstanceState) {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
-        WindowManager.LayoutParams params = getWindow().getAttributes();
-        params.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
-        getWindow().setAttributes(params);
         openCvCameraView = (JavaCameraView) findViewById(R.id.jcv);
         openCvCameraView.setCameraIndex(1);
         openCvCameraView.setCvCameraViewListener(this);
