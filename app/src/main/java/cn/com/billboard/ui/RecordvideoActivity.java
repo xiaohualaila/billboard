@@ -27,6 +27,9 @@ import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
+/**
+ * 录制视频的页面
+ */
 public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implements SurfaceHolder.Callback {
 
     private static final String TAG = "RecordvideoActivity";

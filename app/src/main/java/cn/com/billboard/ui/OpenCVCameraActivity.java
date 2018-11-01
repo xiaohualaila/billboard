@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
@@ -152,8 +150,8 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     }
 
     public void uploadFinish() {
-         //  Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-        finish();
+           Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+           finish();
     }
 
     @Override
