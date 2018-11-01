@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
@@ -24,6 +25,7 @@ import cn.com.billboard.util.MyUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
+import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> implements SurfaceHolder.Callback {
@@ -49,6 +51,9 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
 
     private String mac="";
     private int phoneType;
+    public static final String MAC = "mac";
+    public static final String PHONETYPE = "phoneType";
+
     @Override
     public void initData(Bundle savedInstanceState) {
         View decorView = getWindow().getDecorView();
@@ -60,8 +65,8 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
         holder.addCallback(this);
 
         Intent intent = getIntent();
-        phoneType = intent.getIntExtra("phoneType",0);
-        mac = intent.getStringExtra("mac");
+        phoneType = intent.getIntExtra(PHONETYPE,0);
+        mac = intent.getStringExtra(MAC);
         mRecorder = new MediaRecorder();
         handler.postDelayed(() -> {
             startRecord();
@@ -86,15 +91,7 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
         }
     };
 
-    @Override
-    public int getLayoutId() {
-        return R.layout.activity_record_video;
-    }
 
-    @Override
-    public RecordvideoScreenPresent newP() {
-        return new RecordvideoScreenPresent();
-    }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -220,7 +217,7 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     private String path2;
 
     /**
-     * //视频压缩
+     * 视频压缩
      */
     private void compressVideo() {
         path2 = MyUtil.getSDPath();
@@ -275,7 +272,22 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
         }
     }
 
+    public static void launch(Activity activity, String mac, int phoneType) {
+        Router.newIntent(activity)
+                .to(RecordvideoActivity.class)
+                .putString(MAC, mac)
+                .putInt(PHONETYPE, phoneType)
+                .launch();
+    }
 
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_record_video;
+    }
 
+    @Override
+    public RecordvideoScreenPresent newP() {
+        return new RecordvideoScreenPresent();
+    }
 
 }

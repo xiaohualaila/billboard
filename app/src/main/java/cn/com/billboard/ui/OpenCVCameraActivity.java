@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
 import cn.com.library.event.BusProvider;
 import cn.com.library.mvp.XActivity;
+import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
@@ -154,7 +156,11 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
     }
 
-
+    public static void launch(Activity activity, String mac, int phoneType) {
+        Router.newIntent(activity)
+                .to(OpenCVCameraActivity.class)
+                .launch();
+    }
 
     @Override
     public int getLayoutId() {

@@ -85,6 +85,7 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
     public void toActivity(){
 //        AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SCREEN_IP, mainIp.getText().toString());
 //        AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SCREEN_IP, subIp.getText().toString());
+
         CreateParamsActivity.launch(getV());
         getV().finish();
     }

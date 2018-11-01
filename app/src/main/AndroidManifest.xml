@@ -81,9 +81,6 @@
             android:name=".ui.RecordingActivity2"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".ui.WebActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
