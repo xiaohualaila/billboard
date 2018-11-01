@@ -74,14 +74,16 @@ public class FindFaceView extends SurfaceView implements SurfaceHolder.Callback 
                 // 换算出预览图片和屏幕显示区域的比例参数
                 float scale_x = mWidth / 500;
                 float scale_y = mHeight / 600;
-                Log.e("eyesDistance=", eyesDistance + "");
-                Log.e("midPoint.x=", midPoint.x + "");
-                Log.e("midPoint.y=", midPoint.y + "");
+                Log.e("xxx",  " eyesDistance" + eyesDistance );
+                Log.e("xxx", "midPoint.x=" +midPoint.x );
+                Log.e("xxx", "midPoint.y=" + midPoint.y );
                 // 因为拍摄的相片跟实际显示的图像是镜像关系，所以在图片上获取的两眼中间点跟手机上显示的是相反方向
-                canvas.drawRect((int) (240 - midPoint.x - eyesDistance)
-                                * scale_x, (int) (midPoint.y * scale_y),
-                        (int) (240 - midPoint.x + eyesDistance) * scale_x,
-                        (int) (midPoint.y + 3 * eyesDistance) * scale_y, paint);
+//                canvas.drawRect((int) (240 - midPoint.x - eyesDistance)
+//                                * scale_x, (int) (midPoint.y * scale_y),
+//                        (int) (240 - midPoint.x + eyesDistance) * scale_x,
+//                        (int) (midPoint.y + 3 * eyesDistance) * scale_y, paint);
+
+  canvas.drawRect((int) (midPoint.x) , (int) (midPoint.y+eyesDistance ), (int) ( midPoint.x+eyesDistance*3) , (int) (midPoint.y +  eyesDistance*3) , paint);
             }
             holder.unlockCanvasAndPost(canvas);
         }

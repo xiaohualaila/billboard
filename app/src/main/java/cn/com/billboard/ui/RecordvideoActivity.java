@@ -20,15 +20,14 @@ import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.RecordvideoScreenPresent;
+import cn.com.billboard.present.RecordVideoPresent;
 import cn.com.billboard.util.MyUtil;
 import cn.com.library.event.BusProvider;
-import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> implements SurfaceHolder.Callback {
+public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implements SurfaceHolder.Callback {
 
     private static final String TAG = "RecordvideoActivity";
 
@@ -286,8 +285,8 @@ public class RecordvideoActivity  extends XActivity<RecordvideoScreenPresent> im
     }
 
     @Override
-    public RecordvideoScreenPresent newP() {
-        return new RecordvideoScreenPresent();
+    public RecordVideoPresent newP() {
+        return new RecordVideoPresent();
     }
 
 }

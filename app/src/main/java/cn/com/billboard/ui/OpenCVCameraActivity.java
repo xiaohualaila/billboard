@@ -4,12 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
-
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
@@ -21,17 +18,17 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
-
+import java.util.Date;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -39,13 +36,18 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements CameraBridgeViewBase.CvCameraViewListener,JavaCameraView.PhotoSuccessCallback {
 
-
+    public static final String MAC = "mac";
+    public static final String PHONETYPE = "phoneType";
+    private String mac="";
+    private int phoneType;
     JavaCameraView openCvCameraView;
     private CascadeClassifier cascadeClassifier;
     private Mat grayscaleImage;
     private int absoluteFaceSize;
     private String fileName = "";
     int faceSerialCount = 0;
+    private boolean isPhoteTakingPic = false;
+
     private void initializeOpenCVDependencies() {
         try {
             // Copy the resource into a temp file so OpenCV can load it
@@ -67,13 +69,6 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
         // And we are ready to go
         openCvCameraView.enableView();
-        BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                model -> {
-                    if(!model.isCalling){
-                     finish();
-                    }
-                }
-        );
     }
 
     @Override
@@ -87,8 +82,20 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         openCvCameraView.setCameraIndex(1);
         openCvCameraView.setCvCameraViewListener(this);
         openCvCameraView.setPhotoSuccessCallback(this);
+        Intent intent = getIntent();
+        phoneType = intent.getIntExtra(PHONETYPE,0);
+        mac = intent.getStringExtra(MAC);
+        BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                model -> {
+                    if(!model.isCalling){
+                        File file =new File(fileName);
+                        if(file != null){
+                            getP().uploadVideo(mac,new Date(),phoneType,"two",file);
+                        }
+                    }
+                }
+        );
     }
-
 
     @Override
     public void onResume() {
@@ -127,16 +134,12 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
             faceSerialCount = 0;
         }
         if (faceSerialCount > 6) {
-            fileName =UserInfoKey.BILLBOARD_PICTURE_FACE_PATH + File.separator + getTime() + ".jpeg";
-            openCvCameraView.takePhoto(fileName);
+            if(!isPhoteTakingPic){
+                fileName =UserInfoKey.BILLBOARD_PICTURE_FACE_PATH + File.separator + getTime() + ".jpeg";
+                openCvCameraView.takePhoto(fileName);
+                Log.i("sss","拍摄照片啦");
+            }
             faceSerialCount = -5000;
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(OpenCVCameraActivity.this,"拍摄照片啦",Toast.LENGTH_LONG).show();
-                }
-            });
-
         }
 
         for (int i = 0; i < facesArray.length; i++) {
@@ -144,21 +147,27 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
         return aInputFrame;
     }
+
     public long getTime() {
         return Calendar.getInstance().getTimeInMillis();
     }
 
+    public void uploadFinish() {
+          // Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+        finish();
+    }
+
     @Override
     public void doThing() {
-        Toast.makeText(this,"拍好了！！！！！！！！！！！！",Toast.LENGTH_LONG).show();
-        if (faceSerialCount > 6) {
-            finish();
-        }
+        isPhoteTakingPic = true;
+        Log.i("sss","拍好了！！！！！！！！！！！！");
     }
 
     public static void launch(Activity activity, String mac, int phoneType) {
         Router.newIntent(activity)
                 .to(OpenCVCameraActivity.class)
+                .putString(MAC, mac)
+                .putInt(PHONETYPE, phoneType)
                 .launch();
     }
 

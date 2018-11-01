@@ -70,23 +70,11 @@
             android:name=".ui.FaceActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".ui.VideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" >
-
-        </activity>
-        <activity
-            android:name=".ui.RecordingActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
-            android:name=".ui.RecordingActivity2"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".ui.OpenCVCameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" >
-        </activity>
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <service android:name=".service.UpdateService" />
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver"

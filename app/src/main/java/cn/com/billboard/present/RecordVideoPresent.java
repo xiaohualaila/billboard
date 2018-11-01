@@ -14,7 +14,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-public class RecordvideoScreenPresent extends XPresent<RecordvideoActivity> {
+public class RecordVideoPresent extends XPresent<RecordvideoActivity> {
 
     /**
      * 上传打电话人员的视频
