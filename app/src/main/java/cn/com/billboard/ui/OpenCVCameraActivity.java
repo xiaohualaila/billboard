@@ -85,6 +85,8 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
                         File file =new File(fileName);
                         if(file != null){
                             getP().uploadVideo(mac,phoneType,file);
+                        }else {
+                            finish();
                         }
                     }
                 }
@@ -103,7 +105,6 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     @Override
     public void onCameraViewStarted(int width, int height) {
         grayscaleImage = new Mat(height, width, CvType.CV_8UC4);
-        // The faces will be a 20% of the height of the screen
         absoluteFaceSize = (int) (height * 0.2);
     }
 
@@ -129,6 +130,10 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
         if (faceSerialCount > 6) {
             if(!isPhoteTakingPic){
+                File folder = new File(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                if (!folder.exists()){
+                    folder.mkdirs();
+                }
                 fileName =UserInfoKey.BILLBOARD_PICTURE_FACE_PATH + File.separator + getTime() + ".jpeg";
                 openCvCameraView.takePhoto(fileName);
                 Log.i("sss","拍摄照片啦");
