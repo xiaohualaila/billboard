@@ -162,7 +162,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             mRecorder.setVideoSize(640, 480);//设置要拍摄的宽度和视频的高度。
             mRecorder.setVideoFrameRate(30);//设置录制视频的捕获帧速率。
             mRecorder.setVideoEncodingBitRate(3 * 1024 * 1024);//设置所录制视频的编码位率。
-            mRecorder.setOrientationHint(270);//设置输出的视频播放的方向提示。
+            mRecorder.setOrientationHint(0);//设置输出的视频播放的方向提示。
             //设置记录会话的最大持续时间（毫秒）
             mRecorder.setMaxDuration(30 * 1000);
             mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());//设置使用哪个SurfaceView来显示视频预览。
@@ -204,12 +204,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                   //  compressVideo();
                     getP().uploadVideo(mac,phoneType,file);
                 }else {
-                    if(isClose){//如果电话挂断了就不要抓拍人脸了直接关闭
-                        uploadFinish();
-                    }else {
-                        finish();
-                    }
-
+                    uploadFinish();
                 }
 
             } catch (Exception e) {
@@ -220,9 +215,13 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     }
 
     public void uploadFinish() {
-        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-        OpenCVCameraActivity.launch(this,mac,phoneType);
-        finish();
+        if(isClose){//如果电话挂断了就不要抓拍人脸了直接关闭
+            finish();
+        }else {
+            Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+            OpenCVCameraActivity.launch(this,mac,phoneType);
+            finish();
+        }
     }
 
     private long startTime;

@@ -1,7 +1,8 @@
 package cn.com.billboard.present;
 
+import android.util.Log;
+
 import java.io.File;
-import java.util.Date;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.ui.RecordvideoActivity;
@@ -23,6 +24,7 @@ public class RecordVideoPresent extends XPresent<RecordvideoActivity> {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         builder.addFormDataPart("file", file.getName(), requestBody);
+//        Log.i("sss",macAddress);
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,3,builder.build().parts())
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
