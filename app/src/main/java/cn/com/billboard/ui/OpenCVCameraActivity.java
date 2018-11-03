@@ -81,7 +81,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
                 model -> {
                     if(!model.isCalling){
                         File file =new File(fileName);
-                        if(file != null){
+                        if(file.exists()){
                             getP().uploadVideo(mac,phoneType,file);
                         }else {
                             finish();

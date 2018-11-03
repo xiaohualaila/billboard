@@ -1,13 +1,12 @@
 package cn.com.billboard.net;
 
-import java.util.Date;
 import java.util.List;
-
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
 import cn.com.billboard.model.VersionModel;
 import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
@@ -52,32 +51,18 @@ public interface BillBoardService {
     Flowable<BaseBean> sendState(@Query("mac") String mac
     );
 
-    /**
-     * 上传视频
-     *
-     * @param
-     * @return    public void uploadVideo(String macAddress, Date beginDate, Date endData, int phone, String screenType, File file) {
-     */
-    @POST("")
-    Flowable<BaseBean> uploadVideo(
-            @Query("mac") String macAddress,
-            @Query("beginDate") Date beginDate,
-            @Query("endData") Date endData,
-            @Query("phone") int phone,
-            @Query("screenType") String screenType,
-            @Part List<MultipartBody.Part> file
-    );
 
     /**
-     * 上传视频
+     * 上传报警信息
      *
      * @param
-     * @return    public void uploadVideo(String macAddress, Date beginDate, Date endData, int phone, String screenType, File file) {
      */
-    @POST("")
-    Flowable<BaseBean> uploadFacePic(
-            @Query("mac") String macAddress,
-            @Query("phone") int phone,
+    @POST("system/alarm/saveAlarmDeviceRecord")
+    @Multipart
+    Flowable<BaseBean> uploadAlarmInfo(
+            @Query("devicemac") String macAddress,
+            @Query("telkey") int phone,
+            @Query("type") int type,
             @Part List<MultipartBody.Part> file
     );
 

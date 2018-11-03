@@ -136,7 +136,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(model.isCalling){
-                        OpenCVCameraActivity.launch(this,mac,model.phoneType);
+                     RecordvideoActivity.launch(this,mac,model.phoneType);
+//                        OpenCVCameraActivity.launch(this,mac,model.phoneType);
                     }
                 }
         );

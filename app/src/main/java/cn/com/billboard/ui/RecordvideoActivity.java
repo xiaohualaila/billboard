@@ -23,6 +23,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordVideoPresent;
 import cn.com.billboard.util.MyUtil;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,8 +37,6 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
 
      @BindView(R.id.surfaceview)
      SurfaceView mSurfaceview;
-     @BindView(R.id.text)
-     TextView textView;
 
     private boolean mStartedFlg = false;//是否正在录像
     private MediaRecorder mRecorder;
@@ -55,6 +54,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     private int phoneType;
     public static final String MAC = "mac";
     public static final String PHONETYPE = "phoneType";
+    private boolean isClose = false;//是否是因为挂断电话停止的视频
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -78,6 +78,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
+                        isClose = true;
                         stopRecordVideo();
                     }
                 }
@@ -88,7 +89,11 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         @Override
         public void run() {
             text++;
-            textView.setText(text + "");
+//            textView.setText(text + "");
+            if(text==10){
+                stopRecordVideo();
+                return;
+            }
             handler.postDelayed(this, 1000);
         }
     };
@@ -137,7 +142,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
          mRecorder.reset();
          camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
         if (camera != null) {
-            camera.setDisplayOrientation(90);
+            camera.setDisplayOrientation(0);
             camera.unlock();
             mRecorder.setCamera(camera);
         }
@@ -197,9 +202,14 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                 if (file.exists()) {
                     //压缩后的视频
                   //  compressVideo();
-                    getP().uploadVideo(mac,beginDate,endDate,phoneType,"two",file);
+                    getP().uploadVideo(mac,phoneType,file);
                 }else {
-                    finish();
+                    if(isClose){//如果电话挂断了就不要抓拍人脸了直接关闭
+                        uploadFinish();
+                    }else {
+                        finish();
+                    }
+
                 }
 
             } catch (Exception e) {
@@ -210,7 +220,8 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     }
 
     public void uploadFinish() {
-     //   Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+        OpenCVCameraActivity.launch(this,mac,phoneType);
         finish();
     }
 
