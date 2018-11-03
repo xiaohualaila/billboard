@@ -54,7 +54,7 @@ public interface BillBoardService {
 
     /**
      * 上传报警信息
-     *
+     *type 1图片 2文字 3视频，telkey 1 消防 2监督
      * @param
      */
     @POST("system/alarm/saveAlarmDeviceRecord")
