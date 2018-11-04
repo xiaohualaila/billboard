@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
+
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.JavaCameraView;
 import org.opencv.android.OpenCVLoader;
@@ -20,6 +22,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
+
+import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
@@ -32,7 +36,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements CameraBridgeViewBase.CvCameraViewListener,JavaCameraView.PhotoSuccessCallback {
-
+    @BindView(R.id.bottom_pic)
+    ImageView bottom_pic;
     public static final String MAC = "mac";
     public static final String PHONETYPE = "phoneType";
     private String mac="";
@@ -89,6 +94,11 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
                     }
                 }
         );
+        if(phoneType==1){
+            bottom_pic.setImageResource(R.drawable.police110);
+        }else {
+            bottom_pic.setImageResource(R.drawable.police);
+        }
     }
 
     @Override

@@ -70,8 +70,8 @@ public class SubScreenActivity extends Presentation {
     }
     /**展示副屏数据*/
     public void showData() {
-        images = FileUtil.getFilePath(UserInfoKey.FILE_SUB_PICTURE);
-        videos = FileUtil.getFilePath(UserInfoKey.FILE_SUB_VIDEO);
+        images = FileUtil.getFilePath(UserInfoKey.PIC_UP);
+        videos = FileUtil.getFilePath(UserInfoKey.VIDEO_UP);
 
         XLog.e("副屏图片===" + images);
         XLog.e("副屏视频===" + videos);

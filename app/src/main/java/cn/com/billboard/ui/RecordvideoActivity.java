@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.iceteck.silicompressorr.VideoCompress;//视频压缩
 import java.io.File;
@@ -37,7 +38,8 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
 
      @BindView(R.id.surfaceview)
      SurfaceView mSurfaceview;
-
+    @BindView(R.id.bottom_pic)
+    ImageView bottom_pic;
     private boolean mStartedFlg = false;//是否正在录像
     private MediaRecorder mRecorder;
     private SurfaceHolder mSurfaceHolder;
@@ -67,7 +69,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         holder.addCallback(this);
 
         Intent intent = getIntent();
-        phoneType = intent.getIntExtra(PHONETYPE,0);
+        phoneType = intent.getIntExtra(PHONETYPE,1);//1消防 2监督
         mac = intent.getStringExtra(MAC);
         mRecorder = new MediaRecorder();
         handler.postDelayed(() -> {
@@ -83,6 +85,11 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                     }
                 }
         );
+        if(phoneType==1){
+            bottom_pic.setImageResource(R.drawable.police110);
+        }else {
+            bottom_pic.setImageResource(R.drawable.police);
+        }
     }
 
     private Runnable runnable = new Runnable() {
@@ -204,7 +211,11 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                   //  compressVideo();
                     getP().uploadVideo(mac,phoneType,file);
                 }else {
-                    uploadFinish();
+                    if(!isClose){
+                        OpenCVCameraActivity.launch(this,mac,phoneType);
+                    }else {
+                        finish();
+                    }
                 }
 
             } catch (Exception e) {

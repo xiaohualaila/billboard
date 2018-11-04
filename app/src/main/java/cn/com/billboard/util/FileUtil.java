@@ -24,7 +24,8 @@ public class FileUtil {
     }
 
 
-    public static List<String>  getCommonFileNames(List<String> fs_url,String file_name){
+    public static List<String>  getCommonFileNames(List<String> list,String file_name){
+        List<String> fs_url = list;
         List<String> old_videos = FileUtil.getFilePath(file_name);
         if(fs_url.size()>0 && fs_url!=null){
 

@@ -20,9 +20,10 @@
         android:layout_height="90dp"
         android:background="@color/text_primary"/>
     <ImageView
+        android:id="@+id/bottom_pic"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@mipmap/test"/>
+        android:scaleType="fitXY" />
 
 </LinearLayout>

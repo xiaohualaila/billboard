@@ -8,6 +8,7 @@ import cn.com.billboard.model.VersionModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.ui.CreateParamsActivity;
 import cn.com.billboard.ui.LauncherActivity;
+import cn.com.billboard.ui.TwoScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.NetStateUtil;
 import cn.com.billboard.util.PermissionsUtil;
@@ -32,7 +33,7 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
     private PermissionsUtil.RequestPermission mPermission = new PermissionsUtil.RequestPermission() {
         @Override
         public void onRequestPermissionSuccess() {
-            loadData();
+            toActivity();
         }
 
         @Override
@@ -49,44 +50,10 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
             getV().finish();
         }
     };
-    /**获取数据*/
-    public void loadData() {
-        String mac = NetStateUtil.getMacAddress();
-        BillboardApi.getDataService().checkVersion(mac,1)
-                .compose(XApi.<BaseBean<VersionModel>>getApiTransformer())
-                .compose(XApi.<BaseBean<VersionModel>>getScheduler())
-                .compose(getV().<BaseBean<VersionModel>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean<VersionModel>>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error);
-                    }
 
-                    @Override
-                    public void onNext(BaseBean<VersionModel> model) {
-                        getV().dialog.dismiss();
-                        if (model.isSuccess()) {
-//                            XLog.e("model========" + new Gson().toJson(model));
-//                            getV().showData(model.getMessageBody());
-                            VersionModel model1 = model.getMessageBody();
-                            int v_no = APKVersionCodeUtils.getVersionCode(getV());
-                            if(model1.getBuild()> v_no){
-                                   getV().updateVersion(model1);
-                            }else {
-                                toActivity();
-                            }
-                        } else {
-                            ToastManager.showShort(getV(), model.getDescribe());
-                        }
-                    }
-                });
-    }
 
     public void toActivity(){
-//        AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SCREEN_IP, mainIp.getText().toString());
-//        AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SCREEN_IP, subIp.getText().toString());
-
-        CreateParamsActivity.launch(getV());
+        TwoScreenActivity.launch(getV());
         getV().finish();
     }
 

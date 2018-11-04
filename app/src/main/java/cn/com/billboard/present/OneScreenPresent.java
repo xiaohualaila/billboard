@@ -48,33 +48,33 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
      * 获取数据
      */
     public void getScreenData(String ipAddress, boolean isRefresh) {
-        BillboardApi.getDataService().getData(ipAddress)
-                .compose(XApi.<BaseBean<ScreenDataModel>>getApiTransformer())
-                .compose(XApi.<BaseBean<ScreenDataModel>>getScheduler())
-                .compose(getV().<BaseBean<ScreenDataModel>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean<ScreenDataModel>>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        getV().dialog.dismiss();
-                        if (isRefresh)
-                            callBack.onChangeUI();
-                        else
-                            UpdateService.getInstance().startTimer();
-                        getV().showError(error);
-                    }
-
-                    @Override
-                    public void onNext(BaseBean<ScreenDataModel> model) {
-                        if (model.isSuccess()) {
-                            downloadAndSaveData(model.getMessageBody());
-                        } else {
-                            if (isRefresh)
-                                callBack.onChangeUI();
-                            else
-                                UpdateService.getInstance().startTimer();
-                        }
-                    }
-                });
+//        BillboardApi.getDataService().getData(ipAddress)
+//                .compose(XApi.<BaseBean<ScreenDataModel>>getApiTransformer())
+//                .compose(XApi.<BaseBean<ScreenDataModel>>getScheduler())
+//                .compose(getV().<BaseBean<ScreenDataModel>>bindToLifecycle())
+//                .subscribe(new ApiSubscriber<BaseBean<ScreenDataModel>>() {
+//                    @Override
+//                    protected void onFail(NetError error) {
+//                        getV().dialog.dismiss();
+//                        if (isRefresh)
+//                            callBack.onChangeUI();
+//                        else
+//                            UpdateService.getInstance().startTimer();
+//                        getV().showError(error);
+//                    }
+//
+//                    @Override
+//                    public void onNext(BaseBean<ScreenDataModel> model) {
+//                        if (model.isSuccess()) {
+//                            downloadAndSaveData(model.getMessageBody());
+//                        } else {
+//                            if (isRefresh)
+//                                callBack.onChangeUI();
+//                            else
+//                                UpdateService.getInstance().startTimer();
+//                        }
+//                    }
+//                });
     }
 
     /**

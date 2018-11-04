@@ -3,9 +3,11 @@ package cn.com.billboard.net;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
+import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.model.VersionModel;
 import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
+import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -27,11 +29,13 @@ public interface BillBoardService {
     /**
      * 获取数据
      *
-     * @param screenIP
+     * @param mac
      * @return
      */
-    @POST("pc/multimedia/screen/selectMultimediaMessage")
-    Flowable<BaseBean<ScreenDataModel>> getData(@Query("screenip") String screenIP);
+    @GET("system/multimedia/getDeviceContents")
+    Flowable<BaseBean<TwoScreenModel>> getData(
+            @Query("devicemac") String mac,
+            @Query("deviceip") String deviceip);
 
     /**
      * 上报状态

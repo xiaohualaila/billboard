@@ -1,20 +1,20 @@
 package cn.com.billboard.present;
 
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import cn.com.billboard.model.BaseBean;
-import cn.com.billboard.model.ScreenDataModel;
-import cn.com.billboard.model.ScreenShowModel;
+import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.TwoScreenActivity;
+import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
-import cn.com.billboard.util.ReaderJsonUtil;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
@@ -53,13 +53,13 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     /**
      * 获取数据
      */
-    public void getScreenData(boolean isRefresh, String... strings) {
-        for (String address : strings) {
-            BillboardApi.getDataService().getData(address)
-                    .compose(XApi.<BaseBean<ScreenDataModel>>getApiTransformer())
-                    .compose(XApi.<BaseBean<ScreenDataModel>>getScheduler())
-                    .compose(getV().<BaseBean<ScreenDataModel>>bindToLifecycle())
-                    .subscribe(new ApiSubscriber<BaseBean<ScreenDataModel>>() {
+    public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
+        mac="1C:CA:E3:35:8B:14";
+            BillboardApi.getDataService().getData(mac,ipAddress)
+                    .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
+                    .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
+                    .compose(getV().<BaseBean<TwoScreenModel>>bindToLifecycle())
+                    .subscribe(new ApiSubscriber<BaseBean<TwoScreenModel>>() {
                         @Override
                         protected void onFail(NetError error) {
                             if (isRefresh) {
@@ -72,42 +72,99 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         }
 
                         @Override
-                        public void onNext(BaseBean<ScreenDataModel> model) {
+                        public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
-                                getV().showDownFile();
-                                downloadAndSaveData(model.getMessageBody());
+                                isUpdateApp(model.getMessageBody());
                             } else {
                                 if (isRefresh) {
-                                    if (address.equals(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_IP, "").toString()))
                                         callBack.onMainChangeUI();
-                                    else
                                         callBack.onSubChangeUI();
                                 } else {
-                                    if (address.equals(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_IP, "").toString()))
                                         UpdateService.getInstance().startTimer();
                                 }
                             }
                         }
                     });
+    }
+
+    private void isUpdateApp(TwoScreenModel model){
+        if(model!=null){
+           String s_version= model.getBuild();
+           if(!TextUtils.isEmpty(s_version)){
+               int v_no = APKVersionCodeUtils.getVersionCode(getV());
+               int a = Integer.parseInt(s_version);
+               if(a > v_no){
+                   //更新app
+                   getV().toUpdateVer(model.getApkurl(),s_version);
+               }else {
+                   getV().showDownFile();
+                   downloadAndSaveData(model);
+               }
+//               getV().showDownFile();
+//                downloadAndSaveData(model);
+           }
+
         }
 
     }
 
+
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(ScreenDataModel model) {
-        if (model.getScreenip().equals(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_IP, "").toString())) {//主屏的
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.MAIN_SCREEN_ID, model.getSid());
-            List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
-            XLog.e("main_lists===" + new Gson().toJson(lists));
-            DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists[0], lists[1], callBack);//下载
-        } else {//副屏的
-            AppSharePreferenceMgr.put(getV(), UserInfoKey.SUB_SCREEN_ID, model.getSid());
-            List[] lists = ReaderJsonUtil.getInstance().splitsData(new Gson().fromJson(model.getMessage(), ScreenShowModel.class));
-            XLog.e("sub_lists===" + new Gson().toJson(lists));
-            DownloadFileUtil.getInstance().downSubLoadPicture(getV(), lists[0], lists[1], callBack);
-        }
+    private void downloadAndSaveData(TwoScreenModel model) {
+        //下屏小图片
+        List<String> lists_pic_small_dowm = new ArrayList<>();
+        List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
+          if(halfdowndisplayBeanList!=null){
+              if(halfdowndisplayBeanList.size()>0){
+                  for(int i=0;i<halfdowndisplayBeanList.size();i++){
+                      lists_pic_small_dowm.add(halfdowndisplayBeanList.get(i).getUrl());
+                  }
+             //     Log.i("sss","下屏小图片===" + new Gson().toJson(lists_pic_small_dowm));
+              }
+          }
+
+        //下屏大图片
+        List<String> lists_pic_big_dowm = new ArrayList<>();
+        List<TwoScreenModel.DowndisplayBean> downdisplayBean =  model.getDowndisplay();
+           if(downdisplayBean!=null){
+               if(downdisplayBean.size()>0){
+                   for(int i=0;i<downdisplayBean.size();i++){
+                       lists_pic_big_dowm.add(downdisplayBean.get(i).getUrl());
+                   }
+              //     Log.i("sss","下屏大图片===" + new Gson().toJson(lists_pic_big_dowm));
+               }
+           }
+
+        //上屏图片
+        List<String> lists_pic_up = new ArrayList<>();
+        List<TwoScreenModel.UpdisplayBean> updisplayBean =  model.getUpdisplay();
+          if(updisplayBean!=null){
+              if(updisplayBean.size()>0){
+                  for(int i=0;i<updisplayBean.size();i++){
+                      lists_pic_up.add(updisplayBean.get(i).getUrl());
+                  }
+               //   Log.i("sss","上屏图片===" + new Gson().toJson(lists_pic_up));
+              }
+          }
+
+
+
+        //下屏视频
+        List<String> lists_video = new ArrayList<>();
+        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
+          if(halfupdisplayBean!=null){
+              if(halfupdisplayBean.size()>0){
+                  for(int i=0;i<halfupdisplayBean.size();i++){
+                      lists_video.add(halfupdisplayBean.get(i).getUrl());
+                  }
+               //   Log.i("sss","下屏视频===" + new Gson().toJson(lists_video));
+              }
+          }
+
+        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
+
     }
 
 

@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
@@ -22,12 +25,15 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import butterknife.BindView;
 import cn.com.billboard.R;
+import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.model.ProgressModel;
@@ -35,6 +41,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
+import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
@@ -42,6 +49,7 @@ import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.library.event.BusProvider;
 import cn.com.library.imageloader.ILFactory;
+import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
@@ -49,8 +57,7 @@ import cn.com.library.net.NetError;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
-
+public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements AppDownload.Callback{
     @BindView(R.id.video_view)
     View videoView;
     @BindView(R.id.main_video)
@@ -98,26 +105,19 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     private SmdtManager smdt;
 
     private String mac = "";
-
-
+    private String ipAddress = "";
     private boolean isVideoAgain = false;
     private boolean isSmallPicFis = false;
+    public DownloadAPKDialog dialog_app;
     @Override
     public void initData(Bundle savedInstanceState) {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
 
-
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
         startService(new Intent(context, GPIOService.class));
-
-
-        getP().getScreenData(true, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
-                AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
-        images_big = new ArrayList<>();
-        images_small = new ArrayList<>();
 
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
@@ -128,7 +128,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                     file_name= progressModel.type+progressModel.fileName;
                     if(isUPdate){
                         isUPdate = false;
-                        mHandler.postDelayed(runnable,50);
+                        mHandler.postDelayed(runnable,30);
                     }
                 }
         );
@@ -147,12 +147,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         String model = Build.MODEL;
         if(model.equals("3280")){
             smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char)1);//开启看门狗
+          //  smdt.smdtWatchDogEnable((char)1);//开启看门狗
             mac= smdt.smdtGetEthMacAddress();
-
-            new Timer().schedule(timerTask,0,5000);
+            ipAddress= smdt.smdtGetEthIPAddress();
+         //   new Timer().schedule(timerTask,0,5000);
         }
-
+        getP().getScreenData(true, mac,ipAddress);
+        images_big = new ArrayList<>();
+        images_small = new ArrayList<>();
     }
 
     @Override
@@ -233,9 +235,16 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     public void showData() {
         mHandler.removeCallbacks(runnable);
         rl_pro.setVisibility(View.GONE);
-        videos =  FileUtil.getFilePath(UserInfoKey.FILE_MAIN_VIDEO);
-        images = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_PICTURE);
-        selectPic(images);
+        videos =  FileUtil.getFilePath(UserInfoKey.VIDEO);
+        images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
+        images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
+
+
+        //如果下载下来没有视频默认播放本地视频
+//        if(videos.size()==0){
+//            videos = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_VIDEO_LOCAL);
+//        }
+//        selectPic(images);
 
         if (images_big.size() > 0 && videos.size() > 0) {
             type = 3;
@@ -258,29 +267,29 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         banner.setVisibility(View.GONE);
     }
 
-
-    private void selectPic(List<String> urls) {
-        images_big = new ArrayList<>();
-        images_small = new ArrayList<>();
-        for (int i = 0; i < urls.size(); i++) {
-
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;//这个参数设置为true才有效，
-            Bitmap bmp = BitmapFactory.decodeFile(urls.get(i), options);//这里的bitmap是个空
-            if(bmp==null){
-                Log.e("通过options获取到的bitmap为空","===");
-            }
-
-            float image_height = options.outHeight;
-            float image_widht = options.outWidth;
-
-            if(image_height/image_widht > 1.2){
-                images_big.add(urls.get(i));
-            }else {
-                images_small.add(urls.get(i));
-            }
-        }
-    }
+//
+//    private void selectPic(List<String> urls) {
+//        images_big = new ArrayList<>();
+//        images_small = new ArrayList<>();
+//        for (int i = 0; i < urls.size(); i++) {
+//
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;//这个参数设置为true才有效，
+//            Bitmap bmp = BitmapFactory.decodeFile(urls.get(i), options);//这里的bitmap是个空
+//            if(bmp==null){
+//                Log.e("通过options获取到的bitmap为空","===");
+//            }
+//
+//            float image_height = options.outHeight;
+//            float image_widht = options.outWidth;
+//
+//            if(image_height/image_widht > 1.2){
+//                images_big.add(urls.get(i));
+//            }else {
+//                images_small.add(urls.get(i));
+//            }
+//        }
+//    }
 
 
     /**展示副屏数据*/
@@ -427,8 +436,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
                 eventModel -> {
                     XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, AppSharePreferenceMgr.get(context, UserInfoKey.MAIN_SCREEN_IP, "").toString(),
-                            AppSharePreferenceMgr.get(context, UserInfoKey.SUB_SCREEN_IP, "").toString());
+                    getP().getScreenData(false, mac,ipAddress);
                 }
         );
         return true;
@@ -439,6 +447,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
                 .to(TwoScreenActivity.class)
                 .launch();
     }
+
+
 
     //记录用户首次点击返回键的时间
     private long firstTime = 0;
@@ -470,4 +480,64 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> {
     public TwoScreenPresent newP() {
         return new TwoScreenPresent();
     }
+
+
+    public void toUpdateVer(String apkurl, String version){
+        Kits.File.deleteFile(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/");
+        dialog_app = new DownloadAPKDialog(this);
+        dialog_app.show();
+        dialog_app.setCancelable(false);
+        dialog_app.getFile_name().setText("室内屏apk");
+        dialog_app.getFile_num().setText("版本号"+version);
+        AppDownload appDownload = new AppDownload();
+        appDownload.setProgressInterface(this);
+
+        appDownload.downApk(apkurl,this);
+    }
+
+    @Override
+    public void callProgress(int progress) {
+        if (progress >= 100) {
+            runOnUiThread(() -> {
+                dialog_app.dismiss();
+                String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";
+                install(sdcardDir);
+            });
+
+        }else {
+            runOnUiThread(() -> {
+                dialog_app.getSeekBar().setProgress( progress );
+                dialog_app.getNum_progress().setText(progress+"%");
+            });
+        }
+    }
+
+
+    /**
+     * 开启安装过程
+     * @param fileName
+     */
+    private void install(String fileName) {
+        //承接我的代码，filename指获取到了我的文件相应路径
+        if (fileName != null) {
+            if (fileName.endsWith(".apk")) {
+                if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
+                    File file= new File(fileName);
+                    Uri apkUri = FileProvider.getUriForFile(context, "cn.com.billboard.fileprovider", file);
+                    //在AndroidManifest中的android:authorities值
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    install.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                    context.startActivity(install);
+                } else{
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(install);
+                }
+            }
+        }
+    }
+
 }
