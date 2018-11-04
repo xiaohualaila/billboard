@@ -257,31 +257,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         banner.setVisibility(View.GONE);
     }
 
-//
-//    private void selectPic(List<String> urls) {
-//        images_big = new ArrayList<>();
-//        images_small = new ArrayList<>();
-//        for (int i = 0; i < urls.size(); i++) {
-//
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inJustDecodeBounds = true;//这个参数设置为true才有效，
-//            Bitmap bmp = BitmapFactory.decodeFile(urls.get(i), options);//这里的bitmap是个空
-//            if(bmp==null){
-//                Log.e("通过options获取到的bitmap为空","===");
-//            }
-//
-//            float image_height = options.outHeight;
-//            float image_widht = options.outWidth;
-//
-//            if(image_height/image_widht > 1.2){
-//                images_big.add(urls.get(i));
-//            }else {
-//                images_small.add(urls.get(i));
-//            }
-//        }
-//    }
-
-
     /**展示副屏数据*/
     public void showSubData(){
         XLog.e("屏幕数量===" + displays.length);
