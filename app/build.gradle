@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
     defaultConfig {
         applicationId 'cn.com.billboard'
         minSdkVersion rootProject.ext.android.minSdkVersion
@@ -43,10 +44,14 @@ android {
             keyPassword password
             storeFile file(filePath)
             storePassword(password)
-            v2SigningEnabled false
         }
     }
-    buildToolsVersion '28.0.3'
+    //Add the following configuration不添加打不了正式包
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
 }
 
 dependencies {

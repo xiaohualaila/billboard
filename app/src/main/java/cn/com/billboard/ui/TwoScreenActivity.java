@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
@@ -78,15 +79,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     TextView loading_pro;
     private int type = 0, videoIndex = 0;
 
-    private List<String> images;
-
     private List<String> images_small;
-
     private List<String> images_big;
     private List<String> videos;
 
     DisplayManager displayManager;//屏幕管理类
-
     Display[]  displays;//屏幕数组
 
     int height = 0;
@@ -94,8 +91,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     private String file_name = "";
     private String  file_num = "";
     private int file_pre ;
-
-    private Handler mHandler = new Handler();
 
     private boolean isUPdate = true;
 
@@ -105,7 +100,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     private String ipAddress = "";
     private boolean isVideoAgain = false;
     private boolean isSmallPicFis = false;
+
     public DownloadAPKDialog dialog_app;
+
+    private Handler mHandler = new Handler();
+    @SuppressLint("NewApi")
     @Override
     public void initData(Bundle savedInstanceState) {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
@@ -151,7 +150,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             new Timer().schedule(timerTask,0,5000);
         }
         getP().getScreenData(true, mac,ipAddress);
-
     }
 
     @Override
@@ -375,7 +373,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
    private void  playDownPic(){
        if(images_small.size()>0){
            //底部图片滚动
-           if(!isVideoAgain){//如果视频不否是重复播放的视频，是说明下面小图片没有播放完毕
+           if(!isVideoAgain){//isVideoAgain ==false 视频没有重复播放，说明视频没有播放完那就继续播放小图片
                playSmallBanner();
            }
        }else {

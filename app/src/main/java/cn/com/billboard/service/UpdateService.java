@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
 import java.util.concurrent.TimeUnit;
-
 import cn.com.billboard.model.EventModel;
 import cn.com.library.event.BusProvider;
-import cn.com.library.event.IBus;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -51,7 +48,7 @@ public class UpdateService extends Service {
 
     public void startTimer(){
         //TODO 启动计时服务
-        Observable.timer(5, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
 
             @Override
             public void onSubscribe(Disposable d) {
