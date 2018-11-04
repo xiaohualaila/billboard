@@ -48,8 +48,6 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     private String path;
 
     private int text = 0;
-    private Date beginDate;
-    private Date endDate;
     private Handler handler = new Handler();
 
     private String mac="";
@@ -142,7 +140,6 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
      * 录制视频
      */
     public void startRecord(){
-        beginDate = new Date();
         if (mRecorder == null) {
             mRecorder = new MediaRecorder();
         }
@@ -190,7 +187,6 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
 
     private void stopRecordVideo(){
         //stop
-        endDate = new Date();
         if (mStartedFlg) {
             try {
 

@@ -2,9 +2,7 @@ package cn.com.billboard.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.ImageView;
 import android.widget.TextView;
-
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.present.LauncherPresent;

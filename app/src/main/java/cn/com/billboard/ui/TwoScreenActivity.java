@@ -118,7 +118,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         rl_pro.setVisibility(View.VISIBLE);
         startService(new Intent(context, UpdateService.class));
         startService(new Intent(context, GPIOService.class));
-
+        images_big = new ArrayList<>();
+        images_small = new ArrayList<>();
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
 
@@ -137,24 +138,23 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 model -> {
                     if(model.isCalling){
                      RecordvideoActivity.launch(this,mac,model.phoneType);
-//                        OpenCVCameraActivity.launch(this,mac,model.phoneType);
                     }
                 }
         );
+
         /**
          * 老板子没有喂狗api
          */
         String model = Build.MODEL;
         if(model.equals("3280")){
             smdt = SmdtManager.create(this);
-          //  smdt.smdtWatchDogEnable((char)1);//开启看门狗
+            smdt.smdtWatchDogEnable((char)1);//开启看门狗
             mac= smdt.smdtGetEthMacAddress();
             ipAddress= smdt.smdtGetEthIPAddress();
-         //   new Timer().schedule(timerTask,0,5000);
+            new Timer().schedule(timerTask,0,5000);
         }
         getP().getScreenData(true, mac,ipAddress);
-        images_big = new ArrayList<>();
-        images_small = new ArrayList<>();
+
     }
 
     @Override
@@ -238,13 +238,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         videos =  FileUtil.getFilePath(UserInfoKey.VIDEO);
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-
-
-        //如果下载下来没有视频默认播放本地视频
-//        if(videos.size()==0){
-//            videos = FileUtil.getFilePath(UserInfoKey.FILE_MAIN_VIDEO_LOCAL);
-//        }
-//        selectPic(images);
 
         if (images_big.size() > 0 && videos.size() > 0) {
             type = 3;
@@ -448,8 +441,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 .launch();
     }
 
-
-
     //记录用户首次点击返回键的时间
     private long firstTime = 0;
 
@@ -511,7 +502,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             });
         }
     }
-
 
     /**
      * 开启安装过程
