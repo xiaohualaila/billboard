@@ -1,9 +1,6 @@
 package cn.com.billboard.present;
 
 import android.text.TextUtils;
-import android.util.Log;
-
-import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
@@ -20,9 +17,7 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
-import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
+
 
 public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 
@@ -54,7 +49,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-        mac="1C:CA:E3:35:8B:14";
             BillboardApi.getDataService().getData(mac,ipAddress)
                     .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
                     .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
@@ -74,7 +68,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         @Override
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
-                                isUpdateApp(model.getMessageBody());
+                                dealData(model.getMessageBody());
                             } else {
                                 if (isRefresh) {
                                         callBack.onMainChangeUI();
@@ -87,7 +81,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     });
     }
 
-    private void isUpdateApp(TwoScreenModel model){
+    private void dealData(TwoScreenModel model){
         if(model!=null){
            String s_version= model.getBuild();
            if(!TextUtils.isEmpty(s_version)){
@@ -100,14 +94,9 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                    getV().showDownFile();
                    downloadAndSaveData(model);
                }
-//               getV().showDownFile();
-//                downloadAndSaveData(model);
            }
-
         }
-
     }
-
 
     /**
      * 下载并保存数据
@@ -149,8 +138,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
               }
           }
 
-
-
         //下屏视频
         List<String> lists_video = new ArrayList<>();
         List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
@@ -164,7 +151,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
           }
 
         DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
-
     }
 
 
@@ -193,21 +179,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                 });
     }
 
-    /**
-     * 心跳
-     */
-//    public void sendState(String mac){
-//        //10秒
-//        Observable.interval(10, TimeUnit.SECONDS).
-//                subscribeOn(Schedulers.io()).
-//                subscribe(new Consumer<Long>() {
-//                    @Override public void accept(Long num) throws Exception {
-//
-//
-//
-//                    }
-//                });
-//    }
 
     /**
      * 回调

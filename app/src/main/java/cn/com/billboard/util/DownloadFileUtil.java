@@ -104,7 +104,11 @@ public class DownloadFileUtil {
                             if(images_big.size()>0){
                                 downMainFilePic(images_big,callBack,PIC_BIG_DOWM,"下屏大图片");
                             }else {
-                                downMainFilePic(images_up,callBack,PIC_UP,"上屏图片");
+                                if(images_up.size()>0){
+                                    downMainFilePic(images_up,callBack,PIC_UP,"上屏图片");
+                                }else {
+                                    downMainFileVideo(videos, callBack,UserInfoKey.VIDEO);
+                                }
                             }
                         }else if(url_type.equals(PIC_BIG_DOWM)){
                             if(images_up.size()>0){
@@ -112,15 +116,9 @@ public class DownloadFileUtil {
                             }else {
                                 downMainFileVideo(videos, callBack,UserInfoKey.VIDEO);
                             }
-
                         }else if(url_type.equals(PIC_UP)){
                             downMainFileVideo(videos, callBack,UserInfoKey.VIDEO);
                         }
-
-                        XLog.e("主屏图片下载完成！");
-                       if(url_type.equals(PIC_UP)){
-                           callBack.onSubChangeUI();
-                       }
                     }else {
                         downMainFilePic(images,callBack,url_type,screen_name);
                     }
@@ -141,34 +139,39 @@ public class DownloadFileUtil {
      * @param callBack
      */
     public void downMainFileVideo(List<String> voides,TwoScreenPresent.CallBack  callBack,String url_type){
-        DownloadManager.getInstance().download(voides.get(index), url_type, new DownLoadObserver() {
-            @Override
-            public void onNext(DownloadInfo value) {
-                super.onNext(value);
-                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
-           //     Log.i("sss", " finalI  " + index+1 + " videos size " + voides.size() + " FileName " + value.getFileName());
-            }
+        if(voides.size()>0){
+            DownloadManager.getInstance().download(voides.get(index), url_type, new DownLoadObserver() {
+                @Override
+                public void onNext(DownloadInfo value) {
+                    super.onNext(value);
+                    BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
+               //     Log.i("sss", " finalI  " + index+1 + " videos size " + voides.size() + " FileName " + value.getFileName());
+                }
 
-            @Override
-            public void onComplete() {
-                if (downloadInfo != null) {
-                    index ++;
-                    if (index == voides.size()) {//判断视频是否下载完成
-           //             XLog.e("主屏视频下载完成！");
-                        callBack.onMainChangeUI();
-                        callBack.onSubChangeUI();
-                    }else {
-                        downMainFileVideo(voides,callBack,url_type);
+                @Override
+                public void onComplete() {
+                    if (downloadInfo != null) {
+                        index ++;
+                        if (index == voides.size()) {//判断视频是否下载完成
+               //             XLog.e("主屏视频下载完成！");
+                            callBack.onMainChangeUI();
+                            callBack.onSubChangeUI();
+                        }else {
+                            downMainFileVideo(voides,callBack,url_type);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                super.onError(e);
-                callBack.onErrorChangeUI(e.getMessage());
-            }
-        });
+                @Override
+                public void onError(Throwable e) {
+                    super.onError(e);
+                    callBack.onErrorChangeUI(e.getMessage());
+                }
+            });
+        }else {
+            callBack.onMainChangeUI();
+            callBack.onSubChangeUI();
+        }
     }
 
     /**
