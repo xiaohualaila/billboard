@@ -19,6 +19,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.ChangeTool;
+import cn.com.billboard.util.PhoneUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
@@ -43,7 +44,7 @@ public class GPIOService extends Service {
 
     private String strCmd = "/sys/class/gpio_xrm/gpio";
     private int gpioNum = 5;//IO口电话5，监督6，消防7
-    private final int TIME = 200;
+    private final int TIME = 100;
     private boolean isAuto = true;
     private static Lock lock = new ReentrantLock();
 
@@ -106,7 +107,7 @@ public class GPIOService extends Service {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
-              //   Log.i("sss","strResult_5" + strResult_5);
+                 Log.i("sss","strResult_5" + strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                            sendTest("ATH\r\n"); //挂断电话
@@ -114,7 +115,10 @@ public class GPIOService extends Service {
                            isCalling = false;
 
                            BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
+                           executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
                        }
+                   }else {
+                       executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警闪灯
                    }
                  gpioNum = 6;
              }else if(gpioNum == 6){
@@ -124,7 +128,7 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  sendTest("ATD17682301987;\r\n");
-                                 callPhone("17682301987");
+
                                  send_type = 1;
                                  isCalling = true;
                                  BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
@@ -139,7 +143,7 @@ public class GPIOService extends Service {
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
                              sendTest("ATD17682301987;\r\n");
-                             callPhone("17682301987");
+
                              send_type = 2;
                              isCalling = true;
                              BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
@@ -236,17 +240,6 @@ public class GPIOService extends Service {
             }
         });
     }
-
-    /**
-     *拨打电话（直接拨打电话）
-     *  @param phoneNum 电话号码
-     */
-    public void callPhone(String phoneNum){
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        Uri data = Uri.parse("tel:" + phoneNum);
-        intent.setData(data);
-        startActivity(intent); }
-
 
 
     @Override

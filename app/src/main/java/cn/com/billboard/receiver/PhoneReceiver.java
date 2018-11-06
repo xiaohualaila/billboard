@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 
+import cn.com.billboard.model.EventRecordVideoModel;
+import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 
 public class PhoneReceiver extends BroadcastReceiver {
@@ -40,6 +42,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             switch (state) {
                 case TelephonyManager.CALL_STATE_IDLE:
                     XLog.e("挂断");
+                 //   BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
                     break;
                 case TelephonyManager.CALL_STATE_OFFHOOK:
                     XLog.e("接听");

@@ -42,6 +42,7 @@ import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
+import cn.com.billboard.util.PhoneUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.library.event.BusProvider;
@@ -132,6 +133,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 model -> {
                     if(model.isCalling){
                      RecordvideoActivity.launch(this,mac,model.phoneType);
+                     //   PhoneUtil.callPhone(this,"17682301987");
+
                     }
                 }
         );

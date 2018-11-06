@@ -50,7 +50,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-            Log.i("mac",mac);
+//            Log.i("mac",mac);
             BillboardApi.getDataService().getData(mac,ipAddress)
                     .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
                     .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
@@ -79,8 +79,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                                 } else {
                                         GPIOService.getInstance().startTimer();
                                 }
-
-
                             }
                         }
                     });

@@ -23,6 +23,7 @@ import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordVideoPresent;
 import cn.com.billboard.util.MyUtil;
+import cn.com.billboard.util.PhoneUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
