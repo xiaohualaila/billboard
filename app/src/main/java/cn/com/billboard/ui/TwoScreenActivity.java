@@ -111,7 +111,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         displays = displayManager.getDisplays();
 
         rl_pro.setVisibility(View.VISIBLE);
-//        startService(new Intent(context, UpdateService.class));
         startService(new Intent(context, GPIOService.class));
         images_big = new ArrayList<>();
         images_small = new ArrayList<>();
