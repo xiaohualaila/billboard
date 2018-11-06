@@ -2,6 +2,7 @@ package cn.com.billboard.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -123,6 +124,7 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  sendTest("ATD17682301987;\r\n");
+                                 callPhone("17682301987");
                                  send_type = 1;
                                  isCalling = true;
                                  BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
@@ -137,6 +139,7 @@ public class GPIOService extends Service {
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
                              sendTest("ATD17682301987;\r\n");
+                             callPhone("17682301987");
                              send_type = 2;
                              isCalling = true;
                              BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
@@ -233,6 +236,18 @@ public class GPIOService extends Service {
             }
         });
     }
+
+    /**
+     *拨打电话（直接拨打电话）
+     *  @param phoneNum 电话号码
+     */
+    public void callPhone(String phoneNum){
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        Uri data = Uri.parse("tel:" + phoneNum);
+        intent.setData(data);
+        startActivity(intent); }
+
+
 
     @Override
     public void onDestroy() {

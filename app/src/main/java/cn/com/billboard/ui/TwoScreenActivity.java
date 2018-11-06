@@ -190,6 +190,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         }
     };
 
+    public void toastL(String msg){
+        ToastManager.showLong(context, msg);
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();

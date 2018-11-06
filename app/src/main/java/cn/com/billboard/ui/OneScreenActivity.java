@@ -26,6 +26,7 @@ import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
+import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
@@ -73,7 +74,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
         getWindow().setAttributes(params);
         dialog = new DownloadDialog(context);
         dialog.show();
-        startService(new Intent(context, UpdateService.class));
+        startService(new Intent(context, GPIOService.class));
         getP().getScreenData(AppSharePreferenceMgr.get(context, UserInfoKey.BIG_SCREEN_IP, "").toString(), true);
         String model = Build.MODEL;
         if(model.equals("3280")) {
@@ -296,7 +297,7 @@ public class OneScreenActivity extends XActivity<OneScreenPresent> {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(context, UpdateService.class));
+        stopService(new Intent(context, GPIOService.class));
         String model = Build.MODEL;
         if(model.equals("3280")) {
             smdt.smdtWatchDogEnable((char)0);
