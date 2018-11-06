@@ -3,14 +3,13 @@ package cn.com.billboard.present;
 import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.ScreenDataModel;
 import cn.com.billboard.model.ScreenShowModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.UpdateService;
+import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.ui.OneScreenActivity;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
@@ -20,9 +19,6 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
-import io.reactivex.Observable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 public class OneScreenPresent extends XPresent<OneScreenActivity> {
 
@@ -34,7 +30,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
         public void onChangeUI() {
             getV().dialog.dismiss();
             getV().showData();
-            UpdateService.getInstance().startTimer();
+            GPIOService.getInstance().startTimer();
             updateState();
         }
 
@@ -59,7 +55,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
 //                        if (isRefresh)
 //                            callBack.onChangeUI();
 //                        else
-//                            UpdateService.getInstance().startTimer();
+//                            GPIOService.getInstance().startTimer();
 //                        getV().showError(error);
 //                    }
 //
@@ -71,7 +67,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
 //                            if (isRefresh)
 //                                callBack.onChangeUI();
 //                            else
-//                                UpdateService.getInstance().startTimer();
+//                                GPIOService.getInstance().startTimer();
 //                        }
 //                    }
 //                });

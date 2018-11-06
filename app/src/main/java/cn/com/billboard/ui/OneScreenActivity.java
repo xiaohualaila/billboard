@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import cn.com.billboard.R;
@@ -28,12 +26,10 @@ import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
-import cn.com.billboard.widget.LoadingDialog;
 import cn.com.billboard.widget.MyVideoView;
 import cn.com.library.event.BusProvider;
 import cn.com.library.imageloader.ILFactory;
@@ -42,10 +38,7 @@ import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
 import cn.com.library.router.Router;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 
 public class OneScreenActivity extends XActivity<OneScreenPresent> {
 
