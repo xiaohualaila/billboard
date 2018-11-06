@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -49,7 +50,8 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     private String fileName = "";
     int faceSerialCount = 0;
     private boolean isPhoteTakingPic = false;
-
+    private Handler handler = new Handler();
+    private int count = 0;
     private void initializeOpenCVDependencies() {
         try {
             // Copy the resource into a temp file so OpenCV can load it
@@ -99,7 +101,30 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }else {
             bottom_pic.setImageResource(R.drawable.police);
         }
+        
+        handler.postDelayed(runnable, 1000);
+      
     }
+
+    /**
+     * 如果等于3分钟还没挂断电话那就关闭页面
+     */
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            count++;
+            if(count == 180){
+                File file =new File(fileName);
+                if(file.exists()){
+                    getP().uploadVideo(mac,phoneType,file);
+                }else {
+                    finish();
+                }
+                return;
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     public void onResume() {

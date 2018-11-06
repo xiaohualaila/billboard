@@ -11,13 +11,34 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.library.event.BusProvider;
+import cn.com.library.log.XLog;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class GPIOService extends Service {
+
+    private static GPIOService service;
+
+    public static GPIOService getInstance() {
+        if (service == null) {
+            synchronized (GPIOService.class) {
+                if (service == null) {
+                    service = new GPIOService();
+                }
+            }
+        }
+        return service;
+    }
 
     private String strCmd = "/sys/class/gpio_xrm/gpio";
     private int gpioNum = 5;//IO口电话5，监督6，消防7
@@ -182,6 +203,35 @@ public class GPIOService extends Service {
         }
         String response = output.toString().trim().substring(0, output.length() - 1);
         return response;
+    }
+
+    /**
+     * 10分钟请求一次服务器更新数据
+     */
+    public void startTimer(){
+        //TODO 启动计时服务
+        Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+
+            @Override
+            public void onSubscribe(Disposable d) {
+                XLog.e("更新数据倒计时开始");
+            }
+
+            @Override
+            public void onNext(Long value) {
+                BusProvider.getBus().post(new EventModel("refreshData", "refreshData"));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+                XLog.e("倒计时结束，开始获取数据");
+            }
+        });
     }
 
     @Override

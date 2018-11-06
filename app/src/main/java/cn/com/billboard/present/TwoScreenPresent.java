@@ -1,13 +1,15 @@
 package cn.com.billboard.present;
 
 import android.text.TextUtils;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.UpdateService;
+import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.ui.TwoScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -28,14 +30,13 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         @Override
         public void onMainChangeUI() {
             getV().showData();
-            UpdateService.getInstance().startTimer();
-            updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAIN_SCREEN_ID, "").toString());
+            GPIOService.getInstance().startTimer();
+            updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
         }
 
         @Override
         public void onSubChangeUI() {
             getV().showSubData();
-            updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.SUB_SCREEN_ID, "").toString());
         }
 
         @Override
@@ -49,6 +50,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
+//            Log.i("mac",mac);
             BillboardApi.getDataService().getData(mac,ipAddress)
                     .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
                     .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
@@ -60,7 +62,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
                             } else {
-                                UpdateService.getInstance().startTimer();
+                                GPIOService.getInstance().startTimer();
                             }
                             getV().showError(error);
                         }
@@ -74,7 +76,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                                         callBack.onMainChangeUI();
                                         callBack.onSubChangeUI();
                                 } else {
-                                        UpdateService.getInstance().startTimer();
+                                        GPIOService.getInstance().startTimer();
                                 }
                             }
                         }
@@ -157,8 +159,8 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     /**
      * 上报状态
      */
-    private void updateState(String screenId) {
-        BillboardApi.getDataService().upState(screenId)
+    private void updateState(String mac) {
+        BillboardApi.getDataService().upState(mac)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -179,6 +181,21 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                 });
     }
 
+    /**
+     * 心跳
+     */
+//    public void sendState(String mac){
+//        //10秒
+//        Observable.interval(10, TimeUnit.SECONDS).
+//                subscribeOn(Schedulers.io()).
+//                subscribe(new Consumer<Long>() {
+//                    @Override public void accept(Long num) throws Exception {
+//
+//
+//
+//                    }
+//                });
+//    }
 
     /**
      * 回调

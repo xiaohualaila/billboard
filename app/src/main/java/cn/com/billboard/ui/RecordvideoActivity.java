@@ -94,8 +94,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         @Override
         public void run() {
             text++;
-//            textView.setText(text + "");
-            if(text==10){
+            if(text==11){
                 stopRecordVideo();
                 return;
             }

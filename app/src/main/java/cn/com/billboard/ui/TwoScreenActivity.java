@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,9 +38,9 @@ import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppPhoneMgr;
+import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
@@ -112,7 +111,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         displays = displayManager.getDisplays();
 
         rl_pro.setVisibility(View.VISIBLE);
-        startService(new Intent(context, UpdateService.class));
+//        startService(new Intent(context, UpdateService.class));
         startService(new Intent(context, GPIOService.class));
         images_big = new ArrayList<>();
         images_small = new ArrayList<>();
@@ -147,6 +146,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             smdt.smdtWatchDogEnable((char)1);//开启看门狗
             mac= smdt.smdtGetEthMacAddress();
             ipAddress= smdt.smdtGetEthIPAddress();
+            AppSharePreferenceMgr.put(this,UserInfoKey.MAC,mac);
             new Timer().schedule(timerTask,0,5000);
         }
         getP().getScreenData(true, mac,ipAddress);
@@ -221,7 +221,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     break;
 
                 case NetError.OtherError:
-                    ToastManager.showShort(context, "其他异常");
+                    ToastManager.showShort(context, "请求失败");
                     break;
             }
         }

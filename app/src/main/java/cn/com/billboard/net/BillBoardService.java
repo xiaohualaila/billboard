@@ -15,16 +15,7 @@ import retrofit2.http.Query;
 
 public interface BillBoardService {
 
-    /**
-     * 版本检测
-     *
-     * @param code 传0时代表检测双屏代码版本   传1时代表检测大屏代码版本
-     * @return
-     */
-    @POST("app/version/selectNewVersion")
-    Flowable<BaseBean<VersionModel>> checkVersion(
-            @Query("mac") String mac,
-            @Query("genre") int code);
+
 
     /**
      * 获取数据
@@ -44,7 +35,7 @@ public interface BillBoardService {
      * @return
      */
     @POST("pc/multimedia/screen/completeMultimediaMessage")
-    Flowable<BaseBean> upState(@Query("id") String screenIP);
+    Flowable<BaseBean> upState(@Query("devicemac") String screenIP);
 
     /**
      * 心跳发送服务器状态
