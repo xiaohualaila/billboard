@@ -1,18 +1,24 @@
 package cn.com.billboard.ui;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
+import android.telecom.TelecomManager;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
@@ -42,7 +49,7 @@ import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.FileUtil;
-import cn.com.billboard.util.PhoneUtil;
+
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.library.event.BusProvider;
@@ -55,7 +62,7 @@ import cn.com.library.net.NetError;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements AppDownload.Callback{
+public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements AppDownload.Callback {
     @BindView(R.id.video_view)
     View videoView;
     @BindView(R.id.main_video)
@@ -84,13 +91,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     private List<String> videos;
 
     DisplayManager displayManager;//屏幕管理类
-    Display[]  displays;//屏幕数组
+    Display[] displays;//屏幕数组
 
     int height = 0;
 
     private String file_name = "";
-    private String  file_num = "";
-    private int file_pre ;
+    private String file_num = "";
+    private int file_pre;
 
     private boolean isUPdate = true;
 
@@ -104,11 +111,13 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     public DownloadAPKDialog dialog_app;
 
     private Handler mHandler = new Handler();
+
+    private int phoneType = 1;
     @SuppressLint("NewApi")
     @Override
     public void initData(Bundle savedInstanceState) {
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
-        displayManager = (DisplayManager)context.getSystemService(Context.DISPLAY_SERVICE);
+        displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
 
         rl_pro.setVisibility(View.VISIBLE);
@@ -118,23 +127,22 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
 
-                    int pp = (int) ((float)progressModel.progress/(float)progressModel.total*100);
+                    int pp = (int) ((float) progressModel.progress / (float) progressModel.total * 100);
                     file_pre = pp;
-                    file_num = progressModel.index+"/"+progressModel.num;
-                    file_name= progressModel.type+progressModel.fileName;
-                    if(isUPdate){
+                    file_num = progressModel.index + "/" + progressModel.num;
+                    file_name = progressModel.type + progressModel.fileName;
+                    if (isUPdate) {
                         isUPdate = false;
-                        mHandler.postDelayed(runnable,30);
+                        mHandler.postDelayed(runnable, 30);
                     }
                 }
         );
 
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
-                    if(model.isCalling){
-                     RecordvideoActivity.launch(this,mac,model.phoneType);
-                     //   PhoneUtil.callPhone(this,"17682301987");
-
+                    if (model.isCalling) {
+                        phoneType = model.phoneType;
+                        RecordvideoActivity.launch(this, mac, model.phoneType);
                     }
                 }
         );
@@ -151,6 +159,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             AppSharePreferenceMgr.put(this,UserInfoKey.MAC,mac);
             new Timer().schedule(timerTask,0,5000);
         }
+        Log.i("mac",mac);
         getP().getScreenData(true, mac,ipAddress);
     }
 
@@ -158,6 +167,20 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     protected void onRestart() {
         super.onRestart();
         showData();
+        String video_path = (String) AppSharePreferenceMgr.get(this, "videoFile", "");
+        String pic_path = (String) AppSharePreferenceMgr.get(this, "picFile", "");
+        if(!TextUtils.isEmpty(video_path)){
+            File file = new File(video_path);
+            if (file.exists()) {
+                getP().uploadVideo(mac, phoneType, file);
+            }
+        }
+        if(!TextUtils.isEmpty(pic_path)){
+            File file = new File(pic_path);
+            if (file.exists()) {
+                getP().uploadFacePic(mac, phoneType, file);
+            }
+        }
     }
 
     TimerTask timerTask = new TimerTask(){

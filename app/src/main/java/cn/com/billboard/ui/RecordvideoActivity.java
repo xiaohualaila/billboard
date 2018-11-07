@@ -22,6 +22,7 @@ import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordVideoPresent;
+import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.PhoneUtil;
 import cn.com.library.event.BusProvider;
@@ -203,32 +204,21 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                 }
                 File file = new File(path);
                 if (file.exists()) {
-                    //压缩后的视频
-                  //  compressVideo();
-                    getP().uploadVideo(mac,phoneType,file);
+                    AppSharePreferenceMgr.put(this,"videoFile",path);
                 }else {
-                    if(!isClose){
-                        OpenCVCameraActivity.launch(this,mac,phoneType);
-                    }else {
-                        finish();
-                    }
+                    AppSharePreferenceMgr.put(this,"videoFile","");
                 }
+                if(!isClose){
+                    OpenCVCameraActivity.launch(this,mac,phoneType);
+                }
+                    finish();
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         mStartedFlg = false;
-    }
-
-    public void uploadFinish() {
-        if(isClose){//如果电话挂断了就不要抓拍人脸了直接关闭
-            finish();
-        }else {
-            Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-            OpenCVCameraActivity.launch(this,mac,phoneType);
-            finish();
-        }
     }
 
     private long startTime;

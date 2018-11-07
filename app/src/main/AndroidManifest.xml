@@ -71,10 +71,12 @@
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
             android:name=".ui.RecordvideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop" />
         <activity
             android:name=".ui.OpenCVCameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop"/>
 
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver"

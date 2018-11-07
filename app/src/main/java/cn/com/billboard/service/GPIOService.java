@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
+import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.PhoneUtil;
 import cn.com.library.event.BusProvider;
@@ -69,7 +70,6 @@ public class GPIOService extends Service {
         isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
         thread = new Thread(task);
         thread.start();
-
     }
 
     private void iniview() {
@@ -78,12 +78,15 @@ public class GPIOService extends Service {
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String back= ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
                 if(back.contains("NO CARRIER")){
-                    isCalling = false;
+                    stopCall();
+
                 }else if(back.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
                 }
-    //           Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
+               Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
             }
+
+
         };
         serialHelper.setPort("/dev/ttyS3");
         serialHelper.setBaudRate(9600);
@@ -97,6 +100,16 @@ public class GPIOService extends Service {
         }
     }
 
+    /**
+     * 停止打电话
+     */
+    private void stopCall() {
+        BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
+        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
+        isCalling = false;
+    //    Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 挂断电话0");
+    }
+
 
     Runnable task = () -> {
         while (isAuto) {
@@ -107,16 +120,13 @@ public class GPIOService extends Service {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
-                 Log.i("sss","strResult_5" + strResult_5);
+              //   Log.i("sss","strResult_5" + strResult_5);
                    if(strResult_5.equals("0")){
-                       if(isCalling){
-                           sendTest("ATH\r\n"); //挂断电话
-                           send_type = 0;
-                           isCalling = false;
-
-                           BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
-                           executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
-                       }
+//                       if(isCalling){
+                            sendTest("ATH\r\n"); //挂断电话
+                            stopCall();
+                        //    Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 挂断电话");
+//                       }
                    }else {
                        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警闪灯
                    }
@@ -128,10 +138,10 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  sendTest("ATD17682301987;\r\n");
-
                                  send_type = 1;
+                                 BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
-                                 BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
+                           //      Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 打电话1");
                              }
                          }
                      }
@@ -143,10 +153,10 @@ public class GPIOService extends Service {
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
                              sendTest("ATD17682301987;\r\n");
-
                              send_type = 2;
+                             BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;
-                             BusProvider.getBus().post(new EventRecordVideoModel(isCalling, send_type));
+                        //     Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 打电话2" );
                          }
                      }
                  }

@@ -29,13 +29,14 @@ import cn.com.billboard.R;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
+import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-
+//
 public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements CameraBridgeViewBase.CvCameraViewListener,JavaCameraView.PhotoSuccessCallback {
     @BindView(R.id.bottom_pic)
     ImageView bottom_pic;
@@ -52,6 +53,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     private boolean isPhoteTakingPic = false;
     private Handler handler = new Handler();
     private int count = 0;
+    private String path="";
     private void initializeOpenCVDependencies() {
         try {
             // Copy the resource into a temp file so OpenCV can load it
@@ -84,15 +86,17 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         Intent intent = getIntent();
         phoneType = intent.getIntExtra(PHONETYPE,0);
         mac = intent.getStringExtra(MAC);
+        path = UserInfoKey.BILLBOARD_PICTURE_FACE_PATH;
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
-                        File file =new File(fileName);
+                        File file = new File(fileName);
                         if(file.exists()){
-                            getP().uploadVideo(mac,phoneType,file);
+                            AppSharePreferenceMgr.put(this,"picFile",path);
                         }else {
-                            finish();
+                            AppSharePreferenceMgr.put(this,"picFile","");
                         }
+                        finish();
                     }
                 }
         );
@@ -114,12 +118,13 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         public void run() {
             count++;
             if(count == 180){
-                File file =new File(fileName);
+                File file = new File(fileName);
                 if(file.exists()){
-                    getP().uploadVideo(mac,phoneType,file);
+                    AppSharePreferenceMgr.put(OpenCVCameraActivity.this,"picFile",fileName);
                 }else {
-                    finish();
+                    AppSharePreferenceMgr.put(OpenCVCameraActivity.this,"picFile","");
                 }
+                finish();
                 return;
             }
             handler.postDelayed(this, 1000);
@@ -163,13 +168,13 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
         if (faceSerialCount > 6) {
             if(!isPhoteTakingPic){
-                File folder = new File(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                File folder = new File(path);
                 if (!folder.exists()){
                     folder.mkdirs();
                 }
-                fileName =UserInfoKey.BILLBOARD_PICTURE_FACE_PATH + File.separator + getTime() + ".jpeg";
+                fileName = path+ File.separator + getTime() + ".jpeg";
                 openCvCameraView.takePhoto(fileName);
-                Log.i("sss","拍摄照片啦");
+              //  Log.i("sss","拍摄照片啦");
             }
             faceSerialCount = -5000;
         }

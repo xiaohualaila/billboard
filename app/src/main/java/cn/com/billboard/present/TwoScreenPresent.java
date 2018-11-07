@@ -3,6 +3,7 @@ package cn.com.billboard.present;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
@@ -14,11 +15,15 @@ import cn.com.billboard.ui.TwoScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
+import cn.com.library.kit.Kits;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 
 public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
@@ -50,7 +55,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-//            Log.i("mac",mac);
             BillboardApi.getDataService().getData(mac,ipAddress)
                     .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
                     .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
@@ -70,6 +74,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         @Override
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
+
                                 dealData(model.getMessageBody());
                             } else {
                                 if (isRefresh) {
@@ -197,6 +202,68 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 //                    }
 //                });
 //    }
+
+
+    /**
+     * 上传打电话人员的视频
+     */
+    public void uploadVideo(String macAddress,int phone, File file) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        builder.addFormDataPart("file", file.getName(), requestBody);
+//        Log.i("sss",macAddress);
+        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,3,builder.build().parts())
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        XLog.e("状态上报失败");
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            XLog.e("状态上报成功");
+                        } else {
+                            XLog.e("状态上报失败");
+                        }
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                    }
+                });
+    }
+
+    /**
+     * 上传报警人脸图片
+     */
+    public void uploadFacePic(String macAddress, int phone, File file) {
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        builder.addFormDataPart("file", file.getName(), requestBody);
+        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,1,builder.build().parts())
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        XLog.e("状态上报失败");
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            XLog.e("状态上报成功");
+                        } else {
+                            XLog.e("状态上报失败");
+                        }
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                    }
+                });
+    }
 
     /**
      * 回调

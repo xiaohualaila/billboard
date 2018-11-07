@@ -18,7 +18,7 @@ import okhttp3.RequestBody;
 
 public class OpenCVPresent extends XPresent<OpenCVCameraActivity> {
     /**
-     * 上次报警信息
+     * 上传报警人脸图片
      */
     public void uploadVideo(String macAddress, int phone, File file) {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -41,7 +41,7 @@ public class OpenCVPresent extends XPresent<OpenCVCameraActivity> {
                         } else {
                             XLog.e("状态上报失败");
                         }
-                        getV().uploadFinish();
+                       // getV().uploadFinish();
                     }
                 });
     }

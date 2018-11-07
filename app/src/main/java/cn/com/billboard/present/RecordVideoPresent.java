@@ -32,7 +32,7 @@ public class RecordVideoPresent extends XPresent<RecordvideoActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                         getV().uploadFinish();
+                       //  getV().uploadFinish();
                     }
 
                     @Override
@@ -42,7 +42,7 @@ public class RecordVideoPresent extends XPresent<RecordvideoActivity> {
                         } else {
                             XLog.e("状态上报失败");
                         }
-                        getV().uploadFinish();
+                    //    getV().uploadFinish();
                     }
                 });
     }
