@@ -1,6 +1,6 @@
 package cn.com.billboard.present;
 
-import android.text.TextUtils;
+
 import android.util.Log;
 
 import java.io.File;

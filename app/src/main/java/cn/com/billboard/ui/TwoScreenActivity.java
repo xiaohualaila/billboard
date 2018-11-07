@@ -292,9 +292,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                         return;
                     }
                     //图片播放完毕,休眠图片播放时长后播放视频
-                    mHandler.postDelayed(() ->
-                        backplay()
-                            ,5000);
+                    mHandler.postDelayed(() -> backplay(),5000);
                 }
             }
 
@@ -303,6 +301,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
             }
         });
+        if(images_big.size()==1){
+            mHandler.postDelayed(() -> backplay(),5000);
+        }
     }
 
     private void backplay(){
@@ -355,6 +356,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                             playBanner();
                         }else {
                             banner.startScroll();
+                            if(images_big.size()==1){
+                                mHandler.postDelayed(() -> backplay(),5000);
+                            }
                         }
 
 
@@ -392,6 +396,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     return;
                 }
                 //判断视频下方的小图片是否播放完成，没有继续播放视频
+                if(images_small.size()==1){
+                    isSmallPicFis = true;
+                }
                 if(!isSmallPicFis){
                     playVideo();
                     isVideoAgain = true;
@@ -407,6 +414,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     playBanner();
                 }else {
                     banner.startScroll();
+                    if(images_big.size()==1){
+                        mHandler.postDelayed(() -> backplay(),5000);
+                    }
                 }
             }
         });
