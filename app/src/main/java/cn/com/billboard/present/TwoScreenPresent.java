@@ -74,7 +74,6 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         @Override
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
-
                                 dealData(model.getMessageBody());
                             } else {
                                 if (isRefresh) {
@@ -92,7 +91,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     private void dealData(TwoScreenModel model){
         if(model!=null){
            String s_version= model.getBuild();
-           if(!TextUtils.isEmpty(s_version)){
+           if(s_version != null){
                int v_no = APKVersionCodeUtils.getVersionCode(getV());
                int a = Integer.parseInt(s_version);
                if(a > v_no){
@@ -102,7 +101,11 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                    getV().showDownFile();
                    downloadAndSaveData(model);
                }
+           }else {
+               getV().showDownFile();
+               downloadAndSaveData(model);
            }
+
         }
     }
 
@@ -110,6 +113,10 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
      * 下载并保存数据
      */
     private void downloadAndSaveData(TwoScreenModel model) {
+        String tell = model.getTel1();
+        String tel2 = model.getTel2();
+        AppSharePreferenceMgr.put(getV(),"tell",tell);
+        AppSharePreferenceMgr.put(getV(),"tel2",tel2);
         //下屏小图片
         List<String> lists_pic_small_dowm = new ArrayList<>();
         List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();

@@ -2,7 +2,6 @@ package cn.com.billboard.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -15,12 +14,10 @@ import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
-import cn.com.billboard.ui.RecordvideoActivity;
+import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.ChangeTool;
-import cn.com.billboard.util.PhoneUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
@@ -60,19 +57,20 @@ public class GPIOService extends Service {
 
     String  strResult_5="";
     private SerialHelper serialHelper;
+    String tell;
+    String tel2;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        iniview();
+        init();
         executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
         isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
         thread = new Thread(task);
         thread.start();
     }
 
-    private void iniview() {
+    private void init() {
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
@@ -137,7 +135,8 @@ public class GPIOService extends Service {
                      strResult = executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
-                                 sendTest("ATD17682301987;\r\n");
+                                 tell = (String) AppSharePreferenceMgr.get(this,"tell","");
+                                 sendTest("ATD"+tell+";\r\n");
                                  send_type = 1;
                                  BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
@@ -152,7 +151,8 @@ public class GPIOService extends Service {
                      strResult = executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
-                             sendTest("ATD17682301987;\r\n");
+                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
+                             sendTest("ATD"+tel2+";\r\n");
                              send_type = 2;
                              BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;

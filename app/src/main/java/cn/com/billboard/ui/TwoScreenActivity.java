@@ -113,6 +113,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     private Handler mHandler = new Handler();
 
     private int phoneType = 1;
+
+    private boolean isPlayVideo = false;
+    private boolean isNotPlayedBigPic = true;
     @SuppressLint("NewApi")
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -121,7 +124,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         displays = displayManager.getDisplays();
 
         rl_pro.setVisibility(View.VISIBLE);
-        startService(new Intent(context, GPIOService.class));
+
         images_big = new ArrayList<>();
         images_small = new ArrayList<>();
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
@@ -161,6 +164,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         }
         Log.i("mac",mac);
         getP().getScreenData(true, mac,ipAddress);
+        startService(new Intent(context, GPIOService.class));
     }
 
     @Override
@@ -226,36 +230,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         super.onResume();
     }
 
-    /**请求失败返回*/
-    public void showError(NetError error) {
-        if (error != null) {
-            switch (error.getType()) {
-                case NetError.ParseError:
-                    ToastManager.showShort(context, "数据解析异常");
-                    break;
 
-                case NetError.AuthError:
-                    ToastManager.showShort(context, "身份验证异常");
-                    break;
-
-                case NetError.BusinessError:
-                    ToastManager.showShort(context, "业务异常");
-                    break;
-
-                case NetError.NoConnectError:
-                    ToastManager.showShort(context, "网络无连接");
-                    break;
-
-                case NetError.NoDataError:
-                    ToastManager.showShort(context, "数据为空");
-                    break;
-
-                case NetError.OtherError:
-                    ToastManager.showShort(context, "请求失败");
-                    break;
-            }
-        }
-    }
     /**展示主屏数据*/
     public void showData() {
         mHandler.removeCallbacks(runnable);
@@ -264,17 +239,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
 
-        if (images_big.size() > 0 && videos.size() > 0) {
-            type = 3;
+        if (images_big.size()>0){
             playVideo();
-        } else if (images_big.size() > 0) {
-            type = 1;
-            playBanner();
-        } else if (videos.size() > 0) {
-            type = 2;
-            playVideo();
-        } else {
-            ToastManager.showShort(context, "暂无数据");
+        }
+        if(images_small.size()>0){
+            playSmallBanner();
+        }else {
+            videoImg.setVisibility(View.VISIBLE);
+            pic_banner.setVisibility(View.GONE);
         }
     }
 
@@ -298,9 +270,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
     /**播放图片轮播*/
     private void playBanner(){
+        pic_banner.stopScroll();
         isSmallPicFis = false;
         isVideoAgain = false;
-        pic_banner.stopScroll();
         videoView.setVisibility(View.GONE);
         banner.setVisibility(View.VISIBLE);
         banner.setAdapter(new BannersAdapter(initBanner(images_big)));
@@ -314,11 +286,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
             @Override
             public void onPageSelected(int position) {
-                if (position == images_big.size() - 1 && type == 3) {
-                    banner.stopScroll();
+                Log.i("sss","图片播放完毕,休眠图片播放时长后播放视频 " +position );
+                if (position == images_big.size() - 1) {
+                    if(isPlayVideo){
+                        return;
+                    }
                     //图片播放完毕,休眠图片播放时长后播放视频
                     mHandler.postDelayed(() ->
-                                    playVideo()
+                        backplay()
                             ,5000);
                 }
             }
@@ -330,6 +305,23 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         });
     }
 
+    private void backplay(){
+        isPlayVideo = true;
+        banner.stopScroll();
+        banner.setVisibility(View.GONE);
+        playVideo();
+        if(images_small.size()>0){
+            pic_banner.startScroll();
+            videoImg.setVisibility(View.GONE);
+            pic_banner.setVisibility(View.VISIBLE);
+        }else {
+            videoImg.setVisibility(View.VISIBLE);
+            pic_banner.setVisibility(View.GONE);
+        }
+
+    }
+
+
     /**播放图片轮播,小图片轮播*/
     private void playSmallBanner(){
         pic_banner.setVisibility(View.VISIBLE);
@@ -340,18 +332,34 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         pic_banner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-               int n = position+1;
-                if(n == images_small.size()){
-                    isSmallPicFis = true;
-                    if(isVideoAgain){//判断视频是否重复播放了,如果视频重复播放了，直接播放大图片
-                        playBanner();
-                    }
-                }
+
             }
 
             @Override
             public void onPageSelected(int position) {
+                Log.i("ssss","position  " +position );
 
+                if(position == images_small.size()-1){
+                    isSmallPicFis = true;
+                    if(isVideoAgain){//判断视频是否重复播放了,如果视频重复播放了，直接播放大图片
+                        if(images_big.size()==0){
+                            return;
+                        }
+                        isPlayVideo = false;
+                        isSmallPicFis = false;
+                        isVideoAgain = false;
+                        videoView.setVisibility(View.GONE);
+                        banner.setVisibility(View.VISIBLE);
+                        if(isNotPlayedBigPic){
+                            isNotPlayedBigPic = false;
+                            playBanner();
+                        }else {
+                            banner.startScroll();
+                        }
+
+
+                    }
+                }
             }
 
             @Override
@@ -363,6 +371,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
     /**播放视频*/
     private void playVideo(){
+        isPlayVideo = true;
         banner.setVisibility(View.GONE);
         videoView.setVisibility(View.VISIBLE);
 
@@ -378,7 +387,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 //视频播放结束  开始播放图片  复位视频索引
                 videoIndex = 0;
                 //如果类型未全部是视频时接着循环
-                if (type == 2) {
+                if (images_big.size() == 0) {
                     playVideo();
                     return;
                 }
@@ -388,7 +397,17 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     isVideoAgain = true;
                     return;
                 }
-                playBanner();
+                isPlayVideo = false;
+                isSmallPicFis = false;
+                isVideoAgain = false;
+                videoView.setVisibility(View.GONE);
+                banner.setVisibility(View.VISIBLE);
+                if(isNotPlayedBigPic){
+                    isNotPlayedBigPic = false;
+                    playBanner();
+                }else {
+                    banner.startScroll();
+                }
             }
         });
         video.setOnErrorListener((mp, what, extra) -> {
@@ -397,20 +416,9 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         });
         video.setVideoPath(videos.get(videoIndex));
         video.start();
-        playDownPic();
     }
 
-   private void  playDownPic(){
-       if(images_small.size()>0){
-           //底部图片滚动
-           if(!isVideoAgain){//isVideoAgain ==false 视频没有重复播放，说明视频没有播放完那就继续播放小图片
-               playSmallBanner();
-           }
-       }else {
-           videoImg.setVisibility(View.VISIBLE);
-           pic_banner.setVisibility(View.GONE);
-       }
-    }
+
 
     /**初始化banner数据*/
     private List<View> initBanner(List<String> urls) {
@@ -472,7 +480,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         return new TwoScreenPresent();
     }
 
-
     public void toUpdateVer(String apkurl, String version){
         Kits.File.deleteFile(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/");
         dialog_app = new DownloadAPKDialog(this);
@@ -526,6 +533,37 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(install);
                 }
+            }
+        }
+    }
+
+    /**请求失败返回*/
+    public void showError(NetError error) {
+        if (error != null) {
+            switch (error.getType()) {
+                case NetError.ParseError:
+                    ToastManager.showShort(context, "数据解析异常");
+                    break;
+
+                case NetError.AuthError:
+                    ToastManager.showShort(context, "身份验证异常");
+                    break;
+
+                case NetError.BusinessError:
+                    ToastManager.showShort(context, "业务异常");
+                    break;
+
+                case NetError.NoConnectError:
+                    ToastManager.showShort(context, "网络无连接");
+                    break;
+
+                case NetError.NoDataError:
+                    ToastManager.showShort(context, "数据为空");
+                    break;
+
+                case NetError.OtherError:
+                    ToastManager.showShort(context, "请求失败");
+                    break;
             }
         }
     }

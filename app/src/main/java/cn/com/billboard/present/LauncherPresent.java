@@ -21,13 +21,14 @@ import cn.com.library.net.XApi;
 public class LauncherPresent extends XPresent<LauncherActivity> {
     /**权限申请*/
     public void checkPermissions(){
-        PermissionsUtil.requestPermission(mPermission, new RxPermissions(getV()),
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO);
+        toActivity();
+//        PermissionsUtil.requestPermission(mPermission, new RxPermissions(getV()),
+//                Manifest.permission.ACCESS_FINE_LOCATION,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                Manifest.permission.READ_EXTERNAL_STORAGE,
+//                Manifest.permission.READ_PHONE_STATE,
+//                Manifest.permission.CAMERA,
+//                Manifest.permission.RECORD_AUDIO);
     }
     /**权限申请回调*/
     private PermissionsUtil.RequestPermission mPermission = new PermissionsUtil.RequestPermission() {
