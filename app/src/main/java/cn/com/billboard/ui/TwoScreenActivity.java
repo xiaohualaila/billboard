@@ -1,22 +1,18 @@
 package cn.com.billboard.ui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
-import android.telecom.TelecomManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -114,7 +110,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
     private int phoneType = 1;
 
-    private boolean isPlayVideo = false;
+    private boolean isPlayVideo = true;
     private boolean isNotPlayedBigPic = true;
     @SuppressLint("NewApi")
     @Override
@@ -273,6 +269,8 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         pic_banner.stopScroll();
         isSmallPicFis = false;
         isVideoAgain = false;
+        isPlayVideo = false;
+        isNotPlayedBigPic = false;
         videoView.setVisibility(View.GONE);
         banner.setVisibility(View.VISIBLE);
         banner.setAdapter(new BannersAdapter(initBanner(images_big)));
@@ -306,8 +304,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         }
     }
 
+    /**
+     * 重复播放小图片和视频
+     */
     private void backplay(){
-        isPlayVideo = true;
         banner.stopScroll();
         banner.setVisibility(View.GONE);
         playVideo();
@@ -352,7 +352,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                         videoView.setVisibility(View.GONE);
                         banner.setVisibility(View.VISIBLE);
                         if(isNotPlayedBigPic){
-                            isNotPlayedBigPic = false;
                             playBanner();
                         }else {
                             banner.startScroll();
@@ -360,8 +359,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                                 mHandler.postDelayed(() -> backplay(),5000);
                             }
                         }
-
-
                     }
                 }
             }
@@ -410,7 +407,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 videoView.setVisibility(View.GONE);
                 banner.setVisibility(View.VISIBLE);
                 if(isNotPlayedBigPic){
-                    isNotPlayedBigPic = false;
                     playBanner();
                 }else {
                     banner.startScroll();

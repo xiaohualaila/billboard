@@ -102,9 +102,10 @@ public class GPIOService extends Service {
      * 停止打电话
      */
     private void stopCall() {
+        isCalling = false;
         BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
         executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
-        isCalling = false;
+
     //    Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 挂断电话0");
     }
 
@@ -120,11 +121,11 @@ public class GPIOService extends Service {
                  strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
               //   Log.i("sss","strResult_5" + strResult_5);
                    if(strResult_5.equals("0")){
-//                       if(isCalling){
+                       if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
                             stopCall();
-                        //    Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 挂断电话");
-//                       }
+                            Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 挂断电话");
+                       }
                    }else {
                        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警闪灯
                    }
@@ -135,11 +136,13 @@ public class GPIOService extends Service {
                      strResult = executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
-                                 tell = (String) AppSharePreferenceMgr.get(this,"tell","");
+                                 //tell = (String) AppSharePreferenceMgr.get(this,"tell","");
+                                 tell="15109231279";
                                  sendTest("ATD"+tell+";\r\n");
                                  send_type = 1;
-                                 BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
+                                 BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
+
                            //      Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 打电话1");
                              }
                          }
@@ -151,11 +154,13 @@ public class GPIOService extends Service {
                      strResult = executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
-                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
+//                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
+                             tel2="15109231279";
                              sendTest("ATD"+tel2+";\r\n");
                              send_type = 2;
-                             BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;
+                             BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
+
                         //     Log.i("ccc"," strResult_5 " + strResult_5 + "isCalling " +  isCalling + " 打电话2" );
                          }
                      }
