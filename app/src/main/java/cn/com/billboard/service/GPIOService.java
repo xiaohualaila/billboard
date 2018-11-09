@@ -204,7 +204,6 @@ public class GPIOService extends Service {
      * 10分钟请求一次服务器更新数据
      */
     public void startTimer(){
-        //TODO 启动计时服务
         Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
 
             @Override
