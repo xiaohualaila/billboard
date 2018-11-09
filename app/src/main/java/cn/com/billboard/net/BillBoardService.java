@@ -34,7 +34,7 @@ public interface BillBoardService {
      * @param screenIP
      * @return
      */
-    @POST("pc/multimedia/screen/completeMultimediaMessage")
+    @POST("system/multimedia/updateDeviceMessageStatus")
     Flowable<BaseBean> upState(@Query("devicemac") String screenIP);
 
     /**

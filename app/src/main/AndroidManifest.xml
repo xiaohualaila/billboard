@@ -72,11 +72,11 @@
         <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="SingleTask" />
+            android:launchMode="singleTask" />
         <activity
             android:name=".ui.OpenCVCameraActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="SingleTask"/>
+            android:launchMode="singleTask"/>
 
         <service android:name=".service.GPIOService" />
         <receiver android:name=".receiver.SelfOpeningReceiver"

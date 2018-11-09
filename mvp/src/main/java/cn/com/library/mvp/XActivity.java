@@ -35,20 +35,18 @@ public abstract class XActivity<P extends IPresent> extends RxAppCompatActivity 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-
-        if (getLayoutId() > 0) {
-            setContentView(getLayoutId());
-            bindUI(null);
-            bindEvent();
-        }
         //全屏
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
         getWindow().setAttributes(params);
+        if (getLayoutId() > 0) {
+            setContentView(getLayoutId());
+            bindUI(null);
+            bindEvent();
+        }
         initData(savedInstanceState);
-
     }
 
     @Override
