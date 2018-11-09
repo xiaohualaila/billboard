@@ -57,6 +57,7 @@ public class GPIOService extends Service {
 
     String  strResult_5="";
     private SerialHelper serialHelper;
+    private SerialHelper serialHelperLight;
     String tell;
     String tel2;
 
@@ -87,10 +88,18 @@ public class GPIOService extends Service {
         serialHelper.setPort("/dev/ttyS3");
         serialHelper.setBaudRate(9600);
 
+        serialHelperLight = new SerialHelper() {
+            @Override
+            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+            }
+        };
+        serialHelperLight.setPort("/dev/ttyXRM0");
+        serialHelperLight.setBaudRate(9600);
         try {
             serialHelper.close();
             serialHelper.open();
-
+            serialHelperLight.close();
+            serialHelperLight.open();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,7 +111,8 @@ public class GPIOService extends Service {
     private void stopCall() {
         BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
         isCalling = false;
-        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
+//        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
+        sendHex("0xF1");
     }
 
     Runnable task = () -> {
@@ -120,8 +130,6 @@ public class GPIOService extends Service {
                             sendTest("ATH\r\n"); //挂断电话
                             stopCall();
                        }
-                   }else {
-                       executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警闪灯
                    }
                  gpioNum = 6;
              }else if(gpioNum == 6){
@@ -136,6 +144,7 @@ public class GPIOService extends Service {
                                  send_type = 1;
                                  BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
+                                 sendHex("0x01");
                              }
                          }
                      }
@@ -152,6 +161,7 @@ public class GPIOService extends Service {
                              send_type = 2;
                              BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;
+                             sendHex("0x01");
                          }
                      }
                  }
@@ -180,6 +190,17 @@ public class GPIOService extends Service {
             Log.i("sss","串口都没打开！");
         }
     }
+
+    //发送Hex
+    public void sendHex(String text){
+        if(serialHelperLight.isOpen()){
+            serialHelperLight.sendHex(text);
+        }else {
+            Log.i("sss","串口都没打开！");
+        }
+    }
+
+
 
     private String executer(String command) {
 

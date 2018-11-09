@@ -1,18 +1,17 @@
 package cn.com.billboard.present;
 
 
-import android.util.Log;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.ui.TwoScreenActivity;
+import cn.com.billboard.ui.TwoScreenActivity2;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
@@ -27,7 +26,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 
-public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
+public class TwoScreenPresent2 extends XPresent<TwoScreenActivity2> {
 
     /**
      * 回调页面展示数据、启动及时服务、上报状态
@@ -36,6 +35,8 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         @Override
         public void onMainChangeUI() {
             getV().showData();
+            GPIOService.getInstance().startTimer();
+          //  updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
         }
 
         @Override
@@ -64,8 +65,9 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
+                            } else {
+                                GPIOService.getInstance().startTimer();
                             }
-                            GPIOService.getInstance().startTimer();
                             getV().showError(error);
                         }
 
@@ -73,15 +75,15 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
                                 dealData(model.getMessageBody());
-                                updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
                             } else {
                                 if (isRefresh) {
                                         callBack.onMainChangeUI();
                                         callBack.onSubChangeUI();
                                         getV().toastL(model.getDescribe());
+                                } else {
+                                        GPIOService.getInstance().startTimer();
                                 }
                             }
-                            GPIOService.getInstance().startTimer();
                         }
                     });
     }
@@ -123,6 +125,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                   for(int i=0;i<halfdowndisplayBeanList.size();i++){
                       lists_pic_small_dowm.add(halfdowndisplayBeanList.get(i).getUrl());
                   }
+             //     Log.i("sss","下屏小图片===" + new Gson().toJson(lists_pic_small_dowm));
               }
           }
 
@@ -134,6 +137,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                    for(int i=0;i<downdisplayBean.size();i++){
                        lists_pic_big_dowm.add(downdisplayBean.get(i).getUrl());
                    }
+              //     Log.i("sss","下屏大图片===" + new Gson().toJson(lists_pic_big_dowm));
                }
            }
 
@@ -145,6 +149,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                   for(int i=0;i<updisplayBean.size();i++){
                       lists_pic_up.add(updisplayBean.get(i).getUrl());
                   }
+               //   Log.i("sss","上屏图片===" + new Gson().toJson(lists_pic_up));
               }
           }
 
@@ -213,6 +218,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         builder.addFormDataPart("file", file.getName(), requestBody);
+//        Log.i("sss",macAddress);
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,3,builder.build().parts())
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())

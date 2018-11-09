@@ -6,10 +6,10 @@ import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
+import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OneScreenPresent;
-import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import static cn.com.billboard.net.UserInfoKey.PIC_BIG_DOWM;
@@ -47,7 +47,7 @@ public class DownloadFileUtil {
      * @param callBack 回调
      */
     public void downMainLoadPicture(Context context, List<String> lists_pic_small_dowm, List<String> lists_pic_big_dowm,
-          List<String> lists_pic_up, List<String> lists_video,TwoScreenPresent.CallBack callBack) {
+          List<String> lists_pic_up, List<String> lists_video,CallBack callBack) {
         images_small  = FileUtil.getCommonFileNames(lists_pic_small_dowm, PIC_SMALL_DOWN);
         images_big  = FileUtil.getCommonFileNames(lists_pic_big_dowm, PIC_BIG_DOWM);
         images_up  = FileUtil.getCommonFileNames(lists_pic_up, PIC_UP);
@@ -84,7 +84,7 @@ public class DownloadFileUtil {
      * @param callBack
      * @param
      */
-    public void downMainFilePic( List<String> images,TwoScreenPresent.CallBack  callBack,String url_type,String screen_name){
+    public void downMainFilePic( List<String> images,CallBack  callBack,String url_type,String screen_name){
 
         DownloadManager.getInstance().download(images.get(index),url_type, new DownLoadObserver() {
             @Override
@@ -138,7 +138,7 @@ public class DownloadFileUtil {
      * @param voides
      * @param callBack
      */
-    public void downMainFileVideo(List<String> voides,TwoScreenPresent.CallBack  callBack,String url_type){
+    public void downMainFileVideo(List<String> voides,CallBack  callBack,String url_type){
         if(voides.size()>0){
             DownloadManager.getInstance().download(voides.get(index), url_type, new DownLoadObserver() {
                 @Override
@@ -180,7 +180,7 @@ public class DownloadFileUtil {
      * @param context
      * @param callBack 回调
      */
-    public void downSubLoadPicture(Context context, List<String> images_url, List<String> videos_url, TwoScreenPresent.CallBack callBack) {
+    public void downSubLoadPicture(Context context, List<String> images_url, List<String> videos_url, CallBack callBack) {
 
         List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_SUB_PICTURE);
         List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_SUB_VIDEO);
@@ -237,7 +237,7 @@ public class DownloadFileUtil {
      * @param videos   视频下载url
      * @param callBack 回调
      */
-    public void downSubLoadVideo(Context context, List<String> videos, TwoScreenPresent.CallBack callBack) {
+    public void downSubLoadVideo(Context context, List<String> videos, CallBack callBack) {
         List<String> files = new ArrayList<>();
         for (String url : videos) {
             DownloadManager.getInstance().download(url, UserInfoKey.FILE_SUB_VIDEO, new DownLoadObserver() {
