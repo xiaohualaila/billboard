@@ -2,6 +2,7 @@ package cn.com.billboard.present;
 
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
@@ -217,11 +218,26 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
     /**
      * 上传打电话人员的视频
      */
-    public void uploadVideo(String macAddress,int phone, File file) {
+    public void uploadAlarmInfo(String macAddress,int phone) {
+
+        String video_path = (String) AppSharePreferenceMgr.get(getV(), "videoFile", "");
+        String pic_path = (String) AppSharePreferenceMgr.get(getV(), "picFile", "");
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        builder.addFormDataPart("file", file.getName(), requestBody);
-        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,3,builder.build().parts())
+        if(!TextUtils.isEmpty(video_path)){
+            File v_file =new File(video_path);
+            if(v_file.exists()){
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
+                builder.addFormDataPart("file", v_file.getName(), requestBody);
+            }
+        }
+        if(!TextUtils.isEmpty(pic_path)){
+            File p_file =new File(pic_path);
+            if (p_file.exists()){
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
+                builder.addFormDataPart("file", p_file.getName(), requestBody);
+            }
+        }
+        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone," ",builder.build().parts())
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -230,6 +246,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     protected void onFail(NetError error) {
                         XLog.e("状态上报失败");
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                     }
 
                     @Override
@@ -240,18 +257,17 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                             XLog.e("状态上报失败");
                         }
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                     }
                 });
     }
 
     /**
-     * 上传报警人脸图片
+     * 上传报警
      */
-    public void uploadFacePic(String macAddress, int phone, File file) {
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-        builder.addFormDataPart("file", file.getName(), requestBody);
-        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone,1,builder.build().parts())
+    public void uploadAlarm(String macAddress) {
+
+        BillboardApi.getDataService().uploadAlarm(macAddress)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -259,7 +275,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     @Override
                     protected void onFail(NetError error) {
                         XLog.e("状态上报失败");
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+
                     }
 
                     @Override
@@ -269,21 +285,11 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         } else {
                             XLog.e("状态上报失败");
                         }
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                        getV().getAlarmId("");//返回报警ID
                     }
                 });
     }
 
-//    /**
-//     * 回调
-//     */
-//    public interface CallBack {
-//
-//        void onMainChangeUI();//主屏回调
-//
-//        void onSubChangeUI();//副屏回调
-//
-//        void onErrorChangeUI(String error);//下载失败无法下载
-//    }
+
 
 }

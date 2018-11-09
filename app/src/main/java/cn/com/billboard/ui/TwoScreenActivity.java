@@ -136,11 +136,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 }
         );
 
+        /**
+         * 报警
+         */
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if (model.isCalling) {
                         phoneType = model.phoneType;
-                        RecordvideoActivity.launch(this, mac, model.phoneType);
+                        getP().uploadAlarm(mac);
                     }
                 }
         );
@@ -162,6 +165,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         startService(new Intent(context, GPIOService.class));
     }
 
+    public void getAlarmId(String s) {
+        RecordvideoActivity.launch(this, mac,phoneType);
+    }
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -173,20 +180,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             pic_banner.setVisibility(View.VISIBLE);
         }
 
-        String video_path = (String) AppSharePreferenceMgr.get(this, "videoFile", "");
-        String pic_path = (String) AppSharePreferenceMgr.get(this, "picFile", "");
-        if(!TextUtils.isEmpty(video_path)){
-            File file = new File(video_path);
-            if (file.exists()) {
-                getP().uploadVideo(mac, phoneType, file);
-            }
-        }
-        if(!TextUtils.isEmpty(pic_path)){
-            File file = new File(pic_path);
-            if (file.exists()) {
-                getP().uploadFacePic(mac, phoneType, file);
-            }
-        }
+        /**
+         * 上传报警信息
+         */
+        getP().uploadAlarmInfo(mac, phoneType);
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -587,6 +584,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             }
         }
     }
+
 
 
 }

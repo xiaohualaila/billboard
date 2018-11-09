@@ -49,7 +49,7 @@ public interface BillBoardService {
 
     /**
      * 上传报警信息
-     *type 1图片 2文字 3视频，telkey 1 消防 2监督
+     * telkey 1 消防 2监督
      * @param
      */
     @POST("system/alarm/saveAlarmDeviceRecord")
@@ -57,8 +57,16 @@ public interface BillBoardService {
     Flowable<BaseBean> uploadAlarmInfo(
             @Query("devicemac") String macAddress,
             @Query("telkey") int phone,
-            @Query("type") int type,
+            @Query("") String id,
             @Part List<MultipartBody.Part> file
     );
 
+    /**
+     * 上传报警信息
+     * @param
+     */
+    @POST("system/alarm/saveAlarmDeviceRecord")
+    Flowable<BaseBean> uploadAlarm(
+            @Query("devicemac") String macAddress
+    );
 }
