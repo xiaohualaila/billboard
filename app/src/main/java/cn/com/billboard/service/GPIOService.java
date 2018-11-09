@@ -7,10 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -18,6 +15,7 @@ import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.ChangeTool;
+import cn.com.billboard.util.GpioUtill;
 import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
@@ -65,8 +63,8 @@ public class GPIOService extends Service {
     public void onCreate() {
         super.onCreate();
         init();
-        executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
-        isScanPhone = executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
+        GpioUtill.executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
+        isScanPhone = GpioUtill.executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
         thread = new Thread(task);
         thread.start();
     }
@@ -93,6 +91,7 @@ public class GPIOService extends Service {
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
             }
         };
+        //控制警灯
         serialHelperLight.setPort("/dev/ttyXRM0");
         serialHelperLight.setBaudRate(9600);
         try {
@@ -111,7 +110,6 @@ public class GPIOService extends Service {
     private void stopCall() {
         BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
         isCalling = false;
-//        executer("busybox echo " + 0 + " > " + strCmd + 2 + "/data");//报警灯灭
         sendHex("0xF1");
     }
 
@@ -123,8 +121,7 @@ public class GPIOService extends Service {
             try {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
-                 strResult_5 = executer( "cat " + strCmd + gpioNum + "/data");
-              //   Log.i("sss","strResult_5" + strResult_5);
+                 strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                    if(strResult_5.equals("0")){
                        if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
@@ -135,7 +132,7 @@ public class GPIOService extends Service {
              }else if(gpioNum == 6){
                  if(!isCalling){
                      //消防
-                     strResult = executer( "cat " + strCmd + gpioNum + "/data");
+                     strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  //tell = (String) AppSharePreferenceMgr.get(this,"tell","");
@@ -152,7 +149,7 @@ public class GPIOService extends Service {
              }else {
                  //监督
                  if(!isCalling){
-                     strResult = executer( "cat " + strCmd + gpioNum + "/data");
+                     strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
 //                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
@@ -202,41 +199,6 @@ public class GPIOService extends Service {
 
 
 
-    private String executer(String command) {
-
-        StringBuffer output = new StringBuffer();
-        Process process = null;
-        DataOutputStream os = null;
-        try {
-            process = Runtime.getRuntime().exec("su");
-            os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(command + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            process.waitFor();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String line = "";
-            while ((line = reader.readLine())!= null) {
-                output.append(line + "\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (os != null)
-                    os.close();
-                process.destroy();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (output.toString().equals(""))
-        {
-            return "";
-        }
-        String response = output.toString().trim().substring(0, output.length() - 1);
-        return response;
-    }
 
     /**
      * 10分钟请求一次服务器更新数据
@@ -272,7 +234,7 @@ public class GPIOService extends Service {
     public void onDestroy() {
         super.onDestroy();
         isAuto = false;
-        executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
+        GpioUtill.executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
         if(serialHelper.isOpen()){
             serialHelper.close();
         }

@@ -47,7 +47,7 @@ public class DownloadFileUtil {
      * @param callBack 回调
      */
     public void downMainLoadPicture(Context context, List<String> lists_pic_small_dowm, List<String> lists_pic_big_dowm,
-          List<String> lists_pic_up, List<String> lists_video,CallBack callBack) {
+          List<String> lists_pic_up, List<String> lists_video,CallBack callBack,boolean isRefresh) {
         images_small  = FileUtil.getCommonFileNames(lists_pic_small_dowm, PIC_SMALL_DOWN);
         images_big  = FileUtil.getCommonFileNames(lists_pic_big_dowm, PIC_BIG_DOWM);
         images_up  = FileUtil.getCommonFileNames(lists_pic_up, PIC_UP);
@@ -73,8 +73,13 @@ public class DownloadFileUtil {
             downMainFileVideo(videos, callBack,UserInfoKey.VIDEO);
             return;
         }else {
-            callBack.onMainChangeUI();
-            callBack.onSubChangeUI();
+            if(isRefresh){
+                callBack.onMainChangeUI();
+                callBack.onSubChangeUI();
+            }else {
+                callBack.onMainUpdateUI();
+            }
+
         }
     }
 

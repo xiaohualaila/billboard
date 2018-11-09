@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -67,8 +68,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     BaseViewPager banner;
     @BindView(R.id.pic_banner)
     BaseViewPager pic_banner;
-    @BindView(R.id.video_img)
-    ImageView videoImg;
     @BindView(R.id.rl_pro)
     RelativeLayout rl_pro;
 
@@ -80,7 +79,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     TextView loading_num;
     @BindView(R.id.loading_pro)
     TextView loading_pro;
-    private int type = 0, videoIndex = 0;
+    private int videoIndex = 0;
 
     private List<String> images_small;
     private List<String> images_big;
@@ -166,7 +165,14 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     @Override
     protected void onRestart() {
         super.onRestart();
-        showData();
+        if (videos.size()>0){
+            playVideo();
+        }
+        if(images_small.size()>0){
+            pic_banner.startScroll();
+            pic_banner.setVisibility(View.VISIBLE);
+        }
+
         String video_path = (String) AppSharePreferenceMgr.get(this, "videoFile", "");
         String pic_path = (String) AppSharePreferenceMgr.get(this, "picFile", "");
         if(!TextUtils.isEmpty(video_path)){
@@ -229,23 +235,36 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
     /**展示主屏数据*/
     public void showData() {
-        mHandler.removeCallbacks(runnable);
         rl_pro.setVisibility(View.GONE);
+        mHandler.removeCallbacks(runnable);
         videos =  FileUtil.getFilePath(UserInfoKey.VIDEO);
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
 
-        if (images_big.size()>0){
+        if (videos.size()>0){
             playVideo();
         }
         if(images_small.size()>0){
             playSmallBanner();
-        }else {
-            videoImg.setVisibility(View.VISIBLE);
-            pic_banner.setVisibility(View.GONE);
         }
     }
 
+    /**展示主屏更新数据*/
+    public void showMainUpdateData() {
+        videos =  FileUtil.getFilePath(UserInfoKey.VIDEO);
+        images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
+        images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
+        if(images_small.size()>0){
+            pic_banner.setAdapter(new BannersAdapter(initBanner(images_small)));
+        }
+        if(images_big.size()>0){
+            banner.setAdapter(new BannersAdapter(initBanner(images_big)));
+        }
+    }
+
+    /**
+     * 显示下载app对话框
+     */
     public void showDownFile(){
         isUPdate = true;
         rl_pro.setVisibility(View.VISIBLE);
@@ -254,6 +273,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     }
 
     /**展示副屏数据*/
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void showSubData(){
         XLog.e("屏幕数量===" + displays.length);
         if (displays != null && displays.length > 1) {
@@ -311,22 +331,16 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         banner.stopScroll();
         banner.setVisibility(View.GONE);
         playVideo();
-        if(images_small.size()>0){
+        if(images_small.size()>0) {
             pic_banner.startScroll();
-            videoImg.setVisibility(View.GONE);
-            pic_banner.setVisibility(View.VISIBLE);
-        }else {
-            videoImg.setVisibility(View.VISIBLE);
-            pic_banner.setVisibility(View.GONE);
         }
-
     }
 
 
     /**播放图片轮播,小图片轮播*/
     private void playSmallBanner(){
+        Log.i("ssss","playSmallBanner  " );
         pic_banner.setVisibility(View.VISIBLE);
-        videoImg.setVisibility(View.GONE);
         pic_banner.setAdapter(new BannersAdapter(initBanner(images_small)));
         pic_banner.setIsOutScroll(true);
         pic_banner.startScroll();
@@ -338,7 +352,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("ssss","position  " +position );
+                Log.i("ssss","小图片position  " +position );
 
                 if(position == images_small.size()-1){
                     isSmallPicFis = true;
@@ -573,5 +587,6 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             }
         }
     }
+
 
 }

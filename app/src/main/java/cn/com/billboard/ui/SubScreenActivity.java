@@ -10,6 +10,7 @@ import android.graphics.Matrix;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +42,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class SubScreenActivity extends Presentation {
 
     @BindView(R.id.sub_tip)
@@ -58,6 +60,7 @@ public class SubScreenActivity extends Presentation {
 
     private List<String> videos;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public SubScreenActivity(Context outerContext, Display display) {
         super(outerContext, display);
     }
@@ -89,6 +92,28 @@ public class SubScreenActivity extends Presentation {
             ToastManager.showShort(App.getContext(), "暂无数据");
         }
     }
+
+    /**展示副屏数据*/
+//    public void showSubUpdateData() {
+//        images = FileUtil.getFilePath(UserInfoKey.PIC_UP);
+//        videos = FileUtil.getFilePath(UserInfoKey.VIDEO_UP);
+//
+//        XLog.e("副屏图片===" + images);
+//        XLog.e("副屏视频===" + videos);
+//        if (images.size() > 0 && videos.size() > 0) {
+//            type = 3;
+//            playVideo();
+//        } else if (images.size() > 0) {
+//            type = 1;
+//            banner.setAdapter(new BannersAdapter(initBanner(images)));
+//        } else if (videos.size() > 0) {
+//            type = 2;
+//            playVideo();
+//        } else {
+//            subTip.setVisibility(View.VISIBLE);
+//            ToastManager.showShort(App.getContext(), "暂无数据");
+//        }
+//    }
     /**播放图片轮播*/
     private void playBanner(){
         subTip.setVisibility(View.GONE);

@@ -90,13 +90,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
-                        File file = new File(fileName);
-                        if(file.exists()){
-                            AppSharePreferenceMgr.put(this,"picFile",path);
-                        }else {
-                            AppSharePreferenceMgr.put(this,"picFile","");
-                        }
-                        finish();
+                        saveFileFinishActivity();
                     }
                 }
         );
@@ -118,18 +112,22 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         public void run() {
             count++;
             if(count == 180){
-                File file = new File(fileName);
-                if(file.exists()){
-                    AppSharePreferenceMgr.put(OpenCVCameraActivity.this,"picFile",fileName);
-                }else {
-                    AppSharePreferenceMgr.put(OpenCVCameraActivity.this,"picFile","");
-                }
-                finish();
+                saveFileFinishActivity();
                 return;
             }
             handler.postDelayed(this, 1000);
         }
     };
+
+    private void saveFileFinishActivity(){
+        File file = new File(fileName);
+        if(file.exists()){
+            AppSharePreferenceMgr.put(this,"picFile",fileName);
+        }else {
+            AppSharePreferenceMgr.put(this,"picFile","");
+        }
+        finish();
+    }
 
     @Override
     public void onResume() {

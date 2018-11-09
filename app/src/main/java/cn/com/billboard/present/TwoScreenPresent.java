@@ -1,6 +1,7 @@
 package cn.com.billboard.present;
 
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import java.io.File;
@@ -39,9 +40,16 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         }
 
         @Override
+        public void onMainUpdateUI() {
+            getV().showMainUpdateData();
+        }
+
+        @SuppressLint("NewApi")
+        @Override
         public void onSubChangeUI() {
             getV().showSubData();
         }
+
 
         @Override
         public void onErrorChangeUI(String error) {
@@ -64,6 +72,9 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
+                            }else {
+                                callBack.onMainUpdateUI();
+                                callBack.onSubChangeUI();
                             }
                             GPIOService.getInstance().startTimer();
                             getV().showError(error);
@@ -72,7 +83,8 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                         @Override
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
-                                dealData(model.getMessageBody());
+
+                                dealData(model.getMessageBody(),isRefresh);
                                 updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
                             } else {
                                 if (isRefresh) {
@@ -86,8 +98,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     });
     }
 
-    private void dealData(TwoScreenModel model){
-        if(model!=null){
+    private void dealData(TwoScreenModel model,boolean isRefresh){
            String s_version= model.getBuild();
            if(s_version != null){
                int v_no = APKVersionCodeUtils.getVersionCode(getV());
@@ -97,20 +108,17 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                    getV().toUpdateVer(model.getApkurl(),s_version);
                }else {
                    getV().showDownFile();
-                   downloadAndSaveData(model);
+                   downloadAndSaveData(model,isRefresh);
                }
-           }else {
-               getV().showDownFile();
-               downloadAndSaveData(model);
            }
 
-        }
+
     }
 
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(TwoScreenModel model) {
+    private void downloadAndSaveData(TwoScreenModel model,boolean isRefresh) {
         String tell = model.getTel1();
         String tel2 = model.getTel2();
         AppSharePreferenceMgr.put(getV(),"tell",tell);
@@ -160,7 +168,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
               }
           }
 
-        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
+        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack,isRefresh);//下载
     }
 
 

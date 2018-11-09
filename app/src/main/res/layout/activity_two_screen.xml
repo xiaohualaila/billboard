@@ -26,21 +26,20 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/video_img"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:scaleType="fitXY"
-            android:visibility="gone"
-            android:src="@mipmap/test" />
+        <!--<ImageView-->
+            <!--android:id="@+id/video_img"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:scaleType="fitXY"-->
+            <!--android:visibility="gone"-->
+            <!--android:src="@mipmap/test" />-->
 
         <cn.com.billboard.widget.BaseViewPager
             android:id="@+id/pic_banner"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:visibility="gone">
+            android:layout_weight="1">
 
         </cn.com.billboard.widget.BaseViewPager>
 
@@ -58,6 +57,7 @@
         android:id="@+id/rl_pro"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:layout_margin="30dp">
 
         <LinearLayout
