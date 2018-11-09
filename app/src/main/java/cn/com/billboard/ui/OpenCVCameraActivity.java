@@ -187,10 +187,6 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         return Calendar.getInstance().getTimeInMillis();
     }
 
-    public void uploadFinish() {
-           Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-           finish();
-    }
 
     @Override
     public void doThing() {

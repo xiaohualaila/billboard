@@ -111,6 +111,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
     private boolean isPlayVideo = true;
     private boolean isNotPlayedBigPic = true;
+    private String recordid = "";
     @SuppressLint("NewApi")
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -143,7 +144,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                 model -> {
                     if (model.isCalling) {
                         phoneType = model.phoneType;
-                        getP().uploadAlarm(mac);
+                        getP().uploadAlarm(mac,phoneType);
                     }
                 }
         );
@@ -166,6 +167,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     }
 
     public void getAlarmId(String s) {
+        recordid = s;
         RecordvideoActivity.launch(this, mac,phoneType);
     }
 
@@ -183,7 +185,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         /**
          * 上传报警信息
          */
-        getP().uploadAlarmInfo(mac, phoneType);
+        getP().uploadAlarmInfo(mac,recordid);
     }
 
     TimerTask timerTask = new TimerTask(){
@@ -223,12 +225,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         ToastManager.showLong(context, msg);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
     }
-
 
     /**展示主屏数据*/
     public void showData() {

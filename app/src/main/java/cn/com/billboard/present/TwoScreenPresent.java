@@ -214,60 +214,12 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
 //                });
 //    }
 
-
-    /**
-     * 上传打电话人员的视频
-     */
-    public void uploadAlarmInfo(String macAddress,int phone) {
-
-        String video_path = (String) AppSharePreferenceMgr.get(getV(), "videoFile", "");
-        String pic_path = (String) AppSharePreferenceMgr.get(getV(), "picFile", "");
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        if(!TextUtils.isEmpty(video_path)){
-            File v_file =new File(video_path);
-            if(v_file.exists()){
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
-                builder.addFormDataPart("file", v_file.getName(), requestBody);
-            }
-        }
-        if(!TextUtils.isEmpty(pic_path)){
-            File p_file =new File(pic_path);
-            if (p_file.exists()){
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
-                builder.addFormDataPart("file", p_file.getName(), requestBody);
-            }
-        }
-        BillboardApi.getDataService().uploadAlarmInfo(macAddress,phone," ",builder.build().parts())
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
-                    @Override
-                    protected void onFail(NetError error) {
-                        XLog.e("状态上报失败");
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-                    }
-
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            XLog.e("状态上报成功");
-                        } else {
-                            XLog.e("状态上报失败");
-                        }
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-                    }
-                });
-    }
-
     /**
      * 上传报警
      */
-    public void uploadAlarm(String macAddress) {
+    public void uploadAlarm(String macAddress,int telkey) {
 
-        BillboardApi.getDataService().uploadAlarm(macAddress)
+        BillboardApi.getDataService().uploadAlarm(macAddress,telkey)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())
@@ -289,6 +241,55 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     }
                 });
     }
+
+
+    /**
+     * 上传打电话人员的视频
+     */
+    public void uploadAlarmInfo(String macAddress,String recordId) {
+
+        String video_path = (String) AppSharePreferenceMgr.get(getV(), "videoFile", "");
+        String pic_path = (String) AppSharePreferenceMgr.get(getV(), "picFile", "");
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        if(!TextUtils.isEmpty(video_path)){
+            File v_file =new File(video_path);
+            if(v_file.exists()){
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
+                builder.addFormDataPart("video", v_file.getName(), requestBody);
+            }
+        }
+        if(!TextUtils.isEmpty(pic_path)){
+            File p_file =new File(pic_path);
+            if (p_file.exists()){
+                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
+                builder.addFormDataPart("file", p_file.getName(), requestBody);
+            }
+        }
+        BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,builder.build().parts())
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        XLog.e("状态上报失败");
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            XLog.e("状态上报成功");
+                        } else {
+                            XLog.e("状态上报失败");
+                        }
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                    }
+                });
+    }
+
 
 
 

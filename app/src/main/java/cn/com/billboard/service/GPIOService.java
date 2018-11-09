@@ -110,7 +110,7 @@ public class GPIOService extends Service {
     private void stopCall() {
         BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
         isCalling = false;
-        sendHex("0xF1");
+        sendHex("01");
     }
 
     Runnable task = () -> {
@@ -141,7 +141,7 @@ public class GPIOService extends Service {
                                  send_type = 1;
                                  BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
-                                 sendHex("0x01");
+                                 sendHex("f1");
                              }
                          }
                      }
@@ -158,7 +158,7 @@ public class GPIOService extends Service {
                              send_type = 2;
                              BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;
-                             sendHex("0x01");
+                             sendHex("f1");
                          }
                      }
                  }
@@ -198,8 +198,6 @@ public class GPIOService extends Service {
     }
 
 
-
-
     /**
      * 10分钟请求一次服务器更新数据
      */
@@ -236,6 +234,9 @@ public class GPIOService extends Service {
         GpioUtill.executer("busybox echo " + 0 + " > " + strCmd + gpioNum_ + "/data");//关闭sim800
         if(serialHelper.isOpen()){
             serialHelper.close();
+        }
+        if(serialHelperLight.isOpen()){
+            serialHelperLight.close();
         }
     }
 }

@@ -49,24 +49,24 @@ public interface BillBoardService {
 
     /**
      * 上传报警信息
-     * telkey 1 消防 2监督
      * @param
      */
-    @POST("system/alarm/saveAlarmDeviceRecord")
-    @Multipart
-    Flowable<BaseBean> uploadAlarmInfo(
+    @POST("system/alarm/startAlarmOfDevic")
+    Flowable<BaseBean> uploadAlarm(
             @Query("devicemac") String macAddress,
-            @Query("telkey") int phone,
-            @Query("") String id,
-            @Part List<MultipartBody.Part> file
+            @Query("telkey") int phone
     );
 
     /**
      * 上传报警信息
+     * telkey 1 消防 2监督
      * @param
      */
-    @POST("system/alarm/saveAlarmDeviceRecord")
-    Flowable<BaseBean> uploadAlarm(
-            @Query("devicemac") String macAddress
+    @POST("system/alarm/saveAlarmDeviceFileRecord")
+    @Multipart
+    Flowable<BaseBean> uploadAlarmInfo(
+            @Query("devicemac") String macAddress,
+            @Query("recordid") String id,
+            @Part List<MultipartBody.Part> file
     );
 }
