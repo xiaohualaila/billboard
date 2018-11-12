@@ -227,17 +227,18 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                     @Override
                     protected void onFail(NetError error) {
                         XLog.e("状态上报失败");
-
+                        getV().showError(error);
                     }
 
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
                             XLog.e("状态上报成功");
+                            String str = (String) model.getMessageBody();
+                            getV().getAlarmId(str);//返回报警ID
                         } else {
                             XLog.e("状态上报失败");
                         }
-                        getV().getAlarmId("");//返回报警ID
                     }
                 });
     }

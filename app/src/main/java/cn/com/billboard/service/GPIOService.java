@@ -110,7 +110,7 @@ public class GPIOService extends Service {
     private void stopCall() {
         BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
         isCalling = false;
-        sendHex("01");
+        sendHex("f1");
     }
 
     Runnable task = () -> {
@@ -141,7 +141,7 @@ public class GPIOService extends Service {
                                  send_type = 1;
                                  BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                                  isCalling = true;
-                                 sendHex("f1");
+                                 sendHex("01");
                              }
                          }
                      }
@@ -158,7 +158,7 @@ public class GPIOService extends Service {
                              send_type = 2;
                              BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
                              isCalling = true;
-                             sendHex("f1");
+                             sendHex("01");
                          }
                      }
                  }

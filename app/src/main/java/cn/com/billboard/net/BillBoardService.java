@@ -51,7 +51,7 @@ public interface BillBoardService {
      * 上传报警信息
      * @param
      */
-    @POST("system/alarm/startAlarmOfDevic")
+    @POST("system/alarm/startAlarmOfDevice")
     Flowable<BaseBean> uploadAlarm(
             @Query("devicemac") String macAddress,
             @Query("telkey") int phone
