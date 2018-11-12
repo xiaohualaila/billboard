@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -135,8 +138,11 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
-                                 //tell = (String) AppSharePreferenceMgr.get(this,"tell","");
-                                 tell="15109231279";
+                                 tell = (String) AppSharePreferenceMgr.get(this,"tell","");
+                                 if(TextUtils.isEmpty(tel2)){
+                                     BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
+                                     return;
+                                 }
                                  sendTest("ATD"+tell+";\r\n");
                                  send_type = 1;
                                  BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
@@ -152,8 +158,11 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
-//                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
-                             tel2="15109231279";
+                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
+                             if(TextUtils.isEmpty(tel2)){
+                                 BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
+                                 return;
+                             }
                              sendTest("ATD"+tel2+";\r\n");
                              send_type = 2;
                              BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));

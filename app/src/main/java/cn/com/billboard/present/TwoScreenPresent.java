@@ -24,6 +24,7 @@ import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
+import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -252,21 +253,26 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
         String video_path = (String) AppSharePreferenceMgr.get(getV(), "videoFile", "");
         String pic_path = (String) AppSharePreferenceMgr.get(getV(), "picFile", "");
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        RequestBody requestBody = null;
         if(!TextUtils.isEmpty(video_path)){
             File v_file =new File(video_path);
             if(v_file.exists()){
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
+                 requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
                 builder.addFormDataPart("video", v_file.getName(), requestBody);
             }
         }
         if(!TextUtils.isEmpty(pic_path)){
             File p_file =new File(pic_path);
             if (p_file.exists()){
-                RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
-                builder.addFormDataPart("file", p_file.getName(), requestBody);
+              //   requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
+            //    builder.addFormDataPart("pic", p_file.getName(), requestBody);
+                builder.addPart( Headers.of("Content-Disposition", "form-data; name=\"pic\";filename=\"file.jpeg\""),
+                        RequestBody.create(MediaType.parse("image/png"),p_file)).build();
+
             }
         }
-        BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,builder.build().parts())
+        List<MultipartBody.Part> list =  builder.build().parts();
+        BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,list)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
                 .compose(getV().<BaseBean>bindToLifecycle())

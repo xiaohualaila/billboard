@@ -99,25 +99,25 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }else {
             bottom_pic.setImageResource(R.drawable.police);
         }
-        
-        handler.postDelayed(runnable, 1000);
-      
+
+//        handler.postDelayed(runnable, 1000);
+
     }
 
     /**
      * 如果等于3分钟还没挂断电话那就关闭页面
      */
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            count++;
-            if(count == 180){
-                saveFileFinishActivity();
-                return;
-            }
-            handler.postDelayed(this, 1000);
-        }
-    };
+//    private Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            count++;
+//            if(count == 180){
+//                saveFileFinishActivity();
+//                return;
+//            }
+//            handler.postDelayed(this, 1000);
+//        }
+//    };
 
     private void saveFileFinishActivity(){
         File file = new File(fileName);
@@ -164,7 +164,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         } else {
             faceSerialCount = 0;
         }
-        if (faceSerialCount > 6) {
+        if (faceSerialCount > 4) {
             if(!isPhoteTakingPic){
                 File folder = new File(path);
                 if (!folder.exists()){
@@ -172,7 +172,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
                 }
                 fileName = path+ File.separator + getTime() + ".jpeg";
                 openCvCameraView.takePhoto(fileName);
-              //  Log.i("sss","拍摄照片啦");
+                Log.i("sss","拍摄照片啦");
             }
             faceSerialCount = -5000;
         }

@@ -36,6 +36,7 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
+import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.model.ProgressModel;
@@ -118,11 +119,10 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         height = AppPhoneMgr.getInstance().getPhoneHeight(context);
         displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
-
         rl_pro.setVisibility(View.VISIBLE);
-
         images_big = new ArrayList<>();
         images_small = new ArrayList<>();
+        getP().getScreenData(true, mac,ipAddress);
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
 
@@ -148,6 +148,11 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
                     }
                 }
         );
+        BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                model -> {
+                    ToastManager.showShort(context, model.message);
+                }
+        );
 
         /**
          * 老板子没有喂狗api
@@ -162,13 +167,15 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             new Timer().schedule(timerTask,0,5000);
         }
         Log.i("mac",mac);
-        getP().getScreenData(true, mac,ipAddress);
+
         startService(new Intent(context, GPIOService.class));
     }
 
     public void getAlarmId(String s) {
-        recordid = s;
-        RecordvideoActivity.launch(this, mac,phoneType);
+        if(!TextUtils.isEmpty(s)){
+            recordid = s;
+            RecordvideoActivity.launch(this, mac,phoneType);
+        }
     }
 
     @Override
@@ -183,7 +190,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
         }
 
         /**
-         * 上传报警信息
+         * 上传报警信息图片，视频
          */
         getP().uploadAlarmInfo(mac,recordid);
     }
@@ -349,7 +356,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("ssss","小图片position  " +position );
+               // Log.i("ssss","小图片position  " +position );
 
                 if(position == images_small.size()-1){
                     isSmallPicFis = true;
