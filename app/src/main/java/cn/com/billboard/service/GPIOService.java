@@ -13,9 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.EventModel;
-import cn.com.billboard.model.EventRecordVideoModel;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
@@ -111,7 +111,7 @@ public class GPIOService extends Service {
      * 停止打电话
      */
     private void stopCall() {
-        BusProvider.getBus().post(new EventRecordVideoModel(false, 0));
+        BusProvider.getBus().post(new AlarmRecordModel(false, 0));
         isCalling = false;
         sendHex("f1");
     }
@@ -125,6 +125,7 @@ public class GPIOService extends Service {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
+                 Log.i("sss","+++++++++++++++"+strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
@@ -141,13 +142,13 @@ public class GPIOService extends Service {
                                  tell = (String) AppSharePreferenceMgr.get(this,"tell","");
                                  if(TextUtils.isEmpty(tel2)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-                                     return;
+                                 }else {
+                                     sendTest("ATD"+tell+";\r\n");
+                                     send_type = 1;
+                                     BusProvider.getBus().post(new AlarmRecordModel(true, send_type));
+                                     isCalling = true;
+                                     sendHex("01");
                                  }
-                                 sendTest("ATD"+tell+";\r\n");
-                                 send_type = 1;
-                                 BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
-                                 isCalling = true;
-                                 sendHex("01");
                              }
                          }
                      }
@@ -161,13 +162,15 @@ public class GPIOService extends Service {
                              tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-                                 return;
+//                                 break;
+                             }else {
+                                 sendTest("ATD"+tel2+";\r\n");
+                                 send_type = 2;
+                                 BusProvider.getBus().post(new AlarmRecordModel(true, send_type));
+                                 isCalling = true;
+                                 sendHex("01");
                              }
-                             sendTest("ATD"+tel2+";\r\n");
-                             send_type = 2;
-                             BusProvider.getBus().post(new EventRecordVideoModel(true, send_type));
-                             isCalling = true;
-                             sendHex("01");
+
                          }
                      }
                  }

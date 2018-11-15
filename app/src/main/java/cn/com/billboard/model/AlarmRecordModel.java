@@ -2,13 +2,13 @@ package cn.com.billboard.model;
 
 import cn.com.library.event.IBus;
 
-public class EventRecordVideoModel implements IBus.IEvent{
+public class AlarmRecordModel implements IBus.IEvent{
 
     public boolean isCalling;
 
     public int phoneType;
 
-    public EventRecordVideoModel(boolean isCalling, int phoneType) {
+    public AlarmRecordModel(boolean isCalling, int phoneType) {
         this.isCalling = isCalling;
         this.phoneType = phoneType;
     }

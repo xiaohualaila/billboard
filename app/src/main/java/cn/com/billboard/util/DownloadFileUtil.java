@@ -1,6 +1,8 @@
 package cn.com.billboard.util;
 
 import android.content.Context;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
@@ -96,7 +98,7 @@ public class DownloadFileUtil {
             public void onNext(DownloadInfo value) {
                 super.onNext(value);
                 BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
-             //   Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
+                Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
             }
 
             @Override
@@ -159,7 +161,7 @@ public class DownloadFileUtil {
                         index ++;
                         if (index == voides.size()) {//判断视频是否下载完成
                //             XLog.e("主屏视频下载完成！");
-                            callBack.onMainChangeUI();
+                            callBack.onMainUpdateUI();
                             callBack.onSubChangeUI();
                         }else {
                             downMainFileVideo(voides,callBack,url_type);
@@ -171,10 +173,12 @@ public class DownloadFileUtil {
                 public void onError(Throwable e) {
                     super.onError(e);
                     callBack.onErrorChangeUI(e.getMessage());
+                    callBack.onMainUpdateUI();
+                    callBack.onSubChangeUI();
                 }
             });
         }else {
-            callBack.onMainChangeUI();
+            callBack.onMainUpdateUI();
             callBack.onSubChangeUI();
         }
     }

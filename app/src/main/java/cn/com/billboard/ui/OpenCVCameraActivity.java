@@ -26,12 +26,11 @@ import java.util.Calendar;
 
 import butterknife.BindView;
 import cn.com.billboard.R;
-import cn.com.billboard.model.EventRecordVideoModel;
+import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.library.event.BusProvider;
-import cn.com.library.kit.Kits;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -87,7 +86,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         phoneType = intent.getIntExtra(PHONETYPE,0);
         mac = intent.getStringExtra(MAC);
         path = UserInfoKey.BILLBOARD_PICTURE_FACE_PATH;
-        BusProvider.getBus().toFlowable(EventRecordVideoModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         saveFileFinishActivity();

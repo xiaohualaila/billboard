@@ -1,43 +1,36 @@
-package cn.com.billboard.ui;
+package cn.com.billboard.ui.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.annotation.SuppressLint;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.iceteck.silicompressorr.VideoCompress;//视频压缩
 import java.io.File;
-
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.RecordVideoPresent;
+import cn.com.billboard.ui.FragmentActivity;
 import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.MyUtil;
 import cn.com.library.event.BusProvider;
-import cn.com.library.mvp.XActivity;
-import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-/**
- * 录制视频的页面
- */
-public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implements SurfaceHolder.Callback {
+public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callback {
+    private static final String TAG = "FragmentVideo";
 
-    private static final String TAG = "RecordvideoActivity";
-
-     @BindView(R.id.surfaceview)
-     SurfaceView mSurfaceview;
+    @BindView(R.id.surfaceview)
+    SurfaceView mSurfaceview;
     @BindView(R.id.bottom_pic)
     ImageView bottom_pic;
     private boolean mStartedFlg = false;//是否正在录像
@@ -50,26 +43,21 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     private int text = 0;
     private Handler handler = new Handler();
 
-    private String mac="";
     private int phoneType;
-    public static final String MAC = "mac";
-    public static final String PHONETYPE = "phoneType";
     private boolean isClose = false;//是否是因为挂断电话停止的视频
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    protected int getLayoutId() {
+        return R.layout.fragment_record_video;
+    }
 
+    @Override
+    protected void init() {
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
 
-        Intent intent = getIntent();
-        phoneType = intent.getIntExtra(PHONETYPE,1);//1消防 2监督
-        mac = intent.getStringExtra(MAC);
-        mRecorder = new MediaRecorder();
-        handler.postDelayed(() -> {
-            startRecord();
-            handler.postDelayed(runnable, 1000);
-        },500);
+        phoneType = 1;//1消防 2监督
+
 
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
@@ -86,19 +74,44 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         }
     }
 
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            text++;
-            if(text==11){
-                stopRecordVideo();
-                return;
+    @Override
+    public void onStart() {
+        super.onStart();
+        mRecorder = new MediaRecorder();
+        handler.postDelayed(() -> {
+            startRecord();
+            handler.postDelayed(runnable, 1000);
+        },500);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    /**
+     * 当 Fragment 调用 hide() 、 show() 时回调
+     * @param hidden
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if(!hidden){
+            if(phoneType==1){
+                bottom_pic.setImageResource(R.drawable.police110);
+            }else {
+                bottom_pic.setImageResource(R.drawable.police);
             }
-            handler.postDelayed(this, 1000);
         }
-    };
+        super.onHiddenChanged(hidden);
+    }
 
+    public FragmentVideo() {
+    }
 
+    @SuppressLint("ValidFragment")
+    public FragmentVideo(int phoneType) {
+        this.phoneType = phoneType;
+    }
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -131,6 +144,18 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         }
     }
 
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            text++;
+            if(text==11){
+                stopRecordVideo();
+                return;
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
+
     /**
      * 录制视频
      */
@@ -138,8 +163,8 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         if (mRecorder == null) {
             mRecorder = new MediaRecorder();
         }
-         mRecorder.reset();
-         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+        mRecorder.reset();
+        camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
         if (camera != null) {
             camera.setDisplayOrientation(0);
             camera.unlock();
@@ -166,19 +191,20 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             mRecorder.setMaxDuration(30 * 1000);
             mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());//设置使用哪个SurfaceView来显示视频预览。
 
-                File dir = new File(UserInfoKey.RECORD_VIDEO_PATH);
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-                path = dir + "/" + MyUtil.getDate() + ".mp4";
-                mRecorder.setOutputFile(path);//设置录制的音频文件的保存位置。
-                mRecorder.prepare();
-                mRecorder.start();
-                mStartedFlg = true;
+            File dir = new File(UserInfoKey.RECORD_VIDEO_PATH);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            path = dir + "/" + MyUtil.getDate() + ".mp4";
+            mRecorder.setOutputFile(path);//设置录制的音频文件的保存位置。
+            mRecorder.prepare();
+            mRecorder.start();
+            mStartedFlg = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private void stopRecordVideo(){
         //stop
@@ -198,15 +224,17 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                 }
                 File file = new File(path);
                 if (file.exists()) {
-                    AppSharePreferenceMgr.put(this,"videoFile",path);
+                    AppSharePreferenceMgr.put(getActivity(),"videoFile",path);
                 }else {
-                    AppSharePreferenceMgr.put(this,"videoFile","");
+                    AppSharePreferenceMgr.put(getActivity(),"videoFile","");
                 }
+                FragmentActivity activity = (FragmentActivity ) getActivity();
                 if(!isClose){
-                    OpenCVCameraActivity.launch(this,mac,phoneType);
+                    activity.toFragemntMain();
+                }else {
+                   Log.i("sss","sssssssssssssssssssss");
+                    activity.toFragemntMain();
                 }
-                    finish();
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -215,82 +243,8 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         mStartedFlg = false;
     }
 
-    private long startTime;
-    private long endTime;
-    private String path2;
-
-    /**
-     * 视频压缩
-     */
-    private void compressVideo() {
-        path2 = MyUtil.getSDPath();
-        if (path2 != null) {
-            File dir = new File(path2 + "/recordtest");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            path2 = dir + "/" + MyUtil.getDate() + "ys.mp4";
-
-            VideoCompress.compressVideoLow(path, path2, new VideoCompress.CompressListener() {
-                @Override
-                public void onStart() {
-                    startTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "开始时间" + startTime);
-
-                }
-
-                @Override
-                public void onSuccess() {
-                    endTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "结束时间 = " + endTime);
-                    Log.i(TAG, "压缩后大小 = " + getFileSize(path2));
-                    Log.i(TAG, "结束时间 = " + (endTime - startTime)+"ms " +(endTime - startTime)/1000 + "s");
-                }
-
-                @Override
-                public void onFail() {
-                    endTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "失败时间 = " + endTime);
-                }
-
-                @Override
-                public void onProgress(float percent) {
-                    Log.i(TAG, String.valueOf(percent) + "%");
-                }
-
-            });
-        }
-    }
-
-    private String getFileSize(String path) {
-        File f = new File(path);
-        if (!f.exists()) {
-            return "0 MB";
-        } else {
-            long size = f.length();
-            return (size / 1024f) / 1024f + "MB";
-        }
-    }
-
-    public static void launch(Activity activity, String mac, int phoneType) {
-        Router.newIntent(activity)
-                .to(RecordvideoActivity.class)
-                .putString(MAC, mac)
-                .putInt(PHONETYPE, phoneType)
-                .launch();
-    }
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.activity_record_video;
-    }
-
-    @Override
-    public RecordVideoPresent newP() {
-        return new RecordVideoPresent();
-    }
 
 }
+
+
+

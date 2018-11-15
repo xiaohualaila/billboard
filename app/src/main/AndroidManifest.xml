@@ -46,11 +46,7 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:icon="@mipmap/ic_launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -77,8 +73,22 @@
             android:name=".ui.OpenCVCameraActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.FragmentActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <service android:name=".service.GPIOService" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <service android:name=".service.GPIOService" >
+
+        </service>
+
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"
