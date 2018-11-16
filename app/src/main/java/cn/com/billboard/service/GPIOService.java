@@ -140,7 +140,7 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  tell = (String) AppSharePreferenceMgr.get(this,"tell","");
-                                 if(TextUtils.isEmpty(tel2)){
+                                 if(TextUtils.isEmpty(tell)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
                                      sendTest("ATD"+tell+";\r\n");
@@ -162,7 +162,6 @@ public class GPIOService extends Service {
                              tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-//                                 break;
                              }else {
                                  sendTest("ATD"+tel2+";\r\n");
                                  send_type = 2;
@@ -170,7 +169,6 @@ public class GPIOService extends Service {
                                  isCalling = true;
                                  sendHex("01");
                              }
-
                          }
                      }
                  }
