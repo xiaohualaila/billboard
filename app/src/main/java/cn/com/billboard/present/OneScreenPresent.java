@@ -9,7 +9,7 @@ import cn.com.billboard.model.ScreenDataModel;
 import cn.com.billboard.model.ScreenShowModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.OneScreenActivity;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadFileUtil;
@@ -30,7 +30,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
         public void onChangeUI() {
             getV().dialog.dismiss();
             getV().showData();
-            GPIOService.getInstance().startTimer();
+            UpdateService.getInstance().startTimer();
             updateState();
         }
 
@@ -55,7 +55,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
 //                        if (isRefresh)
 //                            callBack.onChangeUI();
 //                        else
-//                            GPIOService.getInstance().startTimer();
+//                            UpdateService.getInstance().startTimer();
 //                        getV().showError(error);
 //                    }
 //
@@ -67,7 +67,7 @@ public class OneScreenPresent extends XPresent<OneScreenActivity> {
 //                            if (isRefresh)
 //                                callBack.onChangeUI();
 //                            else
-//                                GPIOService.getInstance().startTimer();
+//                                UpdateService.getInstance().startTimer();
 //                        }
 //                    }
 //                });

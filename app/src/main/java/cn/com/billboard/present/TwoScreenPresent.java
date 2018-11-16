@@ -13,7 +13,7 @@ import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.TwoScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -78,7 +78,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                                 callBack.onMainUpdateUI();
                                 callBack.onSubChangeUI();
                             }
-                            GPIOService.getInstance().startTimer();
+                            UpdateService.getInstance().startTimer();
                             getV().showError(error);
                         }
 
@@ -95,7 +95,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
                                         getV().toastL(model.getDescribe());
                                 }
                             }
-                            GPIOService.getInstance().startTimer();
+                            UpdateService.getInstance().startTimer();
                         }
                     });
     }

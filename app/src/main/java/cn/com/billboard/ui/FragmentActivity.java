@@ -30,6 +30,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentActivityPresent;
 
 import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.fragment.FragmentBigPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -95,6 +96,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
            getP().getScreenData(true, mac,ipAddress);
         }
         startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, UpdateService.class));
         /**
          * 报警
          */
@@ -209,6 +211,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(context, GPIOService.class));
+        stopService(new Intent(context, UpdateService.class));
         String model = Build.MODEL;
         if(model.equals("3280")) {
             smdt.smdtWatchDogEnable((char) 0);
@@ -268,37 +271,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(install);
                 }
-            }
-        }
-    }
-
-    /**请求失败返回*/
-    public void showError(NetError error) {
-        if (error != null) {
-            switch (error.getType()) {
-                case NetError.ParseError:
-                    ToastManager.showShort(context, "数据解析异常");
-                    break;
-
-                case NetError.AuthError:
-                    ToastManager.showShort(context, "身份验证异常");
-                    break;
-
-                case NetError.BusinessError:
-                    ToastManager.showShort(context, "业务异常");
-                    break;
-
-                case NetError.NoConnectError:
-                    ToastManager.showShort(context, "网络无连接");
-                    break;
-
-                case NetError.NoDataError:
-                    ToastManager.showShort(context, "数据为空");
-                    break;
-
-                case NetError.OtherError:
-                    ToastManager.showShort(context, "请求失败");
-                    break;
             }
         }
     }

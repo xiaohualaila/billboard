@@ -140,7 +140,7 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  tell = (String) AppSharePreferenceMgr.get(this,"tell","");
-                                 if(TextUtils.isEmpty(tell)){
+                                 if(TextUtils.isEmpty(tel2)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
                                      sendTest("ATD"+tell+";\r\n");
@@ -162,6 +162,7 @@ public class GPIOService extends Service {
                              tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
+//                                 break;
                              }else {
                                  sendTest("ATD"+tel2+";\r\n");
                                  send_type = 2;
@@ -169,6 +170,7 @@ public class GPIOService extends Service {
                                  isCalling = true;
                                  sendHex("01");
                              }
+
                          }
                      }
                  }
@@ -206,36 +208,6 @@ public class GPIOService extends Service {
             Log.i("sss","串口都没打开！");
         }
     }
-
-
-    /**
-     * 10分钟请求一次服务器更新数据
-     */
-    public void startTimer(){
-        Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
-
-            @Override
-            public void onSubscribe(Disposable d) {
-                XLog.e("更新数据倒计时开始");
-            }
-
-            @Override
-            public void onNext(Long value) {
-                BusProvider.getBus().post(new EventModel("refreshData", "refreshData"));
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-                XLog.e("倒计时结束，开始获取数据");
-            }
-        });
-    }
-
 
     @Override
     public void onDestroy() {

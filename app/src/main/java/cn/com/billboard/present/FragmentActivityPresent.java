@@ -11,7 +11,7 @@ import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.FragmentActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -77,7 +77,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                                 callBack.onMainUpdateUI();
                                 callBack.onSubChangeUI();
                             }
-                            GPIOService.getInstance().startTimer();
+                            UpdateService.getInstance().startTimer();
                             callBack.onErrorChangeUI(error.getMessage());
                         }
 
@@ -94,7 +94,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
 
                                 }
                             }
-                            GPIOService.getInstance().startTimer();
+                            UpdateService.getInstance().startTimer();
                         }
                     });
     }

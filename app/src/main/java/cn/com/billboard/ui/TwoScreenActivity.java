@@ -43,6 +43,7 @@ import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.TwoScreenPresent;
 import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppPhoneMgr;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -174,6 +175,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
             getP().getScreenData(true, mac,ipAddress);
         }
         startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, UpdateService.class));
     }
 
     public void getAlarmId(String s) {
@@ -215,6 +217,7 @@ public class TwoScreenActivity extends XActivity<TwoScreenPresent> implements Ap
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(context, GPIOService.class));
+        stopService(new Intent(context, UpdateService.class));
         String model = Build.MODEL;
         if(model.equals("3280")) {
             smdt.smdtWatchDogEnable((char) 0);

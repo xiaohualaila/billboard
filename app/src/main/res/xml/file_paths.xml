@@ -2,6 +2,7 @@
 <resources>
     <paths>
            <!-- Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";-->
+        <!--等同于 Environment.getExternalStorageDirectory() 所获取的目录路径-->
         <external-path path="download" name="download"/>
     </paths>
 </resources>
