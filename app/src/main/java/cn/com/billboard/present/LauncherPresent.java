@@ -7,6 +7,7 @@ import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.VersionModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.ui.CreateParamsActivity;
+import cn.com.billboard.ui.FragmentActivity;
 import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.ui.LauncherActivity;
 import cn.com.billboard.ui.TwoScreenActivity;
@@ -56,6 +57,7 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
 
     public void toActivity(){
 //        TwoScreenActivity.launch(getV());
+      //  FragmentActivity.launch(getV());
         FragmentBigScreenActivity.launch(getV());
         getV().finish();
     }

@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.app.Activity;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
@@ -44,6 +45,7 @@ import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.net.NetError;
+import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback{
@@ -282,9 +284,14 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         }
     }
 
-
     /**请求失败返回*/
     public void showError(String error) {
         ToastManager.showShort(context, error);
+    }
+
+    public static void launch(Activity activity) {
+        Router.newIntent(activity)
+                .to(FragmentActivity.class)
+                .launch();
     }
 }
