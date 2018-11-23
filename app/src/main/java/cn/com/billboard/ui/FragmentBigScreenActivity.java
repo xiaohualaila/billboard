@@ -1,9 +1,8 @@
 package cn.com.billboard.ui;
 
+import android.app.Activity;
 import android.app.smdt.SmdtManager;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,28 +13,21 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Display;
-import android.view.View;
-import android.view.WindowManager;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
-import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.FragmentActivityPresent;
-
+import cn.com.billboard.present.FragmentBigScreenActivityPresent;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
-import cn.com.billboard.ui.fragment.FragmentBigPic;
-import cn.com.billboard.ui.fragment.FragmentMain;
+import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
+import cn.com.billboard.ui.fragment.FragmentScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
-import cn.com.billboard.ui.fragment.FragmentVideo;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.library.event.BusProvider;
@@ -43,72 +35,48 @@ import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
-import cn.com.library.net.NetError;
+import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback{
-
+public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivityPresent> implements AppDownload.Callback{
+    private static FragmentBigScreenActivity instance;
     private Fragment mCurrentFrag;
     private FragmentManager fm;
     private Fragment updateFrag;
-    private Fragment mainFrag;
-    private Fragment bigPigFrag;
-    private Fragment recordVideoFrag;
-    DisplayManager displayManager;//屏幕管理类
-    Display[] displays;//屏幕数组
-
+    private Fragment imgFrg;
+    private Fragment videoFrg;
     private SmdtManager smdt;
     private String mac = "";
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
 
-    private int phoneType = 1;
-    private String recordId = "";
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void initData(Bundle savedInstanceState) {
-        displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
-        displays = displayManager.getDisplays();
         fm = getSupportFragmentManager();
         updateFrag = new FragmentUpdate();
-        mainFrag = new FragmentMain();
-        bigPigFrag = new FragmentBigPic();
-//        recordVideoFrag = new FragmentVideo(phoneType);
-
-        /**
-         * 老板子没有喂狗api
-         */
+        imgFrg = new FragmentBigScreenPic();
+        videoFrg = new FragmentScreenVideo();
         String model = Build.MODEL;
-        if(model.equals("3280")){
+        if(model.equals("3280")) {
             smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char)1);//开启看门狗
-            mac= smdt.smdtGetEthMacAddress();
-            ipAddress= smdt.smdtGetEthIPAddress();
-            AppSharePreferenceMgr.put(this,UserInfoKey.MAC,mac);
-            AppSharePreferenceMgr.put(this,UserInfoKey.IPADDRESS,ipAddress);
-            new Timer().schedule(timerTask,0,5000);
+            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+            mac = smdt.smdtGetEthMacAddress();
+            ipAddress = smdt.smdtGetEthIPAddress();
+            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+            AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+            new Timer().schedule(timerTask, 0, 5000);
         }
         Log.i("mac",mac);
         if(TextUtils.isEmpty(mac)){
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
-            toFragemntMain();
+            toFragmentImg();
         }else {
            getP().getScreenData(true, mac,ipAddress);
         }
-        startService(new Intent(context, GPIOService.class));
         startService(new Intent(context, UpdateService.class));
-        /**
-         * 报警
-         */
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                (AlarmRecordModel recordModel) -> {
-                    if (recordModel.isCalling) {
-                        phoneType = recordModel.phoneType;
-                        getP().uploadAlarm(mac,phoneType);
-                    }
-                }
-        );
+
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     ToastManager.showShort(context, messageModel.message);
@@ -120,18 +88,12 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     getP().getScreenData(false, mac,ipAddress);
                 }
         );
+        instance = this;
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        /**
-         * 上传报警信息图片，视频
-         */
-        getP().uploadAlarmInfo(mac,recordId);
+    public static FragmentBigScreenActivity instance() {
+        return instance;
     }
-
 
     TimerTask timerTask = new TimerTask(){
         @Override
@@ -139,26 +101,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
             smdt.smdtWatchDogFeed();//喂狗
         }
     };
-
-    /**展示副屏数据*/
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public void showSubData(){
-        XLog.e("屏幕数量===" + displays.length);
-        if (displays != null && displays.length > 1) {
-            SubScreenActivity subScreenActivity = new SubScreenActivity(context, displays[1]);//displays[1]是副屏
-            subScreenActivity.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
-            subScreenActivity.show();
-            subScreenActivity.showData();
-        }
-    }
-
-    public void getAlarmId(String s) {
-        if(!TextUtils.isEmpty(s)){
-            recordId = s;
-        //    toFragmentVideo();
-            RecordvideoActivity.launch(this, mac,phoneType);
-        }
-    }
 
     /**
      * 动态添加fragment，不会重复创建fragment
@@ -187,22 +129,17 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                 .commit();
     }
 
-    public void toFragemntUpdate(){
+    public void toFragmentUpdate(){
         switchContent(updateFrag);
     }
 
-    public void toFragemntBigPic(){
-        switchContent(bigPigFrag);
+    public void toFragmentImg(){
+        switchContent(imgFrg);
     }
-
-    public void toFragemntMain(){
-        switchContent(mainFrag);
+    
+    public void toFragmentVideo(){
+        switchContent(videoFrg);
     }
-
-//    public void toFragmentVideo(){
-//        switchContent(recordVideoFrag);
-//    }
-
 
     @Override
     public int getLayoutId() {
@@ -210,8 +147,8 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     }
 
     @Override
-    public FragmentActivityPresent newP() {
-         return new FragmentActivityPresent();
+    public FragmentBigScreenActivityPresent newP() {
+         return new FragmentBigScreenActivityPresent();
     }
 
     @Override
@@ -286,5 +223,11 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     /**请求失败返回*/
     public void showError(String error) {
         ToastManager.showShort(context, error);
+    }
+
+    public static void launch(Activity activity) {
+        Router.newIntent(activity)
+                .to(FragmentBigScreenActivity.class)
+                .launch();
     }
 }

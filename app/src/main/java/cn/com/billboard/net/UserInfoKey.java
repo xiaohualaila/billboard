@@ -30,8 +30,8 @@ public class UserInfoKey {
     public static String PIC_UP = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/two/picture/up";
     public static String VIDEO = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/two/video";
     public static String VIDEO_UP = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/two/videoup";
-
-
+    public static String PIC_BIG_IMAGE_DOWN = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/big/picture";
+    public static String BIG_VIDEO = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/big/video";
 
     public static String FILE_SUB_VIDEO = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/sub/video";
     public static String FILE_SUB_PICTURE = SDCardUtil.getStoragePath(App.getContext()) + "/billboard/file/sub/picture";

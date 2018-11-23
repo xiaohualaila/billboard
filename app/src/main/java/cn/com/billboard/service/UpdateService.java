@@ -51,7 +51,7 @@ public class UpdateService extends Service {
 
     public void startTimer(){
         //TODO 启动计时服务
-        Observable.timer(5, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
 
             @Override
             public void onSubscribe(Disposable d) {

@@ -73,9 +73,6 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
-                            }else {
-                                callBack.onMainUpdateUI();
-                                callBack.onSubChangeUI();
                             }
                             UpdateService.getInstance().startTimer();
                             callBack.onErrorChangeUI(error.getMessage());
@@ -85,14 +82,14 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
                                 getV().toFragemntUpdate();
-                                dealData(model.getMessageBody(),isRefresh);
+                                dealData(model.getMessageBody());
 
                             } else {
                                 if (isRefresh) {
                                         callBack.onMainChangeUI();
                                         callBack.onSubChangeUI();
-
                                 }
+                                callBack.onErrorChangeUI(model.getDescribe());
                             }
                             UpdateService.getInstance().startTimer();
                         }
@@ -104,7 +101,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
      * @param model
      * @param isRefresh
      */
-    private void dealData(TwoScreenModel model,boolean isRefresh){
+    private void dealData(TwoScreenModel model){
            String s_version= model.getBuild();
            if(s_version != null){
                int v_no = APKVersionCodeUtils.getVersionCode(getV());
@@ -113,7 +110,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                    //更新app
                    getV().toUpdateVer(model.getApkurl(),s_version);
                }else {
-                   downloadAndSaveData(model,isRefresh);
+                   downloadAndSaveData(model);
                }
            }
 
@@ -123,7 +120,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(TwoScreenModel model,boolean isRefresh) {
+    private void downloadAndSaveData(TwoScreenModel model) {
         String tell = model.getTel1();
         String tel2 = model.getTel2();
         AppSharePreferenceMgr.put(getV(),"tell",tell);
@@ -172,7 +169,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
               }
           }
 
-        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack,isRefresh);//下载
+        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
 
 

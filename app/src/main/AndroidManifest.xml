@@ -45,10 +45,19 @@
 
         <activity
             android:name=".ui.LauncherActivity"
-            android:icon="@mipmap/ic_launcher">
+            android:icon="@mipmap/ic_launcher"
+            android:screenOrientation="landscape">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.FragmentBigScreenActivity"
+            android:screenOrientation="landscape">
 
         </activity>
-
         <activity
             android:name=".ui.CreateParamsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
@@ -77,11 +86,7 @@
             android:name=".ui.FragmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
 
         </activity>
 
