@@ -170,7 +170,7 @@ public class TwoScreenPresent extends XPresent<TwoScreenActivity> {
               }
           }
 
-        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack,isRefresh);//下载
+        DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
 
 

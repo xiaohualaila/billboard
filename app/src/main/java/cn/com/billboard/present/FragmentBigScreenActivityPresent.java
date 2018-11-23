@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.BigScreenCallBack;
-import cn.com.billboard.model.TwoScreenModel;
+import cn.com.billboard.model.MessageBodyBean;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.service.UpdateService;
@@ -45,11 +45,11 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-            BillboardApi.getDataService().getData(mac,ipAddress)
-                    .compose(XApi.<BaseBean<TwoScreenModel>>getApiTransformer())
-                    .compose(XApi.<BaseBean<TwoScreenModel>>getScheduler())
-                    .compose(getV().<BaseBean<TwoScreenModel>>bindToLifecycle())
-                    .subscribe(new ApiSubscriber<BaseBean<TwoScreenModel>>() {
+            BillboardApi.getDataService().getBigScreenData(mac,ipAddress)
+                    .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                    .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                    .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                    .subscribe(new ApiSubscriber<BaseBean<MessageBodyBean>>() {
                         @Override
                         protected void onFail(NetError error) {
                             if(isRefresh){
@@ -60,7 +60,7 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                         }
 
                         @Override
-                        public void onNext(BaseBean<TwoScreenModel> model) {
+                        public void onNext(BaseBean<MessageBodyBean> model) {
                             if (model.isSuccess()) {
                                 getV().toFragmentUpdate();
                                 dealData(model.getMessageBody());
@@ -79,7 +79,8 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
      * 处理数据
      * @param model
      */
-    private void dealData(TwoScreenModel model){
+    private void dealData(MessageBodyBean model){
+
            String s_version= model.getBuild();
            if(s_version != null){
                int v_no = APKVersionCodeUtils.getVersionCode(getV());
@@ -98,10 +99,11 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(TwoScreenModel model) {
-        //下屏小图片
+    private void downloadAndSaveData(MessageBodyBean model) {
+        //图片
         List<String> lists_pic = new ArrayList<>();
-        List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
+
+        List<MessageBodyBean.FulldisplayBean> halfdowndisplayBeanList =  model.getFulldisplay();
           if(halfdowndisplayBeanList!=null){
               if(halfdowndisplayBeanList.size()>0){
                   for(int i=0;i<halfdowndisplayBeanList.size();i++){
@@ -110,16 +112,16 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
               }
           }
 
-        //下屏视频
+        //视频
         List<String> lists_video = new ArrayList<>();
-        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
-          if(halfupdisplayBean!=null){
-              if(halfupdisplayBean.size()>0){
-                  for(int i=0;i<halfupdisplayBean.size();i++){
-                      lists_video.add(halfupdisplayBean.get(i).getUrl());
-                  }
-              }
-          }
+//        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
+//          if(halfupdisplayBean!=null){
+//              if(halfupdisplayBean.size()>0){
+//                  for(int i=0;i<halfupdisplayBean.size();i++){
+//                      lists_video.add(halfupdisplayBean.get(i).getUrl());
+//                  }
+//              }
+//          }
 
         DownloadBigScreenFileUtil.getInstance().down( lists_pic,lists_video, callBack);//下载
     }

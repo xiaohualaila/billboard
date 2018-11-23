@@ -99,7 +99,6 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
     /**
      * 处理数据
      * @param model
-     * @param isRefresh
      */
     private void dealData(TwoScreenModel model){
            String s_version= model.getBuild();
