@@ -211,7 +211,7 @@ public class FaceActivity extends XActivity {
             mFindFaceView.setVisibility(View.VISIBLE);
             mFindFaceView.drawRect(faces, faceNumber);
             File folder = new File(UserInfoKey.BILLBOARD_PICTURE_PATH);
-            if (!folder.exists()){
+            if (!folder.exists()) {
                 folder.mkdirs();
             }
             File file = new File(UserInfoKey.BILLBOARD_PICTURE_PATH + "/" + AppDateMgr.todayYyyyMmDdHhMmSsTrim() + ".jpg");
@@ -277,7 +277,7 @@ public class FaceActivity extends XActivity {
     }
 
     @OnClick({R.id.bt_camera})
-    public void clickEvent(View view){
+    public void clickEvent(View view) {
         switch (view.getId()) {
             case R.id.bt_camera:
                 if (camera != null) {

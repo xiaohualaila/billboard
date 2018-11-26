@@ -14,7 +14,9 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import java.io.File;
+
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.AlarmRecordModel;
@@ -61,15 +63,15 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
 
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
-                    if(!model.isCalling){
+                    if (!model.isCalling) {
                         isClose = true;
                         stopRecordVideo();
                     }
                 }
         );
-        if(phoneType==1){
+        if (phoneType == 1) {
             bottom_pic.setImageResource(R.drawable.police110);
-        }else {
+        } else {
             bottom_pic.setImageResource(R.drawable.police);
         }
     }
@@ -81,7 +83,7 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
         handler.postDelayed(() -> {
             startRecord();
             handler.postDelayed(runnable, 1000);
-        },500);
+        }, 500);
     }
 
     @Override
@@ -91,14 +93,15 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
 
     /**
      * 当 Fragment 调用 hide() 、 show() 时回调
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
-            if(phoneType==1){
+        if (!hidden) {
+            if (phoneType == 1) {
                 bottom_pic.setImageResource(R.drawable.police110);
-            }else {
+            } else {
                 bottom_pic.setImageResource(R.drawable.police);
             }
         }
@@ -148,7 +151,7 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
         @Override
         public void run() {
             text++;
-            if(text==11){
+            if (text == 11) {
                 stopRecordVideo();
                 return;
             }
@@ -159,7 +162,7 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
     /**
      * 录制视频
      */
-    public void startRecord(){
+    public void startRecord() {
         if (mRecorder == null) {
             mRecorder = new MediaRecorder();
         }
@@ -206,13 +209,13 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
     }
 
 
-    private void stopRecordVideo(){
+    private void stopRecordVideo() {
         //stop
         if (mStartedFlg) {
             try {
 
                 handler.removeCallbacks(runnable);
-                if(mRecorder != null){
+                if (mRecorder != null) {
                     mRecorder.stop();
                     mRecorder.reset();
                     mRecorder.release();
@@ -224,15 +227,15 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
                 }
                 File file = new File(path);
                 if (file.exists()) {
-                    AppSharePreferenceMgr.put(getActivity(),"videoFile",path);
-                }else {
-                    AppSharePreferenceMgr.put(getActivity(),"videoFile","");
+                    AppSharePreferenceMgr.put(getActivity(), "videoFile", path);
+                } else {
+                    AppSharePreferenceMgr.put(getActivity(), "videoFile", "");
                 }
-                FragmentActivity activity = (FragmentActivity ) getActivity();
-                if(!isClose){
+                FragmentActivity activity = (FragmentActivity) getActivity();
+                if (!isClose) {
                     activity.toFragemntMain();
-                }else {
-                   Log.i("sss","sssssssssssssssssssss");
+                } else {
+                    Log.i("sss", "sssssssssssssssssssss");
                     activity.toFragemntMain();
                 }
 

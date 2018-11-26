@@ -4,6 +4,7 @@ package cn.com.billboard.ui.fragment;
 import android.os.Handler;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.model.ProgressModel;
@@ -30,7 +31,6 @@ public class FragmentUpdate extends BaseFragment {
     private Handler mHandler = new Handler();
 
 
-
     @Override
     public int getLayoutId() {
         return R.layout.fragment_update;
@@ -53,18 +53,16 @@ public class FragmentUpdate extends BaseFragment {
         );
     }
 
-    Runnable runnable =  new Runnable() {
+    Runnable runnable = new Runnable() {
         @Override
-        public void run()
-        {
+        public void run() {
             loading_file_name.setText(file_name);
             loading_num.setText(file_num);
             progressBarHorizontal.setProgress(file_pre);
-            loading_pro.setText(file_pre+"%");
+            loading_pro.setText(file_pre + "%");
             mHandler.postDelayed(runnable, 100);
         }
     };
-
 
 
 }

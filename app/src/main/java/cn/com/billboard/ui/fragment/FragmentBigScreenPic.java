@@ -36,13 +36,15 @@ public class FragmentBigScreenPic extends BaseFragment {
     @Override
     protected void init() {
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
-        videos =  FileUtil.getFilePath(UserInfoKey.BIG_VIDEO);
+        videos = FileUtil.getFilePath(UserInfoKey.BIG_VIDEO);
         playBanner();
     }
 
 
-    /**播放图片轮播*/
-    private void playBanner(){
+    /**
+     * 播放图片轮播
+     */
+    private void playBanner() {
         banner.setAdapter(new BannersAdapter(initBanner(images_big)));
         banner.setIsOutScroll(true);
         banner.startScroll();
@@ -54,7 +56,7 @@ public class FragmentBigScreenPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("sss","图片播放完毕,休眠图片播放时长后播放视频 " +position );
+                Log.i("sss", "图片播放完毕,休眠图片播放时长后播放视频 " + position);
                 if (position == images_big.size() - 1) {
                     backplay();
                 }
@@ -65,20 +67,20 @@ public class FragmentBigScreenPic extends BaseFragment {
 
             }
         });
-        if(images_big.size()==1){
-            mHandler.postDelayed(() -> backplay(),5000);
+        if (images_big.size() == 1) {
+            mHandler.postDelayed(() -> backplay(), 5000);
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
+        if (!hidden) {
             images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
-            if(images_big.size()==1){
-                mHandler.postDelayed(() -> backplay(),5000);
+            if (images_big.size() == 1) {
+                mHandler.postDelayed(() -> backplay(), 5000);
             }
             banner.startScroll();
-        }else {
+        } else {
             banner.stopScroll();
         }
         super.onHiddenChanged(hidden);
@@ -87,14 +89,16 @@ public class FragmentBigScreenPic extends BaseFragment {
     /**
      * 重复播放小图片和视频
      */
-    private void backplay(){
-        if(videos.size()==0){
+    private void backplay() {
+        if (videos.size() == 0) {
             return;
         }
         FragmentBigScreenActivity.instance().toFragmentVideo();
     }
 
-    /**初始化banner数据*/
+    /**
+     * 初始化banner数据
+     */
     private List<View> initBanner(List<String> urls) {
         List<View> bannerView = new ArrayList<View>();
         for (int i = 0; i < urls.size(); i++) {

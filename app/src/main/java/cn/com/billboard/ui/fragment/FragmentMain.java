@@ -40,8 +40,7 @@ public class FragmentMain extends BaseFragment {
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
         if(videos.size()==0||images_small.size()==0){
-            FragmentActivity activity = (FragmentActivity ) getActivity();
-            activity.showError("视频或图片不能为空！");
+            FragmentActivity.instance().showError("视频或图片不能为空！");
             return;
         }
         playBanner();
@@ -93,8 +92,7 @@ public class FragmentMain extends BaseFragment {
                 videoIndex = 0;
                 video_finish = true;
                     if(images_big.size()>0 && pic_finish){
-                        FragmentActivity activity = (FragmentActivity ) getActivity();
-                        activity.toFragemntBigPic();
+                        FragmentActivity.instance().toFragemntBigPic();
                     }else {
                         playVideo();
                     }
@@ -130,8 +128,7 @@ public class FragmentMain extends BaseFragment {
                 if(position == images_small.size()-1){
                     pic_finish = true;
                     if(images_big.size()>0 && video_finish){
-                        FragmentActivity activity = (FragmentActivity ) getActivity();
-                        activity.toFragemntBigPic();
+                        FragmentActivity.instance().toFragemntBigPic();
                     }
                 }
             }

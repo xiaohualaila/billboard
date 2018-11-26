@@ -18,7 +18,7 @@ import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.library.imageloader.ILFactory;
 
-public class FragmentBigPic extends BaseFragment {
+public class FragmentPic extends BaseFragment {
 
     @BindView(R.id.main_banner)
     BaseViewPager banner;
@@ -57,9 +57,7 @@ public class FragmentBigPic extends BaseFragment {
             public void onPageSelected(int position) {
                 Log.i("sss","图片播放完毕,休眠图片播放时长后播放视频 " +position );
                 if (position == images_big.size() - 1) {
-
-                    FragmentActivity activity = (FragmentActivity ) getActivity();
-                    activity.toFragemntMain();
+                    FragmentActivity.instance().toFragemntMain();
                 }
             }
 
@@ -91,8 +89,7 @@ public class FragmentBigPic extends BaseFragment {
      * 重复播放小图片和视频
      */
     private void backplay(){
-        FragmentActivity activity = (FragmentActivity ) getActivity();
-        activity.toFragemntMain();
+        FragmentActivity.instance().toFragemntMain();
     }
 
     /**初始化banner数据*/

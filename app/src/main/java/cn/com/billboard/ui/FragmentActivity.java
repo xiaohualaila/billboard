@@ -16,7 +16,6 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
 
 import java.io.File;
@@ -33,10 +32,9 @@ import cn.com.billboard.present.FragmentActivityPresent;
 
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
-import cn.com.billboard.ui.fragment.FragmentBigPic;
+import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
-import cn.com.billboard.ui.fragment.FragmentVideo;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.library.event.BusProvider;
@@ -44,11 +42,10 @@ import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
-import cn.com.library.net.NetError;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback{
+public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback {
 
     private Fragment mCurrentFrag;
     private FragmentManager fm;
@@ -66,6 +63,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
 
     private int phoneType = 1;
     private String recordId = "";
+    private static FragmentActivity instance;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -75,28 +73,28 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         fm = getSupportFragmentManager();
         updateFrag = new FragmentUpdate();
         mainFrag = new FragmentMain();
-        bigPigFrag = new FragmentBigPic();
+        bigPigFrag = new FragmentPic();
 //        recordVideoFrag = new FragmentVideo(phoneType);
 
         /**
          * 老板子没有喂狗api
          */
         String model = Build.MODEL;
-        if(model.equals("3280")){
+        if (model.equals("3280")) {
             smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char)1);//开启看门狗
-            mac= smdt.smdtGetEthMacAddress();
-            ipAddress= smdt.smdtGetEthIPAddress();
-            AppSharePreferenceMgr.put(this,UserInfoKey.MAC,mac);
-            AppSharePreferenceMgr.put(this,UserInfoKey.IPADDRESS,ipAddress);
-            new Timer().schedule(timerTask,0,5000);
+            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+            mac = smdt.smdtGetEthMacAddress();
+            ipAddress = smdt.smdtGetEthIPAddress();
+            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+            AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+            new Timer().schedule(timerTask, 0, 5000);
         }
-        Log.i("mac",mac);
-        if(TextUtils.isEmpty(mac)){
+        Log.i("mac", mac);
+        if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
             toFragemntMain();
-        }else {
-           getP().getScreenData(true, mac,ipAddress);
+        } else {
+            getP().getScreenData(true, mac, ipAddress);
         }
         startService(new Intent(context, GPIOService.class));
         startService(new Intent(context, UpdateService.class));
@@ -107,7 +105,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
                         phoneType = recordModel.phoneType;
-                        getP().uploadAlarm(mac,phoneType);
+                        getP().uploadAlarm(mac, phoneType);
                     }
                 }
         );
@@ -119,9 +117,10 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
                 eventModel -> {
                     XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, mac,ipAddress);
+                    getP().getScreenData(false, mac, ipAddress);
                 }
         );
+        instance = this;
     }
 
     @Override
@@ -131,20 +130,22 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         /**
          * 上传报警信息图片，视频
          */
-        getP().uploadAlarmInfo(mac,recordId);
+        getP().uploadAlarmInfo(mac, recordId);
     }
 
 
-    TimerTask timerTask = new TimerTask(){
+    TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
         }
     };
 
-    /**展示副屏数据*/
+    /**
+     * 展示副屏数据
+     */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public void showSubData(){
+    public void showSubData() {
         XLog.e("屏幕数量===" + displays.length);
         if (displays != null && displays.length > 1) {
             SubScreenActivity subScreenActivity = new SubScreenActivity(context, displays[1]);//displays[1]是副屏
@@ -155,10 +156,10 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     }
 
     public void getAlarmId(String s) {
-        if(!TextUtils.isEmpty(s)){
+        if (!TextUtils.isEmpty(s)) {
             recordId = s;
-        //    toFragmentVideo();
-            RecordvideoActivity.launch(this, mac,phoneType);
+            //    toFragmentVideo();
+            RecordvideoActivity.launch(this, mac, phoneType);
         }
     }
 
@@ -189,15 +190,15 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                 .commit();
     }
 
-    public void toFragemntUpdate(){
+    public void toFragemntUpdate() {
         switchContent(updateFrag);
     }
 
-    public void toFragemntBigPic(){
+    public void toFragemntBigPic() {
         switchContent(bigPigFrag);
     }
 
-    public void toFragemntMain(){
+    public void toFragemntMain() {
         switchContent(mainFrag);
     }
 
@@ -213,7 +214,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
 
     @Override
     public FragmentActivityPresent newP() {
-         return new FragmentActivityPresent();
+        return new FragmentActivityPresent();
     }
 
     @Override
@@ -222,7 +223,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         stopService(new Intent(context, GPIOService.class));
         stopService(new Intent(context, UpdateService.class));
         String model = Build.MODEL;
-        if(model.equals("3280")) {
+        if (model.equals("3280")) {
             smdt.smdtWatchDogEnable((char) 0);
         }
     }
@@ -233,11 +234,11 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         dialog_app.show();
         dialog_app.setCancelable(false);
         dialog_app.getFile_name().setText("室内屏apk");
-        dialog_app.getFile_num().setText("版本号"+version);
+        dialog_app.getFile_num().setText("版本号" + version);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
 
-        appDownload.downApk(apkurl,this);
+        appDownload.downApk(apkurl, this);
     }
 
     @Override
@@ -249,24 +250,25 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                 install(sdcardDir);
             });
 
-        }else {
+        } else {
             runOnUiThread(() -> {
-                dialog_app.getSeekBar().setProgress( progress );
-                dialog_app.getNum_progress().setText(progress+"%");
+                dialog_app.getSeekBar().setProgress(progress);
+                dialog_app.getNum_progress().setText(progress + "%");
             });
         }
     }
 
     /**
      * 开启安装过程
+     *
      * @param fileName
      */
     private void install(String fileName) {
         //承接我的代码，filename指获取到了我的文件相应路径
         if (fileName != null) {
             if (fileName.endsWith(".apk")) {
-                if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
-                    File file= new File(fileName);
+                if (Build.VERSION.SDK_INT >= 24) {//判读版本是否在7.0以上
+                    File file = new File(fileName);
                     Uri apkUri = FileProvider.getUriForFile(context, "cn.com.billboard.fileprovider", file);
                     //在AndroidManifest中的android:authorities值
                     Intent install = new Intent(Intent.ACTION_VIEW);
@@ -274,7 +276,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
                     install.setDataAndType(apkUri, "application/vnd.android.package-archive");
                     context.startActivity(install);
-                } else{
+                } else {
                     Intent install = new Intent(Intent.ACTION_VIEW);
                     install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -284,7 +286,9 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         }
     }
 
-    /**请求失败返回*/
+    /**
+     * 请求失败返回
+     */
     public void showError(String error) {
         ToastManager.showShort(context, error);
     }
@@ -293,5 +297,9 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         Router.newIntent(activity)
                 .to(FragmentActivity.class)
                 .launch();
+    }
+
+    public static FragmentActivity instance() {
+        return instance;
     }
 }

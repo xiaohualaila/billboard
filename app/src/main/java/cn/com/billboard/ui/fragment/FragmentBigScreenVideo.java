@@ -8,7 +8,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.FileUtil;
 
-public class FragmentScreenVideo extends BaseFragment {
+public class FragmentBigScreenVideo extends BaseFragment {
     @BindView(R.id.main_video)
     VideoView video;
     private List<String> videos;

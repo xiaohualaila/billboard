@@ -1,8 +1,11 @@
 package cn.com.billboard.present;
 
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.BigScreenCallBack;
 import cn.com.billboard.model.MessageBodyBean;
@@ -13,12 +16,12 @@ import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadBigScreenFileUtil;
+import cn.com.billboard.util.GsonProvider;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
 import cn.com.library.net.NetError;
 import cn.com.library.net.XApi;
-
 
 
 public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreenActivity> {
@@ -44,86 +47,102 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
     /**
      * 获取数据
      */
-    public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-            BillboardApi.getDataService().getBigScreenData(mac,ipAddress)
-                    .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                    .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                    .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                    .subscribe(new ApiSubscriber<BaseBean<MessageBodyBean>>() {
-                        @Override
-                        protected void onFail(NetError error) {
-                            if(isRefresh){
+    public void getScreenData(boolean isRefresh, String mac, String ipAddress) {
+        BillboardApi.getDataService().getBigScreenData(mac, ipAddress)
+                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean<MessageBodyBean>>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        if (isRefresh) {
+                            getV().toFragmentVideo();
+                        }
+                        callBack.onErrorChangeUI(error.getMessage());
+                        UpdateService.getInstance().startTimer();
+                    }
+
+                    @Override
+                    public void onNext(BaseBean<MessageBodyBean> model) {
+                        if (model.isSuccess()) {
+                            getV().toFragmentUpdate();
+                            dealData(model.getMessageBody());
+                        } else {
+                            if (isRefresh) {
                                 getV().toFragmentVideo();
                             }
-                            callBack.onErrorChangeUI(error.getMessage());
-                            UpdateService.getInstance().startTimer();
+                            callBack.onErrorChangeUI(model.getDescribe());
                         }
-
-                        @Override
-                        public void onNext(BaseBean<MessageBodyBean> model) {
-                            if (model.isSuccess()) {
-                                getV().toFragmentUpdate();
-                                dealData(model.getMessageBody());
-                            } else {
-                                if(isRefresh){
-                                    getV().toFragmentVideo();
-                                }
-                                callBack.onErrorChangeUI(model.getDescribe());
-                            }
-                            UpdateService.getInstance().startTimer();
-                        }
-                    });
+                        UpdateService.getInstance().startTimer();
+                    }
+                });
     }
 
     /**
      * 处理数据
+     *
      * @param model
      */
-    private void dealData(MessageBodyBean model){
+    private void dealData(MessageBodyBean model) {
 
-           String s_version= model.getBuild();
-           if(s_version != null){
-               int v_no = APKVersionCodeUtils.getVersionCode(getV());
-               int a = Integer.parseInt(s_version);
-               if(a > v_no){
-                   //更新app
-                   getV().toUpdateVer(model.getApkurl(),s_version);
-               }else {
-                   downloadAndSaveData(model);
-               }
-           }
-
-
+        String s_version = model.getBuild();
+        if (s_version != null) {
+            int v_no = APKVersionCodeUtils.getVersionCode(getV());
+            int a = Integer.parseInt(s_version);
+            if (a > v_no) {
+                //更新app
+                getV().toUpdateVer(model.getApkurl(), s_version);
+            } else {
+                downloadAndSaveData(model);
+            }
+        }
     }
 
     /**
      * 下载并保存数据
      */
     private void downloadAndSaveData(MessageBodyBean model) {
+        String  tel1 = model.getTel1();
+        String  tel2 = model.getTel2();
+        String  tel3 = model.getTel3();
+        String  tel4 = model.getTel4();
+        AppSharePreferenceMgr.put(getV(),"tel1",tel1);
+        AppSharePreferenceMgr.put(getV(),"tel2",tel2);
+        AppSharePreferenceMgr.put(getV(),"tel3",tel3);
+        AppSharePreferenceMgr.put(getV(),"tel4",tel4);
         //图片
         List<String> lists_pic = new ArrayList<>();
 
-        List<MessageBodyBean.FulldisplayBean> halfdowndisplayBeanList =  model.getFulldisplay();
-          if(halfdowndisplayBeanList!=null){
-              if(halfdowndisplayBeanList.size()>0){
-                  for(int i=0;i<halfdowndisplayBeanList.size();i++){
-                      lists_pic.add(halfdowndisplayBeanList.get(i).getUrl());
-                  }
-              }
-          }
+        List<MessageBodyBean.FullPicsBean> halfdowndisplayBeanList = model.getFullPics();
+        if (halfdowndisplayBeanList != null) {
+            if (halfdowndisplayBeanList.size() > 0) {
+                for (int i = 0; i < halfdowndisplayBeanList.size(); i++) {
+                    lists_pic.add(halfdowndisplayBeanList.get(i).getUrl());
+                }
+            }
+        }
 
         //视频
         List<String> lists_video = new ArrayList<>();
-//        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
-//          if(halfupdisplayBean!=null){
-//              if(halfupdisplayBean.size()>0){
-//                  for(int i=0;i<halfupdisplayBean.size();i++){
-//                      lists_video.add(halfupdisplayBean.get(i).getUrl());
-//                  }
-//              }
-//          }
+        List<MessageBodyBean.FullVideosBean> halfupdisplayBean = model.getFullVideos();
+        if (halfupdisplayBean != null) {
+            if (halfupdisplayBean.size() > 0) {
+                for (int i = 0; i < halfupdisplayBean.size(); i++) {
+                    lists_video.add(halfupdisplayBean.get(i).getUrl());
+                }
+            }
+        }
+        //标题
+        List<MessageBodyBean.StripedisplayBean> stripedisplayBeans = model.getStripedisplay();
+        List<String> lists_str = new ArrayList<>();
+        if (stripedisplayBeans.size() > 0 && stripedisplayBeans != null) {
+            for (int i = 0; i < stripedisplayBeans.size(); i++) {
+                lists_str.add(stripedisplayBeans.get(i).getTitle());
+            }
+        }
+        AppSharePreferenceMgr.put(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
 
-        DownloadBigScreenFileUtil.getInstance().down( lists_pic,lists_video, callBack);//下载
+        DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
     }
 
 

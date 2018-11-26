@@ -3,15 +3,18 @@ package cn.com.billboard.model;
 import java.util.List;
 
 public class MessageBodyBean {
+
+
     /**
-     * tel1 : 2
-     * fulldisplay : [{"title":"","order":"1","url":"http://www.xazhsq.cn:8080/webPicture/admin/2018-11-07/1811071310318379.jpg","isshow":"true","link":"","shapetype":"6"},{"title":"","order":"2","url":"http://www.xazhsq.cn:8080/webPicture/admin/2018-11-07/1811071310437581.jpg","isshow":"true","link":"","shapetype":"6"}]
-     * tel2 : 3
+     * tel1 : 13578900002
+     * tel2 : 13578900003
      * apkurl : http://www.e-2-e.cn/AppUpload/media.apk
      * build : 2
-     * stripedisplay : [{"title":"523452345234","order":"1","url":"http://www.xazhsq.cn:8080/webPicture","isshow":"true","link":"","shapetype":"5"}]
-     * tel3 : 4
-     * tel4 : 5
+     * fullVideos : [{"title":"","order":"1","url":"http://192.168.1.33:8080/webPicture/admin/2018-11-04/1811041042179349.mp4","isshow":"true","link":"","shapetype":"7"}]
+     * stripedisplay : [{"title":"哈哈哈哈哈哈","order":"1","url":"http://192.168.1.33:8080/webPicture","isshow":"true","link":"","shapetype":"5"}]
+     * fullPics : [{"title":"","order":"1","url":"http://192.168.1.33:8080/webPicture/admin/2018-11-07/1811071613307722.jpg","isshow":"true","link":"","shapetype":"6"},{"title":"","order":"2","url":"http://192.168.1.33:8080/webPicture/newsFiles/admin/2018-11-21/1811211051098759.jpg","isshow":"true","link":"","shapetype":"6"},{"title":"","order":"3","url":"http://192.168.1.33:8080/webPicture/admin/2018-11-07/1811071613371659.jpg","isshow":"true","link":"","shapetype":"6"}]
+     * tel3 : 13578900002
+     * tel4 : 13578900005
      */
 
     private String tel1;
@@ -20,8 +23,9 @@ public class MessageBodyBean {
     private String build;
     private String tel3;
     private String tel4;
-    private List<FulldisplayBean> fulldisplay;
+    private List<FullVideosBean> fullVideos;
     private List<StripedisplayBean> stripedisplay;
+    private List<FullPicsBean> fullPics;
 
     public String getTel1() {
         return tel1;
@@ -71,12 +75,12 @@ public class MessageBodyBean {
         this.tel4 = tel4;
     }
 
-    public List<FulldisplayBean> getFulldisplay() {
-        return fulldisplay;
+    public List<FullVideosBean> getFullVideos() {
+        return fullVideos;
     }
 
-    public void setFulldisplay(List<FulldisplayBean> fulldisplay) {
-        this.fulldisplay = fulldisplay;
+    public void setFullVideos(List<FullVideosBean> fullVideos) {
+        this.fullVideos = fullVideos;
     }
 
     public List<StripedisplayBean> getStripedisplay() {
@@ -87,14 +91,22 @@ public class MessageBodyBean {
         this.stripedisplay = stripedisplay;
     }
 
-    public static class FulldisplayBean {
+    public List<FullPicsBean> getFullPics() {
+        return fullPics;
+    }
+
+    public void setFullPics(List<FullPicsBean> fullPics) {
+        this.fullPics = fullPics;
+    }
+
+    public static class FullVideosBean {
         /**
          * title :
          * order : 1
-         * url : http://www.xazhsq.cn:8080/webPicture/admin/2018-11-07/1811071310318379.jpg
+         * url : http://192.168.1.33:8080/webPicture/admin/2018-11-04/1811041042179349.mp4
          * isshow : true
          * link :
-         * shapetype : 6
+         * shapetype : 7
          */
 
         private String title;
@@ -155,12 +167,78 @@ public class MessageBodyBean {
 
     public static class StripedisplayBean {
         /**
-         * title : 523452345234
+         * title : 哈哈哈哈哈哈
          * order : 1
-         * url : http://www.xazhsq.cn:8080/webPicture
+         * url : http://192.168.1.33:8080/webPicture
          * isshow : true
          * link :
          * shapetype : 5
+         */
+
+        private String title;
+        private String order;
+        private String url;
+        private String isshow;
+        private String link;
+        private String shapetype;
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getOrder() {
+            return order;
+        }
+
+        public void setOrder(String order) {
+            this.order = order;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getIsshow() {
+            return isshow;
+        }
+
+        public void setIsshow(String isshow) {
+            this.isshow = isshow;
+        }
+
+        public String getLink() {
+            return link;
+        }
+
+        public void setLink(String link) {
+            this.link = link;
+        }
+
+        public String getShapetype() {
+            return shapetype;
+        }
+
+        public void setShapetype(String shapetype) {
+            this.shapetype = shapetype;
+        }
+    }
+
+    public static class FullPicsBean {
+        /**
+         * title :
+         * order : 1
+         * url : http://192.168.1.33:8080/webPicture/admin/2018-11-07/1811071613307722.jpg
+         * isshow : true
+         * link :
+         * shapetype : 6
          */
 
         private String title;

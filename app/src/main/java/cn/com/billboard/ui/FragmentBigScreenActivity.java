@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
+
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,7 +27,7 @@ import cn.com.billboard.present.FragmentBigScreenActivityPresent;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
-import cn.com.billboard.ui.fragment.FragmentScreenVideo;
+import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppSharePreferenceMgr;
@@ -38,7 +39,7 @@ import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivityPresent> implements AppDownload.Callback{
+public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivityPresent> implements AppDownload.Callback {
     private static FragmentBigScreenActivity instance;
     private Fragment mCurrentFrag;
     private FragmentManager fm;
@@ -57,9 +58,9 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         fm = getSupportFragmentManager();
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentBigScreenPic();
-        videoFrg = new FragmentScreenVideo();
+        videoFrg = new FragmentBigScreenVideo();
         String model = Build.MODEL;
-        if(model.equals("3280")) {
+        if (model.equals("3280")) {
             smdt = SmdtManager.create(this);
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             mac = smdt.smdtGetEthMacAddress();
@@ -68,12 +69,12 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
             AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
             new Timer().schedule(timerTask, 0, 5000);
         }
-        Log.i("mac",mac);
-        if(TextUtils.isEmpty(mac)){
+        Log.i("mac", mac);
+        if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
             toFragmentImg();
-        }else {
-           getP().getScreenData(true, mac,ipAddress);
+        } else {
+            getP().getScreenData(true, mac, ipAddress);
         }
         startService(new Intent(context, UpdateService.class));
 
@@ -85,7 +86,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         BusProvider.getBus().toFlowable(EventModel.class).subscribe(
                 eventModel -> {
                     XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, mac,ipAddress);
+                    getP().getScreenData(false, mac, ipAddress);
                 }
         );
         instance = this;
@@ -95,7 +96,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         return instance;
     }
 
-    TimerTask timerTask = new TimerTask(){
+    TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             smdt.smdtWatchDogFeed();//喂狗
@@ -129,15 +130,15 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
                 .commit();
     }
 
-    public void toFragmentUpdate(){
+    public void toFragmentUpdate() {
         switchContent(updateFrag);
     }
 
-    public void toFragmentImg(){
+    public void toFragmentImg() {
         switchContent(imgFrg);
     }
-    
-    public void toFragmentVideo(){
+
+    public void toFragmentVideo() {
         switchContent(videoFrg);
     }
 
@@ -148,7 +149,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
 
     @Override
     public FragmentBigScreenActivityPresent newP() {
-         return new FragmentBigScreenActivityPresent();
+        return new FragmentBigScreenActivityPresent();
     }
 
     @Override
@@ -157,7 +158,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         stopService(new Intent(context, GPIOService.class));
         stopService(new Intent(context, UpdateService.class));
         String model = Build.MODEL;
-        if(model.equals("3280")) {
+        if (model.equals("3280")) {
             smdt.smdtWatchDogEnable((char) 0);
         }
     }
@@ -168,11 +169,11 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         dialog_app.show();
         dialog_app.setCancelable(false);
         dialog_app.getFile_name().setText("室内屏apk");
-        dialog_app.getFile_num().setText("版本号"+version);
+        dialog_app.getFile_num().setText("版本号" + version);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
 
-        appDownload.downApk(apkurl,this);
+        appDownload.downApk(apkurl, this);
     }
 
     @Override
@@ -184,24 +185,25 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
                 install(sdcardDir);
             });
 
-        }else {
+        } else {
             runOnUiThread(() -> {
-                dialog_app.getSeekBar().setProgress( progress );
-                dialog_app.getNum_progress().setText(progress+"%");
+                dialog_app.getSeekBar().setProgress(progress);
+                dialog_app.getNum_progress().setText(progress + "%");
             });
         }
     }
 
     /**
      * 开启安装过程
+     *
      * @param fileName
      */
     private void install(String fileName) {
         //承接我的代码，filename指获取到了我的文件相应路径
         if (fileName != null) {
             if (fileName.endsWith(".apk")) {
-                if(Build.VERSION.SDK_INT>=24) {//判读版本是否在7.0以上
-                    File file= new File(fileName);
+                if (Build.VERSION.SDK_INT >= 24) {//判读版本是否在7.0以上
+                    File file = new File(fileName);
                     Uri apkUri = FileProvider.getUriForFile(context, "cn.com.billboard.fileprovider", file);
                     //在AndroidManifest中的android:authorities值
                     Intent install = new Intent(Intent.ACTION_VIEW);
@@ -209,7 +211,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
                     install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
                     install.setDataAndType(apkUri, "application/vnd.android.package-archive");
                     context.startActivity(install);
-                } else{
+                } else {
                     Intent install = new Intent(Intent.ACTION_VIEW);
                     install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
                     install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -220,7 +222,9 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     }
 
 
-    /**请求失败返回*/
+    /**
+     * 请求失败返回
+     */
     public void showError(String error) {
         ToastManager.showShort(context, error);
     }
