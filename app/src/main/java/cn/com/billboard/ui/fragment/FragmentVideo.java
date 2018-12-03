@@ -235,7 +235,6 @@ public class FragmentVideo extends BaseFragment implements SurfaceHolder.Callbac
                 if (!isClose) {
                     activity.toFragemntMain();
                 } else {
-                    Log.i("sss", "sssssssssssssssssssss");
                     activity.toFragemntMain();
                 }
 

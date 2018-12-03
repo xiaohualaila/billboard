@@ -60,7 +60,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         imgFrg = new FragmentBigScreenPic();
         videoFrg = new FragmentBigScreenVideo();
         String model = Build.MODEL;
-        if (model.equals("3280")) {
+     //   if (model.equals("3280")) {
             smdt = SmdtManager.create(this);
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             mac = smdt.smdtGetEthMacAddress();
@@ -68,7 +68,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
             AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
             AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
             new Timer().schedule(timerTask, 0, 5000);
-        }
+       // }
         Log.i("mac", mac);
         if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
@@ -158,9 +158,9 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         stopService(new Intent(context, GPIOService.class));
         stopService(new Intent(context, UpdateService.class));
         String model = Build.MODEL;
-        if (model.equals("3280")) {
+     //   if (model.equals("3280")) {
             smdt.smdtWatchDogEnable((char) 0);
-        }
+     //   }
     }
 
     public void toUpdateVer(String apkurl, String version) {

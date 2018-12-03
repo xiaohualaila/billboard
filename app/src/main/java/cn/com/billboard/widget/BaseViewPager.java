@@ -17,7 +17,7 @@ import android.view.MotionEvent;
  * @date 2015-4-2 下午4:43:31
  */
 public class BaseViewPager extends ViewPager {
-	private int interval = 5000;// 自动滚动的时间
+	private int interval = 8000;// 自动滚动的时间
 	public boolean isOutScroll;// 是否需要自动滚动
 	private MyHandler myHandler;
 	private int ROLL = 0x10;
