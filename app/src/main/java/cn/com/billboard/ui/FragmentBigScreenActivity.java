@@ -65,16 +65,22 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             mac = smdt.smdtGetEthMacAddress();
             ipAddress = smdt.smdtGetEthIPAddress();
-            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
-            AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+
             new Timer().schedule(timerTask, 0, 5000);
        // }
         Log.i("mac", mac);
         if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
-            toFragmentImg();
+            toFragmentVideo();
         } else {
-            getP().getScreenData(true, mac, ipAddress);
+            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+            if(TextUtils.isEmpty(ipAddress)){
+                ToastManager.showShort(context, "IP地址为空，请检查网络！");
+                toFragmentVideo();
+            }else {
+                AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+                getP().getScreenData(true, mac, ipAddress);
+            }
         }
         startService(new Intent(context, UpdateService.class));
 

@@ -52,7 +52,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     private Fragment updateFrag;
     private Fragment mainFrag;
     private Fragment bigPigFrag;
-    private Fragment recordVideoFrag;
     DisplayManager displayManager;//屏幕管理类
     Display[] displays;//屏幕数组
 
@@ -74,7 +73,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         updateFrag = new FragmentUpdate();
         mainFrag = new FragmentMain();
         bigPigFrag = new FragmentPic();
-//        recordVideoFrag = new FragmentVideo(phoneType);
 
         /**
          * 老板子没有喂狗api
@@ -85,8 +83,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             mac = smdt.smdtGetEthMacAddress();
             ipAddress = smdt.smdtGetEthIPAddress();
-            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
-            AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
             new Timer().schedule(timerTask, 0, 5000);
     //    }
         Log.i("mac", mac);
@@ -94,7 +90,14 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
             toFragemntMain();
         } else {
-            getP().getScreenData(true, mac, ipAddress);
+            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+            if(TextUtils.isEmpty(ipAddress)){
+                ToastManager.showShort(context, "IP地址为空，请检查网络！");
+                toFragemntMain();
+            }else {
+                AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+                getP().getScreenData(true, mac, ipAddress);
+            }
         }
         startService(new Intent(context, GPIOService.class));
         startService(new Intent(context, UpdateService.class));
