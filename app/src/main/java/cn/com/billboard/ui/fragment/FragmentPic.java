@@ -55,7 +55,6 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("sss","图片播放完毕,休眠图片播放时长后播放视频 " +position );
                 if (position == images_big.size() - 1) {
                     FragmentActivity.instance().toFragemntMain();
                 }

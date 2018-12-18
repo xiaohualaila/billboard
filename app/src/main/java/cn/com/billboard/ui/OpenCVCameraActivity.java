@@ -30,6 +30,7 @@ import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
 import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
@@ -121,9 +122,9 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     private void saveFileFinishActivity(){
         File file = new File(fileName);
         if(file.exists()){
-            AppSharePreferenceMgr.put(this,"picFile",fileName);
+            SharedPreferencesUtil.putString(this,"picFile",fileName);
         }else {
-            AppSharePreferenceMgr.put(this,"picFile","");
+            SharedPreferencesUtil.putString(this,"picFile","");
         }
         finish();
     }

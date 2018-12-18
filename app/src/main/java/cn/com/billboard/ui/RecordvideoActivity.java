@@ -24,6 +24,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordVideoPresent;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.MyUtil;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
@@ -198,9 +199,9 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                 }
                 File file = new File(path);
                 if (file.exists()) {
-                    AppSharePreferenceMgr.put(this,"videoFile",path);
+                    SharedPreferencesUtil.putString(this,"videoFile",path);
                 }else {
-                    AppSharePreferenceMgr.put(this,"videoFile","");
+                    SharedPreferencesUtil.putString(this,"videoFile","");
                 }
                 if(!isClose){
                     OpenCVCameraActivity.launch(this,mac,phoneType);

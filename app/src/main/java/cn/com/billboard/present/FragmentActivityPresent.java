@@ -3,6 +3,7 @@ package cn.com.billboard.present;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,9 @@ import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.FragmentActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
-import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.DownloadFileUtil;
 import cn.com.library.kit.Kits;
 import cn.com.library.log.XLog;
@@ -42,7 +42,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
         @Override
         public void onMainUpdateUI() {
             getV().toFragemntMain();
-            updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
+            updateState(SharedPreferencesUtil.getString(getV(), UserInfoKey.MAC, ""));
         }
 
         @SuppressLint("NewApi")
@@ -51,11 +51,12 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
             getV().showSubData();
         }
 
-
         @Override
         public void onErrorChangeUI(String error) {
             getV().showError(error);
         }
+
+
     };
 
 
@@ -74,24 +75,20 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                                 callBack.onMainChangeUI();
                                 callBack.onSubChangeUI();
                             }
-                            UpdateService.getInstance().startTimer();
-                            callBack.onErrorChangeUI(error.getMessage());
+                            getV().showError("网络异常！");
                         }
 
                         @Override
                         public void onNext(BaseBean<TwoScreenModel> model) {
                             if (model.isSuccess()) {
-                                getV().toFragemntUpdate();
                                 dealData(model.getMessageBody());
-
                             } else {
                                 if (isRefresh) {
                                         callBack.onMainChangeUI();
                                         callBack.onSubChangeUI();
                                 }
-                                callBack.onErrorChangeUI(model.getDescribe());
+                                getV().showError(model.getDescribe());
                             }
-                            UpdateService.getInstance().startTimer();
                         }
                     });
     }
@@ -109,11 +106,10 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                    //更新app
                    getV().toUpdateVer(model.getApkurl(),s_version);
                }else {
+                   getV().toFragemntUpdate();
                    downloadAndSaveData(model);
                }
            }
-
-
     }
 
     /**
@@ -122,8 +118,10 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
     private void downloadAndSaveData(TwoScreenModel model) {
         String tell = model.getTel1();
         String tel2 = model.getTel2();
-        AppSharePreferenceMgr.put(getV(),"tell",tell);
-        AppSharePreferenceMgr.put(getV(),"tel2",tel2);
+        int time = Integer.parseInt(model.getHeartinterval());
+        SharedPreferencesUtil.putString(getV(), "tell", tell);
+        SharedPreferencesUtil.putString(getV(),"tel2",tel2);
+        SharedPreferencesUtil.putInt(getV(),"time",time);
         //下屏小图片
         List<String> lists_pic_small_dowm = new ArrayList<>();
         List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
@@ -167,6 +165,11 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                   }
               }
           }
+          if(halfupdisplayBean == null && updisplayBean== null && halfdowndisplayBeanList == null ){
+              callBack.onMainChangeUI();
+              callBack.onSubChangeUI();
+              return;
+          }
 
         DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
@@ -183,7 +186,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                    //    getV().showError(error);
+                        getV().showError("网络异常！");
                     }
 
                     @Override
@@ -210,7 +213,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                     @Override
                     protected void onFail(NetError error) {
                         XLog.e("状态上报失败");
-                     //   getV().showError(error);
+                        getV().showError("网络异常！");
                     }
 
                     @Override
@@ -231,9 +234,11 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
      * 上传打电话人员的视频
      */
     public void uploadAlarmInfo(String macAddress,String recordId) {
-
-        String video_path = (String) AppSharePreferenceMgr.get(getV(), "videoFile", "");
-        String pic_path = (String) AppSharePreferenceMgr.get(getV(), "picFile", "");
+        String video_path =  SharedPreferencesUtil.getString(getV(), "videoFile", "");
+        String pic_path =  SharedPreferencesUtil.getString(getV(), "picFile", "");
+        if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
+            return;
+        }
         MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
         RequestBody requestBody = null;
         if(!TextUtils.isEmpty(video_path)){
@@ -253,6 +258,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
 
             }
         }
+        Log.i("sss",">>>>>>>>>>>>>>>> 开始上传");
         List<MultipartBody.Part> list =  builder.build().parts();
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,list)
                 .compose(XApi.<BaseBean>getApiTransformer())
@@ -261,7 +267,8 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                        XLog.e("状态上报失败");
+                        Log.i("sss","状态上报失败");
+                        getV().showError("网络异常！");
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                     }
@@ -269,17 +276,16 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            XLog.e("状态上报成功");
+                            Log.i("sss","上报成功");
+                            getV().showError("上报成功！");
                         } else {
-                            XLog.e("状态上报失败");
+                            Log.i("sss","上报失败");
+                            getV().showError("上报失败！");
                         }
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                     }
                 });
     }
-
-
-
 
 }

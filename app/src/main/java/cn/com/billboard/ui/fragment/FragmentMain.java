@@ -40,6 +40,10 @@ public class FragmentMain extends BaseFragment {
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
         if(videos.size()==0||images_small.size()==0){
+            if(images_big.size()>0){
+                FragmentActivity.instance().toFragemntBigPic();
+                return;
+            }
             FragmentActivity.instance().showError("视频或图片不能为空！");
             return;
         }
@@ -49,8 +53,9 @@ public class FragmentMain extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        playVideo();
-
+        if(videos.size()>0){
+            playVideo();
+        }
     }
 
     /**
@@ -79,9 +84,8 @@ public class FragmentMain extends BaseFragment {
 
     /**播放视频*/
     private void playVideo(){
-        video.setOnPreparedListener(mp -> {
 
-        });
+        video.setOnPreparedListener(mp -> { });
         video.setOnCompletionListener(mp -> {
             videoIndex++;
             if (videoIndex != videos.size()) {
@@ -96,8 +100,6 @@ public class FragmentMain extends BaseFragment {
                     }else {
                         playVideo();
                     }
-
-
             }
         });
         video.setOnErrorListener((mp, what, extra) -> {
@@ -123,8 +125,6 @@ public class FragmentMain extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                 Log.i("ssss","小图片position  " +position );
-
                 if(position == images_small.size()-1){
                     pic_finish = true;
                     if(images_big.size()>0 && video_finish){
@@ -154,7 +154,4 @@ public class FragmentMain extends BaseFragment {
         }
         return bannerView;
     }
-
-
-
 }

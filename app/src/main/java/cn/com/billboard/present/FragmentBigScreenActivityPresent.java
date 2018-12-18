@@ -1,22 +1,19 @@
 package cn.com.billboard.present;
 
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.BigScreenCallBack;
 import cn.com.billboard.model.MessageBodyBean;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadBigScreenFileUtil;
 import cn.com.billboard.util.GsonProvider;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
 import cn.com.library.net.ApiSubscriber;
@@ -59,7 +56,6 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                             getV().toFragmentVideo();
                         }
                         callBack.onErrorChangeUI(error.getMessage());
-                        UpdateService.getInstance().startTimer();
                     }
 
                     @Override
@@ -73,7 +69,6 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                             }
                             callBack.onErrorChangeUI(model.getDescribe());
                         }
-                        UpdateService.getInstance().startTimer();
                     }
                 });
     }
@@ -106,10 +101,10 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
         String  tel2 = model.getTel2();
         String  tel3 = model.getTel3();
         String  tel4 = model.getTel4();
-        AppSharePreferenceMgr.put(getV(),"tel1",tel1);
-        AppSharePreferenceMgr.put(getV(),"tel2",tel2);
-        AppSharePreferenceMgr.put(getV(),"tel3",tel3);
-        AppSharePreferenceMgr.put(getV(),"tel4",tel4);
+        SharedPreferencesUtil.putString(getV(),"tel1",tel1);
+        SharedPreferencesUtil.putString(getV(),"tel2",tel2);
+        SharedPreferencesUtil.putString(getV(),"tel3",tel3);
+        SharedPreferencesUtil.putString(getV(),"tel4",tel4);
         //图片
         List<String> lists_pic = new ArrayList<>();
 

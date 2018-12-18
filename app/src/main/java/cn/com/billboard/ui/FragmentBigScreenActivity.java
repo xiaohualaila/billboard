@@ -13,31 +13,28 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import java.util.concurrent.TimeUnit;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.model.EventModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentBigScreenActivityPresent;
-import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
 import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
-import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivityPresent> implements AppDownload.Callback {
     private static FragmentBigScreenActivity instance;
@@ -50,8 +47,8 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     private String mac = "";
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
-
-
+    private Disposable mDisposable;
+    private boolean isFirst = true;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -59,42 +56,35 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentBigScreenPic();
         videoFrg = new FragmentBigScreenVideo();
-        String model = Build.MODEL;
-     //   if (model.equals("3280")) {
+ 
             smdt = SmdtManager.create(this);
             smdt.smdtWatchDogEnable((char) 1);//开启看门狗
             mac = smdt.smdtGetEthMacAddress();
             ipAddress = smdt.smdtGetEthIPAddress();
 
             new Timer().schedule(timerTask, 0, 5000);
-       // }
+    
         Log.i("mac", mac);
         if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
             toFragmentVideo();
         } else {
-            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+            SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
             if(TextUtils.isEmpty(ipAddress)){
                 ToastManager.showShort(context, "IP地址为空，请检查网络！");
                 toFragmentVideo();
             }else {
-                AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
-                getP().getScreenData(true, mac, ipAddress);
+                SharedPreferencesUtil.putString(this, UserInfoKey.IPADDRESS, ipAddress);
+                heartinterval();
             }
         }
-        startService(new Intent(context, UpdateService.class));
 
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     ToastManager.showShort(context, messageModel.message);
                 }
         );
-        BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                eventModel -> {
-                    XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, mac, ipAddress);
-                }
-        );
+       
         instance = this;
     }
 
@@ -108,6 +98,19 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
             smdt.smdtWatchDogFeed();//喂狗
         }
     };
+
+    /**
+     * 发送心跳数据
+     */
+    private void heartinterval() {
+        int time =  SharedPreferencesUtil.getInt(this, "time", 10);
+        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    getP().getScreenData(isFirst, mac, ipAddress);
+                    isFirst = false;
+                });
+    }
 
     /**
      * 动态添加fragment，不会重复创建fragment
@@ -161,12 +164,10 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopService(new Intent(context, GPIOService.class));
-        stopService(new Intent(context, UpdateService.class));
-        String model = Build.MODEL;
-     //   if (model.equals("3280")) {
-            smdt.smdtWatchDogEnable((char) 0);
-     //   }
+        smdt.smdtWatchDogEnable((char) 0);
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     public void toUpdateVer(String apkurl, String version) {

@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
@@ -37,13 +38,16 @@ import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
 import cn.com.library.kit.ToastManager;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback {
 
@@ -63,6 +67,8 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     private int phoneType = 1;
     private String recordId = "";
     private static FragmentActivity instance;
+    private Disposable mDisposable;
+    private boolean isFirst = true;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -77,14 +83,12 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         /**
          * 老板子没有喂狗api
          */
-        String model = Build.MODEL;
-      //  if (model.equals("3280")) {
-            smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-            mac = smdt.smdtGetEthMacAddress();
-            ipAddress = smdt.smdtGetEthIPAddress();
-            new Timer().schedule(timerTask, 0, 5000);
-    //    }
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        mac = smdt.smdtGetEthMacAddress();
+        ipAddress = smdt.smdtGetEthIPAddress();
+        new Timer().schedule(timerTask, 0, 5000);
+
         Log.i("mac", mac);
         if (TextUtils.isEmpty(mac)) {
             ToastManager.showShort(context, "Mac地址，为空请检查网络！");
@@ -96,11 +100,10 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                 toFragemntMain();
             }else {
                 AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
-                getP().getScreenData(true, mac, ipAddress);
+                heartinterval();
             }
         }
         startService(new Intent(context, GPIOService.class));
-        startService(new Intent(context, UpdateService.class));
         /**
          * 报警
          */
@@ -117,13 +120,21 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     ToastManager.showShort(context, messageModel.message);
                 }
         );
-        BusProvider.getBus().toFlowable(EventModel.class).subscribe(
-                eventModel -> {
-                    XLog.e("EventModel===" + eventModel.value);
-                    getP().getScreenData(false, mac, ipAddress);
-                }
-        );
         instance = this;
+    }
+
+    /**
+     * 发送心跳数据
+     */
+    private void heartinterval() {
+        int time =  SharedPreferencesUtil.getInt(this, "time", 10);
+        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    getP().getScreenData(isFirst, mac, ipAddress);
+                    isFirst = false;
+                    Log.i("sss","进行心跳请求。。。");
+                });
     }
 
     @Override
@@ -223,12 +234,11 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        smdt.smdtWatchDogEnable((char) 0);//停止喂狗
         stopService(new Intent(context, GPIOService.class));
-        stopService(new Intent(context, UpdateService.class));
-        String model = Build.MODEL;
-     //   if (model.equals("3280")) {
-            smdt.smdtWatchDogEnable((char) 0);
-     //   }
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     public void toUpdateVer(String apkurl, String version) {
@@ -240,7 +250,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         dialog_app.getFile_num().setText("版本号" + version);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
-
         appDownload.downApk(apkurl, this);
     }
 

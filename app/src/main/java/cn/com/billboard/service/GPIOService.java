@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.EventModel;
-import cn.com.billboard.util.AppSharePreferenceMgr;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
 import cn.com.library.event.BusProvider;
@@ -42,7 +42,7 @@ public class GPIOService extends Service {
     }
 
     private String strCmd = "/sys/class/gpio_xrm/gpio";
-    private int gpioNum = 5;//IO口电话5，监督6，消防7
+    private int gpioNum = 4;//IO口电话5，监督6，消防7
     private final int TIME = 100;
     private boolean isAuto = true;
     private static Lock lock = new ReentrantLock();
@@ -54,7 +54,6 @@ public class GPIOService extends Service {
     private String isScanPhone = "0";
 
     private boolean isCalling = false;
-    private int send_type = 0;
 
     String  strResult_5="";
     private SerialHelper serialHelper;
@@ -119,13 +118,13 @@ public class GPIOService extends Service {
     Runnable task = () -> {
         while (isAuto) {
             lock.lock();
-            String  strResult="";
+            String  strResult;
 
             try {
-             if(gpioNum == 5){//挂上电话是0，拿下电话是 1
+             if(gpioNum == 4){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                 Log.i("sss","+++++++++++++++"+strResult_5);
+                 //Log.i("sss","+++++++++++++++"+strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
@@ -139,15 +138,14 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
-                                 tell = (String) AppSharePreferenceMgr.get(this,"tell","");
-                                 if(TextUtils.isEmpty(tel2)){
+                                 tell =  SharedPreferencesUtil.getString(this,"tell","");
+                                 if(TextUtils.isEmpty(tell)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
-                                     sendTest("ATD"+tell+";\r\n");
-                                     send_type = 1;
-                                     BusProvider.getBus().post(new AlarmRecordModel(true, send_type));
                                      isCalling = true;
-                                     sendHex("01");
+                                     sendTest("ATD"+tell+";\r\n");
+                                     BusProvider.getBus().post(new AlarmRecordModel(true, 1));
+                                     sendHex("01");//报警灯
                                  }
                              }
                          }
@@ -159,22 +157,20 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
-                             tel2 = (String) AppSharePreferenceMgr.get(this,"tel2","");
+                             tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-//                                 break;
                              }else {
-                                 sendTest("ATD"+tel2+";\r\n");
-                                 send_type = 2;
-                                 BusProvider.getBus().post(new AlarmRecordModel(true, send_type));
                                  isCalling = true;
+                                 sendTest("ATD"+tel2+";\r\n");
+                                 BusProvider.getBus().post(new AlarmRecordModel(true, 2));
                                  sendHex("01");
                              }
 
                          }
                      }
                  }
-                 gpioNum = 5;
+                 gpioNum = 4;
              }
                 Thread.sleep(TIME);
             } catch (Exception e) {

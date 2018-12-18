@@ -17,6 +17,16 @@ public class TwoScreenModel {
     private String build;
     private String tel1;
     private String tel2;
+    private String heartinterval;
+
+    public String getHeartinterval() {
+        return heartinterval;
+    }
+
+    public void setHeartinterval(String heartinterval) {
+        this.heartinterval = heartinterval;
+    }
+
     private List<HalfdowndisplayBean> halfdowndisplay;
     private List<DowndisplayBean> downdisplay;
     private List<UpdisplayBean> updisplay;

@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
 import cn.com.billboard.model.EventModel;
+import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.event.IBus;
 import cn.com.library.log.XLog;
@@ -50,8 +51,10 @@ public class UpdateService extends Service {
     }
 
     public void startTimer(){
+        String DD = SharedPreferencesUtil.getString(this,"tell","");
+        int time = SharedPreferencesUtil.getInt(this,"time",10);
         //TODO 启动计时服务
-        Observable.timer(10, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
+        Observable.timer(time, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
 
             @Override
             public void onSubscribe(Disposable d) {
