@@ -6,14 +6,11 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
-
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.util.ChangeTool;

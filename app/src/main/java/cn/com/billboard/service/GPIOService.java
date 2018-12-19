@@ -9,22 +9,15 @@ import android.util.Log;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.model.EventModel;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
 import cn.com.library.event.BusProvider;
-import cn.com.library.log.XLog;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+
 
 public class GPIOService extends Service {
 

@@ -47,7 +47,7 @@ public class FragmentUpdate extends BaseFragment {
                     file_name = progressModel.type + progressModel.fileName;
                     if (isUPdate) {
                         isUPdate = false;
-                        mHandler.postDelayed(runnable, 30);
+                        mHandler.postDelayed(runnable, 100);
                     }
                 }
         );
@@ -56,11 +56,15 @@ public class FragmentUpdate extends BaseFragment {
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            loading_file_name.setText(file_name);
-            loading_num.setText(file_num);
-            progressBarHorizontal.setProgress(file_pre);
-            loading_pro.setText(file_pre + "%");
-            mHandler.postDelayed(runnable, 100);
+            try {
+                loading_file_name.setText(file_name);
+                loading_num.setText(file_num);
+                progressBarHorizontal.setProgress(file_pre);
+                loading_pro.setText(file_pre + "%");
+                mHandler.postDelayed(runnable, 100);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     };
 

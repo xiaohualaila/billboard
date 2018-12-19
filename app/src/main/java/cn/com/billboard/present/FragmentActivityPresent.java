@@ -197,7 +197,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                        getV().showError("网络异常！");
+                  //      getV().showError("网络异常！");
                     }
 
                     @Override
@@ -269,7 +269,6 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
 
             }
         }
-        Log.i("sss",">>>>>>>>>>>>>>>> 开始上传");
         List<MultipartBody.Part> list =  builder.build().parts();
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,list)
                 .compose(XApi.<BaseBean>getApiTransformer())
@@ -278,7 +277,6 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-                        Log.i("sss","状态上报失败");
                         getV().showError("网络异常！");
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
@@ -287,10 +285,8 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            Log.i("sss","上报成功");
                             getV().showError("上报成功！");
                         } else {
-                            Log.i("sss","上报失败");
                             getV().showError("上报失败！");
                         }
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
