@@ -22,7 +22,7 @@ public class LauncherActivity extends XActivity<LauncherPresent>  {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-               getP().checkPermissions();
+               getP().toActivity();
             }
         },3000);
 

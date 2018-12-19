@@ -17,7 +17,6 @@ public class UserInfoKey {
     public static String SUB_SCREEN_ID = "sub_screen_id"; // 副屏id
     public static String BIG_SCREEN_ID = "sub_screen_id"; // 大屏id
     public static String MAC = "mac";
-    public static String IPADDRESS = "ip_address";
     public static String SUB_PICTURE_FILE = "sub_picture_file";//副屏图片(本地存储地址)
 
 

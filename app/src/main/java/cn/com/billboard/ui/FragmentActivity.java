@@ -32,7 +32,6 @@ import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
-import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.kit.Kits;
@@ -119,10 +118,10 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
                         ToastManager.showShort(context, "Mac地址或IP地址不能为空，请检查网络！");
                         toFragemntMain();
+                        isFirst = false;
                         return;
                     }
-                    AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
-                    AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
+                    SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
                     getP().getScreenData(isFirst, mac, ipAddress);
                     isFirst = false;
                 });

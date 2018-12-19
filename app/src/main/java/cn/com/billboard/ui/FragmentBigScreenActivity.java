@@ -74,7 +74,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
                 ToastManager.showShort(context, "IP地址为空，请检查网络！");
                 toFragmentVideo();
             }else {
-                SharedPreferencesUtil.putString(this, UserInfoKey.IPADDRESS, ipAddress);
+//                SharedPreferencesUtil.putString(this, UserInfoKey.IPADDRESS, ipAddress);
                 heartinterval();
             }
         }
