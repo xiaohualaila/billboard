@@ -26,6 +26,7 @@ import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
+import cn.com.library.kit.ToastManager;
 import cn.com.library.mvp.XActivity;
 import cn.com.library.router.Router;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -140,7 +141,15 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             mRecorder = new MediaRecorder();
         }
          mRecorder.reset();
-         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+
+        try {
+            camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastManager.showShort(context, "请检查摄像头！");
+            SharedPreferencesUtil.putString(this,"videoFile","");
+            finish();
+        }
         if (camera != null) {
             camera.setDisplayOrientation(0);
             camera.unlock();

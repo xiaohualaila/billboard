@@ -269,7 +269,12 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
 
             }
         }
-        List<MultipartBody.Part> list =  builder.build().parts();
+        List<MultipartBody.Part> list = null;
+        try {
+            list = builder.build().parts();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,list)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())

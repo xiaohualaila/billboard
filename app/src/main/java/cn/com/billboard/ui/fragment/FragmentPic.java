@@ -56,7 +56,11 @@ public class FragmentPic extends BaseFragment {
             @Override
             public void onPageSelected(int position) {
                 if (position == images_big.size() - 1) {
-                    FragmentActivity.instance().toFragemntMain();
+                    try {
+                        FragmentActivity.instance().toFragemntMain();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

@@ -17,22 +17,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.model.EventModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentActivityPresent;
-
 import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.service.UpdateService;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -85,25 +80,14 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
          */
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        mac = smdt.smdtGetEthMacAddress();
-        ipAddress = smdt.smdtGetEthIPAddress();
         new Timer().schedule(timerTask, 0, 5000);
-
-        Log.i("mac", mac);
-        if (TextUtils.isEmpty(mac)) {
-            ToastManager.showShort(context, "Mac地址，为空请检查网络！");
-            toFragemntMain();
-        } else {
-            AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
-            if(TextUtils.isEmpty(ipAddress)){
-                ToastManager.showShort(context, "IP地址为空，请检查网络！");
-                toFragemntMain();
-            }else {
-                AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
-                heartinterval();
-            }
-        }
+        heartinterval();
         startService(new Intent(context, GPIOService.class));
+        getBusDate();
+        instance = this;
+    }
+
+    private void getBusDate() {
         /**
          * 报警
          */
@@ -120,7 +104,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     ToastManager.showShort(context, messageModel.message);
                 }
         );
-        instance = this;
     }
 
     /**
@@ -131,9 +114,17 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
+                    mac = smdt.smdtGetEthMacAddress();
+                    ipAddress = smdt.smdtGetEthIPAddress();
+                    if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
+                        ToastManager.showShort(context, "Mac地址或IP地址不能为空，请检查网络！");
+                        toFragemntMain();
+                        return;
+                    }
+                    AppSharePreferenceMgr.put(this, UserInfoKey.MAC, mac);
+                    AppSharePreferenceMgr.put(this, UserInfoKey.IPADDRESS, ipAddress);
                     getP().getScreenData(isFirst, mac, ipAddress);
                     isFirst = false;
-                    Log.i("sss","进行心跳请求。。。");
                 });
     }
 
@@ -146,7 +137,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
          */
         getP().uploadAlarmInfo(mac, recordId);
     }
-
 
     TimerTask timerTask = new TimerTask() {
         @Override
@@ -172,7 +162,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     public void getAlarmId(String s) {
         if (!TextUtils.isEmpty(s)) {
             recordId = s;
-            //    toFragmentVideo();
             RecordvideoActivity.launch(this, mac, phoneType);
         }
     }
@@ -215,11 +204,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     public void toFragemntMain() {
         switchContent(mainFrag);
     }
-
-//    public void toFragmentVideo(){
-//        switchContent(recordVideoFrag);
-//    }
-
 
     @Override
     public int getLayoutId() {
