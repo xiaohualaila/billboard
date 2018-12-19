@@ -78,7 +78,6 @@ public class GPIOService extends Service {
                 String back= ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
                 if(back.contains("NO CARRIER")){
                     stopCall();
-
                 }else if(back.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
                 }
@@ -139,6 +138,7 @@ public class GPIOService extends Service {
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  tell =  SharedPreferencesUtil.getString(this,"tell","");
+                                 Log.i("sss","tel1  "+tell);
                                  if(TextUtils.isEmpty(tell)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
@@ -158,6 +158,7 @@ public class GPIOService extends Service {
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
                              tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
+                             Log.i("sss","tel2  "+tel2);
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                              }else {

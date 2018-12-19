@@ -14,6 +14,7 @@ import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.ui.FragmentActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.DownloadFileUtil;
 import cn.com.library.kit.Kits;
@@ -36,12 +37,12 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
     CallBack callBack = new CallBack() {
         @Override
         public void onMainChangeUI() {
-                    getV().toFragemntMain();
+            selectFragment();
         }
 
         @Override
         public void onMainUpdateUI() {
-            getV().toFragemntMain();
+            selectFragment();
             updateState(SharedPreferencesUtil.getString(getV(), UserInfoKey.MAC, ""));
         }
 
@@ -56,8 +57,16 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
             getV().showError(error);
         }
 
-
     };
+
+    private void selectFragment() {
+        List<String> images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
+        if(images_big.size() > 0 ){
+            getV().toFragemntBigPic();
+        }else {
+            getV().toFragemntMain();
+        }
+    }
 
 
     /**
@@ -106,7 +115,6 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                    //更新app
                    getV().toUpdateVer(model.getApkurl(),s_version);
                }else {
-                   getV().toFragemntUpdate();
                    downloadAndSaveData(model);
                }
            }
@@ -122,6 +130,13 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
         SharedPreferencesUtil.putString(getV(), "tell", tell);
         SharedPreferencesUtil.putString(getV(),"tel2",tel2);
         SharedPreferencesUtil.putInt(getV(),"time",time);
+        if(model.getHalfdowndisplay() == null && model.getDowndisplay()== null && model.getDowndisplay() == null && model.getUpdisplay()==null ){
+            callBack.onMainChangeUI();
+            callBack.onSubChangeUI();
+            return;
+        }
+        getV().toFragemntUpdate();
+
         //下屏小图片
         List<String> lists_pic_small_dowm = new ArrayList<>();
         List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
@@ -165,11 +180,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                   }
               }
           }
-          if(halfupdisplayBean == null && updisplayBean== null && halfdowndisplayBeanList == null ){
-              callBack.onMainChangeUI();
-              callBack.onSubChangeUI();
-              return;
-          }
+
 
         DownloadFileUtil.getInstance().downMainLoadPicture(getV(), lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
