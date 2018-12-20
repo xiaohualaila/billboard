@@ -60,7 +60,7 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                     @Override
                     protected void onFail(NetError error) {
                         if (isRefresh) {
-                            getV().toFragmentVideo();
+                            callBack.onScreenChangeUI();
                         }
                         callBack.onErrorChangeUI(error.getMessage());
                     }

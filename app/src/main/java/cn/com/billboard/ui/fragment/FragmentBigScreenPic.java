@@ -58,7 +58,9 @@ public class FragmentBigScreenPic extends BaseFragment {
             public void onPageSelected(int position) {
             //    Log.i("sss", "图片播放完毕,休眠图片播放时长后播放视频 " + position);
                 if (position == images_big.size() - 1) {
-                    mHandler.postDelayed(() -> backplay(), 2000);
+                    if(videos.size()>0){
+                        mHandler.postDelayed(() -> backplay(), 2000);
+                    }
                 }
             }
 
@@ -68,7 +70,9 @@ public class FragmentBigScreenPic extends BaseFragment {
             }
         });
         if (images_big.size() == 1) {
-            mHandler.postDelayed(() -> backplay(), 2000);
+            if(videos.size()>0){
+                mHandler.postDelayed(() -> backplay(), 2000);
+            }
         }
     }
 
@@ -78,7 +82,9 @@ public class FragmentBigScreenPic extends BaseFragment {
             banner.startScroll();
             images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
             if (images_big.size() == 1) {
-                mHandler.postDelayed(() -> backplay(), 2000);
+                if(videos.size()>0){
+                    mHandler.postDelayed(() -> backplay(), 2000);
+                }
             }
         } else {
             banner.stopScroll();
@@ -90,9 +96,6 @@ public class FragmentBigScreenPic extends BaseFragment {
      * 重复播放小图片和视频
      */
     private void backplay() {
-        if (videos.size() == 0) {
-            return;
-        }
         FragmentBigScreenActivity.instance().toFragmentVideo();
     }
 
