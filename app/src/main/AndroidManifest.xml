@@ -84,13 +84,10 @@
             android:name=".ui.FragmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask">
-
-
         </activity>
 
-        <service android:name=".service.GPIOService" >
-
-        </service>
+        <service android:name=".service.GPIOService" />
+        <service android:name=".service.GPIOBigService" />
 
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"

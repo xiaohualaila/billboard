@@ -56,9 +56,9 @@ public class FragmentBigScreenPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("sss", "图片播放完毕,休眠图片播放时长后播放视频 " + position);
+            //    Log.i("sss", "图片播放完毕,休眠图片播放时长后播放视频 " + position);
                 if (position == images_big.size() - 1) {
-                    backplay();
+                    mHandler.postDelayed(() -> backplay(), 2000);
                 }
             }
 
@@ -68,18 +68,18 @@ public class FragmentBigScreenPic extends BaseFragment {
             }
         });
         if (images_big.size() == 1) {
-            mHandler.postDelayed(() -> backplay(), 5000);
+            mHandler.postDelayed(() -> backplay(), 2000);
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if (!hidden) {
+            banner.startScroll();
             images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
             if (images_big.size() == 1) {
-                mHandler.postDelayed(() -> backplay(), 5000);
+                mHandler.postDelayed(() -> backplay(), 2000);
             }
-            banner.startScroll();
         } else {
             banner.stopScroll();
         }

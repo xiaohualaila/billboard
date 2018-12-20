@@ -67,6 +67,8 @@ public class GPIOService extends Service {
                     stopCall();
                 }else if(back.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
+                } else if(back.contains("ERROR")){
+                    stopCall();
                 }
                Log.i("sss", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
             }

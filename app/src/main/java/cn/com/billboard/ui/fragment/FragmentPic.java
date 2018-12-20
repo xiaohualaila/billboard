@@ -23,7 +23,7 @@ public class FragmentPic extends BaseFragment {
     @BindView(R.id.main_banner)
     BaseViewPager banner;
     private List<String> images_big;
-
+    private List<String> video;
     private Handler mHandler = new Handler();
 
     @Override
@@ -34,13 +34,10 @@ public class FragmentPic extends BaseFragment {
     @Override
     protected void init() {
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
+        video = FileUtil.getFilePath(UserInfoKey.VIDEO);
         playBanner();
     }
+
 
     /**播放图片轮播*/
     private void playBanner(){
@@ -55,12 +52,12 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
+               // Log.i("sss","position " + position);
                 if (position == images_big.size() - 1) {
-                    try {
-                        FragmentActivity.instance().toFragemntMain();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if(video.size()>0){
+                        mHandler.postDelayed(() -> backplay(),5000);
                     }
+
                 }
             }
 
@@ -70,18 +67,20 @@ public class FragmentPic extends BaseFragment {
             }
         });
         if(images_big.size()==1){
-            mHandler.postDelayed(() -> backplay(),5000);
+            if(video.size()>0) {
+                mHandler.postDelayed(() -> backplay(), 5000);
+            }
         }
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         if(!hidden){
+            banner.startScroll();
             images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
             if(images_big.size()==1){
                 mHandler.postDelayed(() -> backplay(),5000);
             }
-            banner.startScroll();
         }else {
             banner.stopScroll();
         }

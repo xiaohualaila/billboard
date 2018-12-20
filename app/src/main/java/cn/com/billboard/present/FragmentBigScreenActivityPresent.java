@@ -112,6 +112,10 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
         SharedPreferencesUtil.putString(getV(),"tel2",tel2);
         SharedPreferencesUtil.putString(getV(),"tel3",tel3);
         SharedPreferencesUtil.putString(getV(),"tel4",tel4);
+        if( model.getFullPics()== null && model.getFullVideos() == null  ){
+            callBack.onScreenChangeUI();
+            return;
+        }
         //图片
         List<String> lists_pic = new ArrayList<>();
 
@@ -135,14 +139,16 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
             }
         }
         //标题
-        List<MessageBodyBean.StripedisplayBean> stripedisplayBeans = model.getStripedisplay();
-        List<String> lists_str = new ArrayList<>();
-        if (stripedisplayBeans.size() > 0 && stripedisplayBeans != null) {
-            for (int i = 0; i < stripedisplayBeans.size(); i++) {
-                lists_str.add(stripedisplayBeans.get(i).getTitle());
-            }
-        }
-        SharedPreferencesUtil.putString(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
+//        List<MessageBodyBean.StripedisplayBean> stripedisplayBeans = model.getStripedisplay();
+//        List<String> lists_str = new ArrayList<>();
+//        if (stripedisplayBeans != null) {
+//            if (stripedisplayBeans.size()>0) {
+//                for (int i = 0; i < stripedisplayBeans.size(); i++) {
+//                    lists_str.add(stripedisplayBeans.get(i).getTitle());
+//                }
+//            }
+//        }
+//        SharedPreferencesUtil.putString(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
 
         DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
     }
