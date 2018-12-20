@@ -138,17 +138,6 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                 }
             }
         }
-        //标题
-//        List<MessageBodyBean.StripedisplayBean> stripedisplayBeans = model.getStripedisplay();
-//        List<String> lists_str = new ArrayList<>();
-//        if (stripedisplayBeans != null) {
-//            if (stripedisplayBeans.size()>0) {
-//                for (int i = 0; i < stripedisplayBeans.size(); i++) {
-//                    lists_str.add(stripedisplayBeans.get(i).getTitle());
-//                }
-//            }
-//        }
-//        SharedPreferencesUtil.putString(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
 
         DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
     }
