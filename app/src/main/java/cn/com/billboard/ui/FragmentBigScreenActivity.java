@@ -22,6 +22,8 @@ import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentBigScreenActivityPresent;
+import cn.com.billboard.service.GPIOBigService;
+import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
 import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -56,36 +58,21 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentBigScreenPic();
         videoFrg = new FragmentBigScreenVideo();
- 
-            smdt = SmdtManager.create(this);
-            smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-            mac = smdt.smdtGetEthMacAddress();
-            ipAddress = smdt.smdtGetEthIPAddress();
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        new Timer().schedule(timerTask, 0, 5000);
+        heartinterval();
+        startService(new Intent(context, GPIOBigService.class));
+        getBus();
+        instance = this;
+    }
 
-            new Timer().schedule(timerTask, 0, 5000);
-    
-        Log.i("mac", mac);
-        if (TextUtils.isEmpty(mac)) {
-            ToastManager.showShort(context, "Mac地址，为空请检查网络！");
-            toFragmentVideo();
-        } else {
-            SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-            if(TextUtils.isEmpty(ipAddress)){
-                ToastManager.showShort(context, "IP地址为空，请检查网络！");
-                toFragmentVideo();
-            }else {
-//                SharedPreferencesUtil.putString(this, UserInfoKey.IPADDRESS, ipAddress);
-                heartinterval();
-            }
-        }
-
+    private void getBus() {
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     ToastManager.showShort(context, messageModel.message);
                 }
         );
-       
-        instance = this;
     }
 
     public static FragmentBigScreenActivity instance() {
@@ -107,6 +94,14 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
+                    mac = smdt.smdtGetEthMacAddress();
+                    ipAddress = smdt.smdtGetEthIPAddress();
+                    if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
+                        ToastManager.showShort(context, "Mac地址或IP地址不能为空，请检查网络！");
+                        toFragmentVideo();
+                        isFirst = false;
+                        return;
+                    }
                     getP().getScreenData(isFirst, mac, ipAddress);
                     isFirst = false;
                 });
@@ -118,25 +113,23 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
      * @param to 将要加载的fragment
      */
     public void switchContent(Fragment to) {
-        if (mCurrentFrag != to) {
-            if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
-                if (mCurrentFrag != null) {
-                    fm.beginTransaction().hide(mCurrentFrag).commit();
+        try {
+            if (mCurrentFrag != to) {
+                if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
+                    if (mCurrentFrag != null) {
+                        fm.beginTransaction().hide(mCurrentFrag).commit();
+                    }
+                    fm.beginTransaction()
+                            .add(R.id.fl_content, to)
+                            .commit();
+                } else {
+                    fm.beginTransaction().hide(mCurrentFrag).show(to).commitAllowingStateLoss(); // 隐藏当前的fragment，显示下一个
                 }
-                fm.beginTransaction()
-                        .add(R.id.fl_content, to)
-                        .commit();
-            } else {
-                fm.beginTransaction().hide(mCurrentFrag).show(to).commit(); // 隐藏当前的fragment，显示下一个
+                mCurrentFrag = to;
             }
-            mCurrentFrag = to;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    public void switchContent2(Fragment to) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fl_content, to)
-                .commit();
     }
 
     public void toFragmentUpdate() {
@@ -165,6 +158,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);
+        stopService(new Intent(context, GPIOBigService.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

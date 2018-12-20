@@ -171,18 +171,22 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
      * @param to 将要加载的fragment
      */
     public void switchContent(Fragment to) {
-        if (mCurrentFrag != to) {
-            if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
-                if (mCurrentFrag != null) {
-                    fm.beginTransaction().hide(mCurrentFrag).commit();
+        try {
+            if (mCurrentFrag != to) {
+                if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
+                    if (mCurrentFrag != null) {
+                        fm.beginTransaction().hide(mCurrentFrag).commit();
+                    }
+                    fm.beginTransaction()
+                            .add(R.id.fl_content, to)
+                            .commit();
+                } else {
+                    fm.beginTransaction().hide(mCurrentFrag).show(to).commitAllowingStateLoss(); // 隐藏当前的fragment，显示下一个
                 }
-                fm.beginTransaction()
-                        .add(R.id.fl_content, to)
-                        .commit();
-            } else {
-                fm.beginTransaction().hide(mCurrentFrag).show(to).commit(); // 隐藏当前的fragment，显示下一个
+                mCurrentFrag = to;
             }
-            mCurrentFrag = to;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -193,15 +197,15 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     }
 
     public void toFragemntUpdate() {
-        switchContent(updateFrag);
+            switchContent(updateFrag);
     }
 
     public void toFragemntBigPic() {
-        switchContent(bigPigFrag);
+            switchContent(bigPigFrag);
     }
 
     public void toFragemntMain() {
-        switchContent(mainFrag);
+            switchContent(mainFrag);
     }
 
     @Override

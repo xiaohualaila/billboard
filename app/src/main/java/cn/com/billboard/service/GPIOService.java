@@ -35,19 +35,13 @@ public class GPIOService extends Service {
     }
 
     private String strCmd = "/sys/class/gpio_xrm/gpio";
-    private int gpioNum = 4;//IO口电话5，监督6，消防7
+    private int gpioNum = 5;//IO口电话5，监督6，消防7
     private final int TIME = 100;
     private boolean isAuto = true;
     private static Lock lock = new ReentrantLock();
-
     private Thread thread;
-
-
     private int gpioNum_ = 1;
-    private String isScanPhone = "0";
-
     private boolean isCalling = false;
-
     String  strResult_5="";
     private SerialHelper serialHelper;
     private SerialHelper serialHelperLight;
@@ -59,7 +53,7 @@ public class GPIOService extends Service {
         super.onCreate();
         init();
         GpioUtill.executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
-        isScanPhone = GpioUtill.executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
+        GpioUtill.executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
         thread = new Thread(task);
         thread.start();
     }
@@ -113,7 +107,7 @@ public class GPIOService extends Service {
             String  strResult;
 
             try {
-             if(gpioNum == 4){//挂上电话是0，拿下电话是 1
+             if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                  //Log.i("sss","+++++++++++++++"+strResult_5);
@@ -164,7 +158,7 @@ public class GPIOService extends Service {
                          }
                      }
                  }
-                 gpioNum = 4;
+                 gpioNum = 5;
              }
                 Thread.sleep(TIME);
             } catch (Exception e) {

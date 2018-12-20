@@ -12,6 +12,7 @@ import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.DownloadBigScreenFileUtil;
+import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.GsonProvider;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.log.XLog;
@@ -30,7 +31,13 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
 
         @Override
         public void onScreenChangeUI() {
-            getV().toFragmentVideo();
+           List<String> images = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
+           if(images.size()>0){
+               getV().toFragmentImg();
+           }else {
+               getV().toFragmentVideo();
+           }
+
             updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
         }
 
@@ -65,7 +72,7 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                             dealData(model.getMessageBody());
                         } else {
                             if (isRefresh) {
-                                getV().toFragmentVideo();
+                                callBack.onScreenChangeUI();
                             }
                             callBack.onErrorChangeUI(model.getDescribe());
                         }
