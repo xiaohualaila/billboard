@@ -10,7 +10,7 @@ import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
-import cn.com.billboard.util.AppSharePreferenceMgr;
+
 import cn.com.billboard.util.DownloadBigScreenFileUtil;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.GsonProvider;
@@ -38,7 +38,7 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                getV().toFragmentVideo();
            }
 
-            updateState(AppSharePreferenceMgr.get(getV(), UserInfoKey.MAC, "").toString());
+            updateState(SharedPreferencesUtil.getString(getV(), UserInfoKey.MAC, ""));
         }
 
         @Override
@@ -142,7 +142,7 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                 lists_str.add(stripedisplayBeans.get(i).getTitle());
             }
         }
-        AppSharePreferenceMgr.put(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
+        SharedPreferencesUtil.putString(getV(),"titles", GsonProvider.getInstance().getGson().toJson(lists_str));
 
         DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
     }
