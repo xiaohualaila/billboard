@@ -12,6 +12,8 @@ import com.bjw.utils.SerialHelper;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
@@ -119,6 +121,7 @@ public class GPIOBigService extends Service {
                                  }else {
                                      isCalling1 = true;
                                      sendTest("ATD"+tell+";\r\n");
+                                     BusProvider.getBus().post(new AlarmRecordModel(true, 1));
                                  }
                              }
                          }
@@ -136,6 +139,7 @@ public class GPIOBigService extends Service {
                              }else {
                                  isCalling1 = true;
                                  sendTest("ATD"+tel2+";\r\n");
+                                 BusProvider.getBus().post(new AlarmRecordModel(true, 2));
                              }
                          }
                      }
@@ -162,6 +166,7 @@ public class GPIOBigService extends Service {
                                 }else {
                                     isCalling2 = true;
                                     sendTest("ATD"+tel3+";\r\n");
+                                    BusProvider.getBus().post(new AlarmRecordModel(true, 3));
                                 }
                             }
                         }
@@ -178,6 +183,7 @@ public class GPIOBigService extends Service {
                                 }else {
                                     isCalling2 = true;
                                     sendTest("ATD"+tel4+";\r\n");
+                                    BusProvider.getBus().post(new AlarmRecordModel(true, 4));
                                 }
                             }
                         }

@@ -19,6 +19,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
+import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.present.FragmentBigScreenActivityPresent;
 import cn.com.billboard.service.GPIOBigService;
@@ -69,6 +70,17 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     ToastManager.showShort(context, messageModel.message);
+                }
+        );
+        /**
+         * 报警
+         */
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                (AlarmRecordModel recordModel) -> {
+                    if (recordModel.isCalling) {
+                        int phoneType = recordModel.phoneType;
+                        getP().uploadAlarm(mac, phoneType);
+                    }
                 }
         );
     }

@@ -154,7 +154,34 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
                 .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
                     protected void onFail(NetError error) {
-//                        getV().showError(error);
+                        getV().showError(error.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            XLog.e("状态上报成功");
+                        } else {
+                            XLog.e("状态上报失败");
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 上传报警
+     */
+    public void uploadAlarm(String macAddress,int telkey) {
+
+        BillboardApi.getDataService().uploadAlarm(macAddress,telkey)
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        XLog.e("状态上报失败");
+                        getV().showError("网络异常！");
                     }
 
                     @Override
