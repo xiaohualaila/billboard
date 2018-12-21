@@ -10,10 +10,8 @@ import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
-
 import cn.com.billboard.util.DownloadBigScreenFileUtil;
 import cn.com.billboard.util.FileUtil;
-import cn.com.billboard.util.GsonProvider;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.log.XLog;
 import cn.com.library.mvp.XPresent;
