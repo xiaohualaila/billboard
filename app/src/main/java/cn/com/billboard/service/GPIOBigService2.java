@@ -167,7 +167,7 @@ public class GPIOBigService2 extends Service {
                     }
                     gpioNum = 4;
                 }else {
-                    if(!isCalling){//片警 tel4
+                    if(!isCalling){//片警 KEY4 tel4
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                       //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){
