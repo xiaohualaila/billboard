@@ -129,7 +129,7 @@ public class GPIOBigService2 extends Service {
                          }
                      }
                  gpioNum = 7;
-             }else if (gpioNum == 7){//key io7 物业 tel2
+             }else if (gpioNum == 7){//key1 io7 物业 tel2
                  //监督
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
