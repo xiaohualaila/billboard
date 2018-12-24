@@ -1,6 +1,5 @@
 package cn.com.billboard.present;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
