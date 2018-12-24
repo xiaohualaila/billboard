@@ -1,5 +1,7 @@
 package cn.com.billboard.present;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.model.BaseBean;
@@ -105,6 +107,10 @@ public class FragmentBigScreenActivityPresent extends XPresent<FragmentBigScreen
         String  tel2 = model.getTel2();
         String  tel3 = model.getTel3();
         String  tel4 = model.getTel4();
+        Log.i("sss","tel1  "+tel1);
+        Log.i("sss","tel2  "+tel2);
+        Log.i("sss","tel3  "+tel3);
+        Log.i("sss","tel4  "+tel4);
         SharedPreferencesUtil.putString(getV(),"tel1",tel1);
         SharedPreferencesUtil.putString(getV(),"tel2",tel2);
         SharedPreferencesUtil.putString(getV(),"tel3",tel3);

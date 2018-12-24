@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
 import java.util.concurrent.TimeUnit;
-
 import cn.com.billboard.model.EventModel;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
-import cn.com.library.event.IBus;
 import cn.com.library.log.XLog;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -42,7 +39,7 @@ public class UpdateService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        updateService = this;
     }
 
     @Override
@@ -51,7 +48,6 @@ public class UpdateService extends Service {
     }
 
     public void startTimer(){
-        String DD = SharedPreferencesUtil.getString(this,"tell","");
         int time = SharedPreferencesUtil.getInt(this,"time",10);
         //TODO 启动计时服务
         Observable.timer(time, TimeUnit.MINUTES, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {

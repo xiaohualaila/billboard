@@ -88,7 +88,7 @@
 
         <service android:name=".service.GPIOService" />
         <service android:name=".service.GPIOBigService" />
-
+        <service android:name=".service.GPIOBigService2" />
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"

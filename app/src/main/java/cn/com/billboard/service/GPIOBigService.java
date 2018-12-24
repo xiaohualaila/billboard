@@ -54,6 +54,7 @@ public class GPIOBigService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        service = this;
         init();
         GpioUtill.executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
         GpioUtill.executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800

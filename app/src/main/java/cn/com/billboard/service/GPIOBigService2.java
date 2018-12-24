@@ -57,6 +57,7 @@ public class GPIOBigService2 extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        service =this;
         init();
         GpioUtill.executer("busybox echo " + 1 + " > " + strCmd + gpioNum_ + "/data");//打开sim800
         GpioUtill.executer( "cat " + strCmd + gpioNum_ + "/data");//判断是否打开sim800
@@ -102,7 +103,7 @@ public class GPIOBigService2 extends Service {
              if(gpioNum == 5){//1表示可以打电话，0表示不能打
                    //电话
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                // Log.i("xxx","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult_5  "+ strResult_5);
+              //   Log.i("xxx","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult_5  "+ strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
@@ -113,7 +114,7 @@ public class GPIOBigService2 extends Service {
              }else if(gpioNum == 6){//KEY2 IO6 物业 tell
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                  //   Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
+                 //    Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
                                  tell =  SharedPreferencesUtil.getString(this,"tel1","");
@@ -132,7 +133,7 @@ public class GPIOBigService2 extends Service {
                  //监督
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                   //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
+                  //   Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
                              tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
@@ -150,7 +151,7 @@ public class GPIOBigService2 extends Service {
              } else if(gpioNum == 3){//KEY3 IO4
                     if(!isCalling){//监督
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                      //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
+                   //     Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){//打电话
                             if(strResult_2.equals("1")) {
                                 tel3 =  SharedPreferencesUtil.getString(this,"tel3","");
