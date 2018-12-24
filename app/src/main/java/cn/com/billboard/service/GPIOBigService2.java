@@ -19,15 +19,19 @@ import cn.com.billboard.util.GpioUtill;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 
-public class GPIOBigService extends Service {
+/**
+ * 一个电话四个按键,例如给望城小区这种情况
+ */
 
-    private static GPIOBigService service;
+public class GPIOBigService2 extends Service {
 
-    public static GPIOBigService getInstance() {
+    private static GPIOBigService2 service;
+
+    public static GPIOBigService2 getInstance() {
         if (service == null) {
-            synchronized (GPIOBigService.class) {
+            synchronized (GPIOBigService2.class) {
                 if (service == null) {
-                    service = new GPIOBigService();
+                    service = new GPIOBigService2();
                 }
             }
         }
@@ -41,8 +45,7 @@ public class GPIOBigService extends Service {
     private static Lock lock = new ReentrantLock();
     private Thread thread;
     private int gpioNum_ = 1;
-    private boolean isCalling1 = false;
-    private boolean isCalling2 = false;
+    private boolean isCalling = false;
     String  strResult_5="";
     String  strResult_2="";
     private SerialHelper serialHelper;
@@ -64,7 +67,7 @@ public class GPIOBigService extends Service {
     private void init() {
         serialHelper = new SerialHelper() {
             @Override
-            protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
+            protected void onDataReceived(final ComBean comBean) {
                 dealPhone(comBean);
             }
         };
@@ -81,13 +84,11 @@ public class GPIOBigService extends Service {
     private void dealPhone(ComBean comBean) {
         String back= ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
         if(back.contains("NO CARRIER")){
-            isCalling1 =false;
-            isCalling2 = false;
+            isCalling =false;
         }else if(back.contains("RING")){//不予许接外来电话
                 sendTest("ATH\r\n");
         }else if(back.contains("ERROR")){
-            isCalling1 = false;
-            isCalling2 = false;
+            isCalling = false;
         }
         Log.i("xxx", ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec)));
     }
@@ -103,14 +104,14 @@ public class GPIOBigService extends Service {
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                 // Log.i("xxx","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult_5  "+ strResult_5);
                    if(strResult_5.equals("0")){
-                       if(isCalling1 && !isCalling2){
+                       if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
-                           isCalling1 = false;
+                            isCalling = false;
                        }
                    }
                  gpioNum = 6;
              }else if(gpioNum == 6){//KEY2 IO6 物业 tell
-                 if(!isCalling1 && !isCalling2){
+                 if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                   //   Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                          if(strResult.equals("0")){//打电话
@@ -119,7 +120,7 @@ public class GPIOBigService extends Service {
                                  if(TextUtils.isEmpty(tell)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
-                                     isCalling1 = true;
+                                     isCalling = true;
                                      sendTest("ATD"+tell+";\r\n");
                                      BusProvider.getBus().post(new AlarmRecordModel(true, 1));
                                  }
@@ -129,7 +130,7 @@ public class GPIOBigService extends Service {
                  gpioNum = 7;
              }else if (gpioNum == 7){//key io7 物业 tel2
                  //监督
-                 if(!isCalling1 && !isCalling2){
+                 if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                    //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                      if(strResult.equals("0")){
@@ -138,26 +139,16 @@ public class GPIOBigService extends Service {
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                              }else {
-                                 isCalling1 = true;
+                                 isCalling = true;
                                  sendTest("ATD"+tel2+";\r\n");
                                  BusProvider.getBus().post(new AlarmRecordModel(true, 2));
                              }
                          }
                      }
                  }
-                 gpioNum = 2;
-             } else if(gpioNum == 2){//挂上电话是0，拿下电话是 1
-                 strResult_2 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                // Log.i("xxx","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult_2  "+ strResult_2);
-                    if(strResult_2.equals("0")){
-                        if(!isCalling1 && isCalling2){
-                                sendTest("ATH\r\n"); //挂断电话
-                                isCalling2 = false;
-                        }
-                    }
-                    gpioNum = 3;
-                }else if(gpioNum == 3){//KEY3 IO4
-                    if(!isCalling2 && !isCalling1){//监督
+                 gpioNum = 3;
+             } else if(gpioNum == 3){//KEY3 IO4
+                    if(!isCalling){//监督
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                       //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){//打电话
@@ -166,7 +157,7 @@ public class GPIOBigService extends Service {
                                 if(TextUtils.isEmpty(tel3)){
                                     BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                 }else {
-                                    isCalling2 = true;
+                                    isCalling = true;
                                     sendTest("ATD"+tel3+";\r\n");
                                     BusProvider.getBus().post(new AlarmRecordModel(true, 3));
                                 }
@@ -175,7 +166,7 @@ public class GPIOBigService extends Service {
                     }
                     gpioNum = 4;
                 }else {
-                    if(!isCalling2 && !isCalling1){//片警 tel4
+                    if(!isCalling){//片警 tel4
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                       //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){
@@ -184,7 +175,7 @@ public class GPIOBigService extends Service {
                                 if(TextUtils.isEmpty(tel4)){
                                     BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                 }else {
-                                    isCalling2 = true;
+                                    isCalling = true;
                                     sendTest("ATD"+tel4+";\r\n");
                                     BusProvider.getBus().post(new AlarmRecordModel(true, 4));
                                 }

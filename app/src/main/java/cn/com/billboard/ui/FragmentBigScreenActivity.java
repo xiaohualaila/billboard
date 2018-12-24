@@ -23,6 +23,7 @@ import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.present.FragmentBigScreenActivityPresent;
 import cn.com.billboard.service.GPIOBigService;
+import cn.com.billboard.service.GPIOBigService2;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
 import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -61,7 +62,8 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-        startService(new Intent(context, GPIOBigService.class));
+        //startService(new Intent(context, GPIOBigService.class));
+        startService(new Intent(context, GPIOBigService2.class));
         getBus();
         instance = this;
     }
@@ -168,7 +170,8 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);
-        stopService(new Intent(context, GPIOBigService.class));
+      //  stopService(new Intent(context, GPIOBigService.class));
+        stopService(new Intent(context, GPIOBigService2.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }
