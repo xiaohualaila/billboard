@@ -62,7 +62,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
+       // startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
        // startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
         getBus();
         instance = this;
@@ -170,7 +170,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);
-        stopService(new Intent(context, GPIOBigService.class));
+      //  stopService(new Intent(context, GPIOBigService.class));
       //  stopService(new Intent(context, GPIOBigService2.class));
         if (mDisposable != null) {
             mDisposable.dispose();
