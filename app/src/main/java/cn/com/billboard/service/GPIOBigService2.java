@@ -111,7 +111,7 @@ public class GPIOBigService2 extends Service {
                        }
                    }
                  gpioNum = 6;
-             }else if(gpioNum == 6){//KEY2 IO6 物业 tell
+             }else if(gpioNum == 6){// IO6 tell
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                  //    Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
@@ -129,7 +129,7 @@ public class GPIOBigService2 extends Service {
                          }
                      }
                  gpioNum = 7;
-             }else if (gpioNum == 7){//key1 io7 物业 tel2
+             }else if (gpioNum == 7){//io7 tel2
                  //监督
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
@@ -148,7 +148,7 @@ public class GPIOBigService2 extends Service {
                      }
                  }
                  gpioNum = 3;
-             } else if(gpioNum == 3){//KEY3 IO4
+             } else if(gpioNum == 3){// IO3 tel3
                     if(!isCalling){//监督
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                    //     Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
@@ -167,7 +167,7 @@ public class GPIOBigService2 extends Service {
                     }
                     gpioNum = 4;
                 }else {
-                    if(!isCalling){//片警 KEY4 tel4
+                    if(!isCalling){//IO4 tel4
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                       //  Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){

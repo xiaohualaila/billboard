@@ -110,7 +110,7 @@ public class GPIOBigService extends Service {
                        }
                    }
                  gpioNum = 6;
-             }else if(gpioNum == 6){//KEY2 IO6 物业 tell
+             }else if(gpioNum == 6){//KEY2 IO6 物业 tell右上
                  if(!isCalling1 && !isCalling2){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                  //    Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
@@ -128,7 +128,7 @@ public class GPIOBigService extends Service {
                          }
                      }
                  gpioNum = 7;
-             }else if (gpioNum == 7){//key1 io7 物业 tel2
+             }else if (gpioNum == 7){//key1 io7 物业 tel2 右下
                  //监督
                  if(!isCalling1 && !isCalling2){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
@@ -157,8 +157,8 @@ public class GPIOBigService extends Service {
                         }
                     }
                     gpioNum = 3;
-                }else if(gpioNum == 3){//KEY3 IO4
-                    if(!isCalling2 && !isCalling1){//监督
+                }else if(gpioNum == 3){//KEY3 IO3  tel3 左上
+                    if(!isCalling2 && !isCalling1){
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                   //      Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){//打电话
@@ -176,7 +176,7 @@ public class GPIOBigService extends Service {
                     }
                     gpioNum = 4;
                 }else {
-                    if(!isCalling2 && !isCalling1){//片警 key4 tel4
+                    if(!isCalling2 && !isCalling1){//key4 IO4 tel4 左下
                         strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                     //    Log.i("sss","+++++++++++++ gpioNum ++  "+ gpioNum +" strResult  "+ strResult);
                         if(strResult.equals("0")){
