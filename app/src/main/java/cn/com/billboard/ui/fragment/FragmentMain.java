@@ -68,7 +68,9 @@ public class FragmentMain extends BaseFragment {
             }
             pic_finish = false;
             video_finish = false;
-            playVideo();
+            if(videos.size()>0){
+                playVideoAgain();
+            }
             pic_banner.startScroll();
         }else {
             pic_banner.stopScroll();
@@ -86,7 +88,7 @@ public class FragmentMain extends BaseFragment {
             videoIndex++;
             if (videoIndex != videos.size()) {
                 //继续播放视频
-                playVideo();
+                playVideoAgain();
             } else {
                 //视频播放结束  开始播放图片  复位视频索引
                 videoIndex = 0;
@@ -94,7 +96,7 @@ public class FragmentMain extends BaseFragment {
                     if(images_big.size()>0 && pic_finish){
                         FragmentActivity.instance().toFragemntBigPic();
                     }else {
-                        playVideo();
+                        playVideoAgain();
                     }
             }
         });
@@ -102,6 +104,11 @@ public class FragmentMain extends BaseFragment {
             video.stopPlayback();
             return true;
         });
+        video.setVideoPath(videos.get(videoIndex));
+        video.start();
+    }
+
+    public void playVideoAgain(){
         video.setVideoPath(videos.get(videoIndex));
         video.start();
     }

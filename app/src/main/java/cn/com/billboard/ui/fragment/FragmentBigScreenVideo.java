@@ -51,7 +51,7 @@ public class FragmentBigScreenVideo extends BaseFragment {
     public void onHiddenChanged(boolean hidden) {
         if(!hidden){
             videoIndex = 0;
-            playVideo();
+            playVideoAgain();
         }
         super.onHiddenChanged(hidden);
     }
@@ -65,12 +65,12 @@ public class FragmentBigScreenVideo extends BaseFragment {
             videoIndex++;
             if (videoIndex != videos.size()) {
                 //继续播放视频
-                playVideo();
+                playVideoAgain();
             } else {
                     if(images.size()>0){
                         FragmentBigScreenActivity.instance().toFragmentImg();
                     }else {
-                        playVideo();
+                        playVideoAgain();
                     }
             }
         });
@@ -81,5 +81,8 @@ public class FragmentBigScreenVideo extends BaseFragment {
         video.setVideoPath(videos.get(videoIndex));
         video.start();
     }
-
+    public void playVideoAgain(){
+        video.setVideoPath(videos.get(videoIndex));
+        video.start();
+    }
 }
