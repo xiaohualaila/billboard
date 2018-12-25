@@ -18,7 +18,9 @@ import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
-
+/**
+ * 两个电话四个按键,例如给和平春天这种情况
+ */
 public class GPIOBigService extends Service {
 
     private static GPIOBigService service;

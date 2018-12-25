@@ -208,4 +208,24 @@ public class GPIOService extends Service {
             serialHelperLight.close();
         }
     }
+
+    /**
+     * IO口控制指令 开
+     */
+    private byte[]  setIoOpen(int num){
+        /**四个继电器的*/
+        byte[] sendArr = new byte[1];//打开继电器指令
+        sendArr[0] = (byte) (num == 1 ? 0x11 : num == 2 ? 0x21 : num == 3 ? 0x31 : num == 4 ? 0x41 : 0x51); //0x51全开
+        return sendArr;
+    }
+
+    /**
+     * IO口控制指令 关
+     */
+    private byte[]  setIoClose(int num){
+        /**四个继电器的*/
+        final byte[] sendArr_ = new byte[1];//复位继电器指令
+        sendArr_[0] = (byte) (num == 1 ? 0x10 : num == 2 ? 0x20 : num == 3 ? 0x30 : num == 4 ? 0x40 : 0x50) ;//0x50全关
+        return sendArr_;
+    }
 }
