@@ -245,6 +245,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
      * 上传打电话人员的视频
      */
     public void uploadAlarmInfo(String macAddress,String recordId) {
+        Log.i("sss","准备上传");
         String video_path =  SharedPreferencesUtil.getString(getV(), "videoFile", "");
         String pic_path =  SharedPreferencesUtil.getString(getV(), "picFile", "");
         if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
@@ -275,6 +276,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.i("sss","开始上传");
         BillboardApi.getDataService().uploadAlarmInfo(macAddress,recordId,list)
                 .compose(XApi.<BaseBean>getApiTransformer())
                 .compose(XApi.<BaseBean>getScheduler())
@@ -285,14 +287,17 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                         getV().showError("网络异常！");
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                        Log.i("sss","上传失败");
                     }
 
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
                             getV().showError("上报成功！");
+                            Log.i("sss","上报成功");
                         } else {
                             getV().showError("上报失败！");
+                            Log.i("sss","上传失败");
                         }
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);

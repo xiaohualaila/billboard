@@ -56,7 +56,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     private int phoneType;
     public static final String MAC = "mac";
     public static final String PHONETYPE = "phoneType";
-    private boolean isClose = false;//是否是因为挂断电话停止的视频
+    private boolean isCalling = true;//是否是因为挂断电话停止的视频
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
-                        isClose = true;
+                        isCalling  = false;
                         stopRecordVideo();
                     }
                 }
@@ -212,7 +212,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
                 }else {
                     SharedPreferencesUtil.putString(this,"videoFile","");
                 }
-                if(!isClose){
+                if(isCalling){
                     OpenCVCameraActivity.launch(this,mac,phoneType);
                 }
                     finish();

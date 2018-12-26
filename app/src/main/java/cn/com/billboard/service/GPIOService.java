@@ -113,7 +113,7 @@ public class GPIOService extends Service {
              if(gpioNum == 5){//挂上电话是0，拿下电话是 1
                    //电话
                  strResult_5 = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
-                 //Log.i("sss","+++++++++++++++"+strResult_5);
+              //   Log.i("sss","++++++++++strResult_5+++++  "+strResult_5);
                    if(strResult_5.equals("0")){
                        if(isCalling){
                             sendTest("ATH\r\n"); //挂断电话
