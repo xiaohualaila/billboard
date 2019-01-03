@@ -165,7 +165,7 @@ public class DownloadFileUtil {
                 @Override
                 public void onError(Throwable e) {
                     super.onError(e);
-                    callBack.onErrorChangeUI(e.getMessage());
+                    callBack.onErrorChangeUI("视频下载失败！");
                     callBack.onMainUpdateUI();
                     callBack.onSubChangeUI();
                 }
