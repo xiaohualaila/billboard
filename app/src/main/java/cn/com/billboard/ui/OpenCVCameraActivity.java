@@ -29,7 +29,6 @@ import cn.com.billboard.R;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.OpenCVPresent;
-import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
 import cn.com.library.mvp.XActivity;

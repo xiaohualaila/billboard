@@ -62,6 +62,5 @@ dependencies {
     //串口
     implementation(name: 'serialport-1.0.1', ext: 'aar')
     implementation files('libs/smdt.jar')
-    implementation project(':silicompressor')
     implementation project(':openCVLibrary320')
 }

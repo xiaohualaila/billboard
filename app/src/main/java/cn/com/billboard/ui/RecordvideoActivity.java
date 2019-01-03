@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import com.iceteck.silicompressorr.VideoCompress;//视频压缩
 import java.io.File;
 
 import butterknife.BindView;
@@ -22,7 +21,6 @@ import cn.com.billboard.R;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.RecordVideoPresent;
-import cn.com.billboard.util.AppSharePreferenceMgr;
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.library.event.BusProvider;
@@ -223,66 +221,6 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             }
         }
         mStartedFlg = false;
-    }
-
-    private long startTime;
-    private long endTime;
-    private String path2;
-
-    /**
-     * 视频压缩
-     */
-    private void compressVideo() {
-        path2 = MyUtil.getSDPath();
-        if (path2 != null) {
-            File dir = new File(path2 + "/recordtest");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            path2 = dir + "/" + MyUtil.getDate() + "ys.mp4";
-
-            VideoCompress.compressVideoLow(path, path2, new VideoCompress.CompressListener() {
-                @Override
-                public void onStart() {
-                    startTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "开始时间" + startTime);
-
-                }
-
-                @Override
-                public void onSuccess() {
-                    endTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "结束时间 = " + endTime);
-                    Log.i(TAG, "压缩后大小 = " + getFileSize(path2));
-                    Log.i(TAG, "结束时间 = " + (endTime - startTime)+"ms " +(endTime - startTime)/1000 + "s");
-                }
-
-                @Override
-                public void onFail() {
-                    endTime = System.currentTimeMillis();
-
-                    Log.i(TAG, "失败时间 = " + endTime);
-                }
-
-                @Override
-                public void onProgress(float percent) {
-                    Log.i(TAG, String.valueOf(percent) + "%");
-                }
-
-            });
-        }
-    }
-
-    private String getFileSize(String path) {
-        File f = new File(path);
-        if (!f.exists()) {
-            return "0 MB";
-        } else {
-            long size = f.length();
-            return (size / 1024f) / 1024f + "MB";
-        }
     }
 
     public static void launch(Activity activity, String mac, int phoneType) {

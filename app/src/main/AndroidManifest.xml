@@ -23,7 +23,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--用于提高GPS定位速度-->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
@@ -52,27 +51,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.FragmentBigScreenActivity"
-            android:screenOrientation="landscape">
-
-        </activity>
-        <activity
-            android:name=".ui.CreateParamsActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
-            android:name=".ui.OneScreenActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="landscape" />
-        <activity
-            android:name=".ui.TwoScreenActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
-            android:name=".ui.CameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
-            android:name=".ui.FaceActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask" />
@@ -87,8 +65,7 @@
         </activity>
 
         <service android:name=".service.GPIOService" />
-        <service android:name=".service.GPIOBigService" />
-        <service android:name=".service.GPIOBigService2" />
+
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"
@@ -101,12 +78,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receiver.PhoneReceiver">
-            <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
-                <action android:name="android.intent.action.PHONE_STATE"/>
-            </intent-filter>
-        </receiver>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="cn.com.billboard.fileprovider"

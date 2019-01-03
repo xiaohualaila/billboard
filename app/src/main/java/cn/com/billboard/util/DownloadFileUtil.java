@@ -2,7 +2,6 @@ package cn.com.billboard.util;
 
 import android.content.Context;
 import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
@@ -11,7 +10,6 @@ import cn.com.billboard.download.DownloadManager;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.ProgressModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.OneScreenPresent;
 import cn.com.library.event.BusProvider;
 import cn.com.library.log.XLog;
 import static cn.com.billboard.net.UserInfoKey.PIC_BIG_DOWM;
@@ -224,7 +222,6 @@ public class DownloadFileUtil {
             }
         } else {
             if (videos.size() > 0) {
-                AppSharePreferenceMgr.put(context, UserInfoKey.SUB_PICTURE_FILE, "[]");//保存图片路径
                 downSubLoadVideo(context, videos, callBack);
             } else {
                 callBack.onSubChangeUI();
@@ -271,110 +268,5 @@ public class DownloadFileUtil {
         }
     }
 
-    /**
-     * 下载大屏图片
-     *
-     * @param context
-     * @param callBack 回调
-     */
-    public void downBigLoadPicture(Context context, List<String> images_url, List<String> videos_url, OneScreenPresent.CallBack callBack) {
-//        Kits.File.deleteFile(UserInfoKey.FILE_BIG_PICTURE);
-//        Kits.File.deleteFile(UserInfoKey.FILE_BIG_VIDEO);
-
-        List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_BIG_PICTURE);
-        List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_BIG_VIDEO);
-        index =0;
-        if (images.size() > 0) {
-            downBigFilePic(images,callBack,videos);
-        } else {
-            if (videos.size() > 0) {
-                downBigFileVideo(videos,callBack);
-            } else {
-                callBack.onChangeUI();
-            }
-        }
-
-    }
-
-
-    /**
-     * 下载室外大屏图片
-     * @param images
-     * @param callBack
-     * @param videos
-     */
-    public void downBigFilePic( List<String> images,OneScreenPresent.CallBack  callBack, List<String>  videos){
-        DownloadManager.getInstance().download(images.get(index), UserInfoKey.FILE_BIG_PICTURE, new DownLoadObserver() {
-            @Override
-            public void onNext(DownloadInfo value) {
-                super.onNext(value);
-                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(),
-                        index+1, images.size(), value.getFileName(), "图片"));
-            }
-
-            @Override
-            public void onComplete() {
-                if (downloadInfo != null) {
-                    index ++;
-                    if (index == images.size()) {
-                        XLog.e("主屏图片下载完成！");
-                        if (videos.size() > 0) {
-                            index = 0;
-                            downBigFileVideo(videos,callBack);
-                        } else {
-                            callBack.onChangeUI();
-                        }
-                    }else {
-                        downBigFilePic(images,callBack, videos);
-                    }
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                super.onError(e);
-                callBack.onErrorChangeUI(e.getMessage());
-            }
-        });
-    }
-
-
-    /**
-     * 下载大屏视频
-     *
-     * @param videos   视频下载url
-     * @param callBack 回调
-     */
-    public void downBigFileVideo(List<String> videos, OneScreenPresent.CallBack callBack) {
-
-            DownloadManager.getInstance().download(videos.get(index), UserInfoKey.FILE_BIG_VIDEO, new DownLoadObserver() {
-                @Override
-                public void onNext(DownloadInfo value) {
-                    super.onNext(value);
-                    BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(),
-                            index+1, videos.size(), value.getFileName(), "视频"));
-                }
-
-                @Override
-                public void onComplete() {
-                    if (downloadInfo != null) {
-                        index ++;
-                        if (index == videos.size()) {//判断视频是否下载完成
-                            callBack.onChangeUI();
-                        }else {
-                            downBigFileVideo(videos,callBack);
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    super.onError(e);
-                    callBack.onErrorChangeUI(e.getMessage());
-                }
-
-            });
-
-    }
 
 }
