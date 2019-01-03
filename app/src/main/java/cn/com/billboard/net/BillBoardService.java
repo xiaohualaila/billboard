@@ -28,16 +28,6 @@ public interface BillBoardService {
             @Query("deviceip") String deviceip);
 
     /**
-     * 获取数据
-     *
-     * @param mac
-     * @return
-     */
-    @GET("system/multimedia/getDeviceContents")
-    Flowable<BaseBean<MessageBodyBean>> getBigScreenData(
-            @Query("devicemac") String mac,
-            @Query("deviceip") String deviceip);
-    /**
      * 上报状态
      *
      * @param screenIP
@@ -45,15 +35,6 @@ public interface BillBoardService {
      */
     @POST("system/multimedia/updateDeviceMessageStatus")
     Flowable<BaseBean> upState(@Query("devicemac") String screenIP);
-
-    /**
-     * 心跳发送服务器状态
-     *
-     * @return
-     */
-    @POST("pc/multimedia/screen/selectMultimediaMessage")
-    Flowable<BaseBean> sendState(@Query("mac") String mac
-    );
 
 
     /**
