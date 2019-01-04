@@ -1,11 +1,16 @@
 package cn.com.billboard.net;
 
 import java.util.List;
+import java.util.Map;
+
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.MessageBodyBean;
 import cn.com.billboard.model.TwoScreenModel;
 import io.reactivex.Flowable;
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
+import retrofit2.http.FieldMap;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -78,4 +83,9 @@ public interface BillBoardService {
             @Query("recordid") String id,
             @Part List<MultipartBody.Part> file
     );
+
+    @FormUrlEncoded
+    @POST("http://117.36.77.242:8099/doormaster/server/employees")
+    Flowable<ResponseBody> getRequest(
+            @FieldMap Map<String, String> map);
 }

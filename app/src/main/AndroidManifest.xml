@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--用于提高GPS定位速度-->
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
@@ -44,7 +44,7 @@
         <activity
             android:name=".ui.LauncherActivity"
             android:icon="@mipmap/ic_launcher"
-            android:screenOrientation="landscape">
+           >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

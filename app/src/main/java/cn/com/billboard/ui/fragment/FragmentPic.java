@@ -1,6 +1,7 @@
 package cn.com.billboard.ui.fragment;
 
 
+import android.content.Context;
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -33,11 +34,18 @@ public class FragmentPic extends BaseFragment {
 
     @Override
     protected void init() {
+        Log.i("sss","FragmentPic   init");
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
         video = FileUtil.getFilePath(UserInfoKey.VIDEO);
-        playBanner();
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        playBanner();
+      Log.i("sss","FragmentPic   onResume");
+    }
 
     /**播放图片轮播*/
     private void playBanner(){
@@ -52,7 +60,7 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-               // Log.i("sss","position " + position);
+                Log.i("sss","position  FragmentPic  " + position);
                 if (position == images_big.size() - 1) {
                     if(video.size()>0){
                         mHandler.postDelayed(() -> backplay(),5000);
@@ -73,20 +81,6 @@ public class FragmentPic extends BaseFragment {
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
-            banner.startScroll();
-            images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-            if(images_big.size()==1){
-                mHandler.postDelayed(() -> backplay(),5000);
-            }
-        }else {
-            banner.stopScroll();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
     /**
      * 重复播放小图片和视频
      */
@@ -103,5 +97,43 @@ public class FragmentPic extends BaseFragment {
             bannerView.add(guidView);
         }
         return bannerView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.i("sss","FragmentPic   onAttach");
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("sss","FragmentPic   onStart");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("sss","FragmentPic   onPause");
+        banner.stopScroll();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("sss","FragmentPic   onStop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("sss","FragmentPic   onDestroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i("sss","FragmentPic   onDetach");
     }
 }

@@ -27,25 +27,7 @@ android {
         }
     }
 
-    signingConfigs {
-
-        def password = "123456"
-        def alias = "key0"
-        def filePath = "E:/MyCompanyProject/billboard/key.jks"
-
-        debug {
-            keyAlias alias
-            keyPassword password
-            storeFile file(filePath)
-            storePassword(password)
-        }
-        release {
-            keyAlias alias
-            keyPassword password
-            storeFile file(filePath)
-            storePassword(password)
-        }
-    }
+  
     //Add the following configuration不添加打不了正式包
     lintOptions {
         checkReleaseBuilds false
