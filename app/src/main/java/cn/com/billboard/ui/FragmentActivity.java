@@ -45,8 +45,6 @@ import io.reactivex.disposables.Disposable;
 
 public class FragmentActivity extends XActivity<FragmentActivityPresent> implements AppDownload.Callback {
 
-    private Fragment mCurrentFrag;
-    private FragmentManager fm;
     private Fragment updateFrag;
     private Fragment mainFrag;
     private Fragment bigPigFrag;
@@ -69,7 +67,6 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     public void initData(Bundle savedInstanceState) {
         displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
-        fm = getSupportFragmentManager();
         updateFrag = new FragmentUpdate();
         mainFrag = new FragmentMain();
         bigPigFrag = new FragmentPic();
@@ -165,22 +162,22 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         }
     }
 
-    public void switchContent2(Fragment to) {
+    public void switchContent(Fragment to) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_content, to)
                 .commit();
     }
 
     public void toFragemntUpdate() {
-            switchContent2(updateFrag);
+            switchContent(updateFrag);
     }
 
     public void toFragemntBigPic() {
-        switchContent2(bigPigFrag);
+        switchContent(bigPigFrag);
     }
 
     public void toFragemntMain() {
-        switchContent2(mainFrag);
+        switchContent(mainFrag);
     }
 
     @Override
