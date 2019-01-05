@@ -62,6 +62,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     private Disposable mDisposable;
     private boolean isFirst = true;
 
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         bigPigFrag = new FragmentPic();
 
         /**
-         * 老板子没有喂狗api
+         * 喂狗api
          */
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
@@ -122,6 +123,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
                     getP().getScreenData(isFirst, mac, ipAddress);
                     isFirst = false;
                 });
+
     }
 
     @Override
@@ -146,7 +148,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     public void showSubData() {
-        XLog.e("屏幕数量===" + displays.length);
+       // XLog.e("屏幕数量===" + displays.length);
         if (displays != null && displays.length > 1) {
             SubScreenActivity subScreenActivity = new SubScreenActivity(context, displays[1]);//displays[1]是副屏
             subScreenActivity.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);

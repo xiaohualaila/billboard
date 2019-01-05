@@ -1,7 +1,5 @@
 package cn.com.billboard.ui.fragment;
 
-import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +52,7 @@ public class FragmentMain extends BaseFragment {
         super.onResume();
         playBanner();
         playVideo();
+        Log.i("sss","FragmentMain   onResume");
     }
 
     /**播放视频*/
@@ -137,7 +136,6 @@ public class FragmentMain extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.i("sss","FragmentPic   onPause");
         pic_banner.stopScroll();
         video.stopPlayback();
     }

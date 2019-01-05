@@ -34,7 +34,6 @@ public class FragmentPic extends BaseFragment {
 
     @Override
     protected void init() {
-        Log.i("sss","FragmentPic   init");
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
         video = FileUtil.getFilePath(UserInfoKey.VIDEO);
     }
@@ -44,7 +43,6 @@ public class FragmentPic extends BaseFragment {
     public void onResume() {
         super.onResume();
         playBanner();
-      Log.i("sss","FragmentPic   onResume");
     }
 
     /**播放图片轮播*/
@@ -60,12 +58,11 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("sss","position  FragmentPic  " + position);
+//                Log.i("sss","position  FragmentPic  " + position);
                 if (position == images_big.size() - 1) {
                     if(video.size()>0){
                         mHandler.postDelayed(() -> backplay(),5000);
                     }
-
                 }
             }
 
@@ -100,40 +97,8 @@ public class FragmentPic extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        Log.i("sss","FragmentPic   onAttach");
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("sss","FragmentPic   onStart");
-    }
-
-    @Override
     public void onPause() {
         super.onPause();
-        Log.i("sss","FragmentPic   onPause");
         banner.stopScroll();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("sss","FragmentPic   onStop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("sss","FragmentPic   onDestroy");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i("sss","FragmentPic   onDetach");
     }
 }

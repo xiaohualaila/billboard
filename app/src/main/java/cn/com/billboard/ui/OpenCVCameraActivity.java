@@ -113,6 +113,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
 //            count++;
 //            if(count == 180){
 //                saveFileFinishActivity();
+//                Log.i("sss",">>>>>>>>>>");
 //                return;
 //            }
 //            handler.postDelayed(this, 1000);
