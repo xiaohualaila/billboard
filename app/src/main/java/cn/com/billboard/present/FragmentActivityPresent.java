@@ -2,6 +2,11 @@ package cn.com.billboard.present;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import java.io.File;
@@ -303,6 +308,34 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                     }
                 });
+    }
+
+    /**
+     * 开启安装过程
+     *
+     * @param fileName
+     */
+    public void install(String fileName,Context context) {
+        //承接我的代码，filename指获取到了我的文件相应路径
+        if (fileName != null) {
+            if (fileName.endsWith(".apk")) {
+                if (Build.VERSION.SDK_INT >= 24) {//判读版本是否在7.0以上
+                    File file = new File(fileName);
+                    Uri apkUri = FileProvider.getUriForFile(context, "cn.com.billboard.fileprovider", file);
+                    //在AndroidManifest中的android:authorities值
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);//添加这一句表示对目标应用临时授权该Uri所代表的文件
+                    install.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                    context.startActivity(install);
+                } else {
+                    Intent install = new Intent(Intent.ACTION_VIEW);
+                    install.setDataAndType(Uri.fromFile(new File(fileName)), "application/vnd.android.package-archive");
+                    install.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(install);
+                }
+            }
+        }
     }
 
 }

@@ -10,8 +10,8 @@ public class LauncherPresent extends XPresent<LauncherActivity> {
 
     public void toActivity(){
 //        TwoScreenActivity.launch(getV());
-    //  FragmentActivity.launch(getV());
-       FragmentBigScreenActivity.launch(getV());
+     FragmentActivity.launch(getV());
+//       FragmentBigScreenActivity.launch(getV());
         getV().finish();
     }
 

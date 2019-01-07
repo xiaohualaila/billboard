@@ -29,6 +29,7 @@ import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentActivityPresent;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
+import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -70,7 +71,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
         updateFrag = new FragmentUpdate();
-        mainFrag = new FragmentMain();
+        mainFrag = new FragmentMain2();
         bigPigFrag = new FragmentPic();
 
         /**
@@ -223,9 +224,8 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
             runOnUiThread(() -> {
                 dialog_app.dismiss();
                 String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";
-                install(sdcardDir);
+                getP().install(sdcardDir,context);
             });
-
         } else {
             runOnUiThread(() -> {
                 dialog_app.getSeekBar().setProgress(progress);
