@@ -66,14 +66,11 @@ public class GPIOServiceNew extends Service {
 
                 String back_phone = ChangeTool.decodeHexStr(back);
                 Log.i("xxx",back_phone);
-                if(back_phone.contains("NO CARRIER")){
+                if(back_phone.contains("NO CARRIER")||back_phone.contains("ERROR")||back_phone.contains("NO DIALTONE")){
                     isCalling =false;
                     BusProvider.getBus().post(new AlarmRecordModel(false, 0));
                 }else if(back_phone.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
-                }else if(back_phone.contains("ERROR")){
-                    isCalling = false;
-                    BusProvider.getBus().post(new AlarmRecordModel(false, 0));
                 }
             }
         };
