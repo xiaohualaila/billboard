@@ -224,7 +224,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
             runOnUiThread(() -> {
                 dialog_app.dismiss();
                 String sdcardDir = Environment.getExternalStorageDirectory().getAbsoluteFile() + "/download/zhsq.apk";
-                getP().install(sdcardDir,context);
+                install(sdcardDir);
             });
         } else {
             runOnUiThread(() -> {
