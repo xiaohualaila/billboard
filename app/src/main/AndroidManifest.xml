@@ -67,12 +67,6 @@
             android:name=".ui.TwoScreenActivity"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name=".ui.CameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
-            android:name=".ui.FaceActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
-        <activity
             android:name=".ui.RecordvideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask" />
@@ -87,6 +81,7 @@
         </activity>
 
         <service android:name=".service.GPIOService" />
+        <service android:name=".service.GPIOServiceNew" />
         <service android:name=".service.GPIOBigService" />
         <service android:name=".service.GPIOBigService2" />
         <receiver android:name=".receiver.SelfOpeningReceiver"

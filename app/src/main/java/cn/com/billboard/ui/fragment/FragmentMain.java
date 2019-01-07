@@ -80,8 +80,7 @@ public class FragmentMain extends BaseFragment {
             }
         });
         video.setOnErrorListener((mp, what, extra) -> {
-            video.stopPlayback();
-            video_finish = true;
+            FragmentActivity.instance().toFragemntBigPic();
             return true;
         });
         video.setVideoPath(videos.get(videoIndex));

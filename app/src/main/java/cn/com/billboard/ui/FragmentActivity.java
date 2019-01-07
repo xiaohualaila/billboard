@@ -28,6 +28,7 @@ import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentActivityPresent;
 import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.GPIOServiceNew;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -79,7 +80,8 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-        startService(new Intent(context, GPIOService.class));
+      //  startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, GPIOServiceNew.class));
         getBusDate();
         instance = this;
     }
@@ -196,7 +198,8 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
-        stopService(new Intent(context, GPIOService.class));
+//        stopService(new Intent(context, GPIOService.class));
+        stopService(new Intent(context, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }
