@@ -81,15 +81,15 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
       //  startService(new Intent(context, GPIOService.class));
-        startService(new Intent(context, GPIOServiceNew.class));
+        startService(new Intent(context, GPIOServiceNew.class));//新的带接线板子
         getBusDate();
         instance = this;
     }
 
+    /**
+     * 报警
+     */
     private void getBusDate() {
-        /**
-         * 报警
-         */
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
