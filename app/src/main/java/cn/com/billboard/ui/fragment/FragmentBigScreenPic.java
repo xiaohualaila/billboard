@@ -37,9 +37,13 @@ public class FragmentBigScreenPic extends BaseFragment {
     protected void init() {
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
         videos = FileUtil.getFilePath(UserInfoKey.BIG_VIDEO);
-        playBanner();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        playBanner();
+    }
 
     /**
      * 播放图片轮播
@@ -76,22 +80,6 @@ public class FragmentBigScreenPic extends BaseFragment {
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if (!hidden) {
-            banner.startScroll();
-            images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
-            if (images_big.size() == 1) {
-                if(videos.size()>0){
-                    mHandler.postDelayed(() -> backplay(), 2000);
-                }
-            }
-        } else {
-            banner.stopScroll();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
     /**
      * 重复播放小图片和视频
      */
@@ -110,5 +98,11 @@ public class FragmentBigScreenPic extends BaseFragment {
             bannerView.add(guidView);
         }
         return bannerView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        banner.stopScroll();
     }
 }

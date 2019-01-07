@@ -24,6 +24,7 @@ import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.present.FragmentBigScreenActivityPresent;
 import cn.com.billboard.service.GPIOBigService;
 import cn.com.billboard.service.GPIOBigService2;
+import cn.com.billboard.service.GPIOBigServiceNew;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
 import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -62,8 +63,9 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
+//        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
       //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
+          startService(new Intent(context, GPIOBigServiceNew.class));//采用了新的接线板子
         getBus();
         instance = this;
     }
@@ -119,29 +121,10 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
                 });
     }
 
-    /**
-     * 动态添加fragment，不会重复创建fragment
-     *
-     * @param to 将要加载的fragment
-     */
     public void switchContent(Fragment to) {
-        try {
-            if (mCurrentFrag != to) {
-                if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
-                    if (mCurrentFrag != null) {
-                        fm.beginTransaction().hide(mCurrentFrag).commit();
-                    }
-                    fm.beginTransaction()
-                            .add(R.id.fl_content, to)
-                            .commit();
-                } else {
-                    fm.beginTransaction().hide(mCurrentFrag).show(to).commitAllowingStateLoss(); // 隐藏当前的fragment，显示下一个
-                }
-                mCurrentFrag = to;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fl_content, to)
+                .commit();
     }
 
     public void toFragmentUpdate() {
@@ -172,6 +155,7 @@ public class FragmentBigScreenActivity extends XActivity<FragmentBigScreenActivi
         smdt.smdtWatchDogEnable((char) 0);
       //  stopService(new Intent(context, GPIOBigService.class));
       //  stopService(new Intent(context, GPIOBigService2.class));
+        stopService(new Intent(context, GPIOBigServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

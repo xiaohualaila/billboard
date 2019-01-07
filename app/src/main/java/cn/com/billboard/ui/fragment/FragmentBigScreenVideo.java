@@ -43,19 +43,6 @@ public class FragmentBigScreenVideo extends BaseFragment {
         }
     }
 
-    /**
-     * 当 Fragment 调用 hide() 、 show() 时回调
-     * @param hidden
-     */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
-            videoIndex = 0;
-            playVideo();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
     /**播放视频*/
     private void playVideo(){
         video.setOnPreparedListener(mp -> {
@@ -67,6 +54,7 @@ public class FragmentBigScreenVideo extends BaseFragment {
                 //继续播放视频
                 playVideo();
             } else {
+                    videoIndex = 0;
                     if(images.size()>0){
                         FragmentBigScreenActivity.instance().toFragmentImg();
                     }else {
@@ -75,14 +63,16 @@ public class FragmentBigScreenVideo extends BaseFragment {
             }
         });
         video.setOnErrorListener((mp, what, extra) -> {
-            video.stopPlayback();
+            FragmentBigScreenActivity.instance().toFragmentImg();
             return true;
         });
         video.setVideoPath(videos.get(videoIndex));
         video.start();
     }
-    public void playVideoAgain(){
-        video.setVideoPath(videos.get(videoIndex));
-        video.start();
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        video.stopPlayback();
     }
 }
