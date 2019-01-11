@@ -28,6 +28,7 @@ import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.present.FragmentActivityPresent;
 import cn.com.billboard.service.GPIOService;
+import cn.com.billboard.service.GPIOServiceNew;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -82,6 +83,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
       //  startService(new Intent(context, GPIOService.class));
+        startService(new Intent(context, GPIOServiceNew.class));
         getBusDate();
         instance = this;
     }
@@ -165,32 +167,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         }
     }
 
-    /**
-     * 动态添加fragment，不会重复创建fragment
-     *
-     * @param to 将要加载的fragment
-     */
     public void switchContent(Fragment to) {
-        try {
-            if (mCurrentFrag != to) {
-                if (!to.isAdded()) {// 如果to fragment没有被add则增加一个fragment
-                    if (mCurrentFrag != null) {
-                        fm.beginTransaction().hide(mCurrentFrag).commit();
-                    }
-                    fm.beginTransaction()
-                            .add(R.id.fl_content, to)
-                            .commit();
-                } else {
-                    fm.beginTransaction().hide(mCurrentFrag).show(to).commitAllowingStateLoss(); // 隐藏当前的fragment，显示下一个
-                }
-                mCurrentFrag = to;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void switchContent2(Fragment to) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_content, to)
                 .commit();
@@ -223,6 +200,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
     //    stopService(new Intent(context, GPIOService.class));
+        stopService(new Intent(context, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

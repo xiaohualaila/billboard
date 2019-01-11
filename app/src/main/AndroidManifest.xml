@@ -65,7 +65,7 @@
         </activity>
 
         <service android:name=".service.GPIOService" />
-
+        <service android:name=".service.GPIOServiceNew" />
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"
