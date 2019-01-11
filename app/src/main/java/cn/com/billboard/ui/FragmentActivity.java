@@ -81,7 +81,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-        startService(new Intent(context, GPIOService.class));
+      //  startService(new Intent(context, GPIOService.class));
         getBusDate();
         instance = this;
     }
@@ -222,7 +222,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
-        stopService(new Intent(context, GPIOService.class));
+    //    stopService(new Intent(context, GPIOService.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

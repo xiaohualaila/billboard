@@ -43,40 +43,15 @@ public class FragmentMain extends BaseFragment {
             FragmentActivity.instance().showError("视频或图片不能为空！");
             return;
         }
-        playBanner();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         playVideo();
+        playBanner();
     }
 
-    /**
-     * 当 Fragment 调用 hide() 、 show() 时回调
-     * @param hidden
-     */
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
-            videos =  FileUtil.getFilePath(UserInfoKey.VIDEO);
-            images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
-            images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-
-            if(images_small.size()==1){
-                pic_finish = true;
-            }
-            pic_finish = false;
-            video_finish = false;
-            if(videos.size()>0){
-                playVideo();
-            }
-            pic_banner.startScroll();
-        }else {
-            pic_banner.stopScroll();
-        }
-        super.onHiddenChanged(hidden);
-    }
 
     /**播放视频*/
     private void playVideo(){
@@ -150,5 +125,12 @@ public class FragmentMain extends BaseFragment {
             bannerView.add(guidView);
         }
         return bannerView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pic_banner.stopScroll();
+        video.stopPlayback();
     }
 }

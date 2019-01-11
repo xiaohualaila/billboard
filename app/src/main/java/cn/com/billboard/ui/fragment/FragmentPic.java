@@ -38,6 +38,11 @@ public class FragmentPic extends BaseFragment {
         playBanner();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        playBanner();
+    }
 
     /**播放图片轮播*/
     private void playBanner(){
@@ -73,20 +78,6 @@ public class FragmentPic extends BaseFragment {
         }
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        if(!hidden){
-            banner.startScroll();
-            images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-            if(images_big.size()==1){
-                mHandler.postDelayed(() -> backplay(),5000);
-            }
-        }else {
-            banner.stopScroll();
-        }
-        super.onHiddenChanged(hidden);
-    }
-
     /**
      * 重复播放小图片和视频
      */
@@ -103,5 +94,11 @@ public class FragmentPic extends BaseFragment {
             bannerView.add(guidView);
         }
         return bannerView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        banner.stopScroll();
     }
 }
