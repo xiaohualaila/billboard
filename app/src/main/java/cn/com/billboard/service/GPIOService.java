@@ -127,8 +127,10 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                          if(strResult.equals("0")){//打电话
                              if(strResult_5.equals("1")) {
-                                 tell =  SharedPreferencesUtil.getString(this,"tell","");
+                                 tell =  SharedPreferencesUtil.getString(this,"tel2","");
                                  Log.i("sss","tel1  "+tell);
+//                                 tell="17682301987";
+
                                  if(TextUtils.isEmpty(tell)){
                                      BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                                  }else {
@@ -147,8 +149,9 @@ public class GPIOService extends Service {
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
                      if(strResult.equals("0")){
                          if(strResult_5.equals("1")){
-                             tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
+                             tel2 =  SharedPreferencesUtil.getString(this,"tell","");
                              Log.i("sss","tel2  "+tel2);
+//                             tel2="17682301987";
                              if(TextUtils.isEmpty(tel2)){
                                  BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
                              }else {

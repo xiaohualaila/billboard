@@ -199,7 +199,7 @@ public class FragmentActivity extends XActivity<FragmentActivityPresent> impleme
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
-//        stopService(new Intent(context, GPIOService.class));
+      //  stopService(new Intent(context, GPIOService.class));
         stopService(new Intent(context, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();

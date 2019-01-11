@@ -293,6 +293,7 @@ public class FragmentActivityPresent extends XPresent<FragmentActivity> {
                         Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
                         Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                         Log.i("sss","上传失败");
+                        Log.i("sss",error.getMessage());
                     }
 
                     @Override

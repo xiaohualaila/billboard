@@ -167,9 +167,10 @@ public class DownloadFileUtil {
                 @Override
                 public void onError(Throwable e) {
                     super.onError(e);
-                    callBack.onErrorChangeUI(e.getMessage());
-                    callBack.onMainUpdateUI();
-                    callBack.onSubChangeUI();
+//                    callBack.onErrorChangeUI(e.getMessage());
+//                    callBack.onMainUpdateUI();
+//                    callBack.onSubChangeUI();
+                    downMainFileVideo(voides,callBack,url_type);//重新下载
                 }
             });
         }else {

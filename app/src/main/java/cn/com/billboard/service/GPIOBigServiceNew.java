@@ -101,6 +101,7 @@ public class GPIOBigServiceNew extends Service {
             return;
         }
         tell =  SharedPreferencesUtil.getString(this,"tell","");
+   //     tell="19909157722";
         Log.i("sss","tel1  "+tell);
         if(TextUtils.isEmpty(tell)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
@@ -116,6 +117,7 @@ public class GPIOBigServiceNew extends Service {
             return;
         }
         tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
+    //   tel2="09153213474";
         Log.i("sss","tel2  "+tel2);
         if(TextUtils.isEmpty(tel2)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
@@ -131,6 +133,7 @@ public class GPIOBigServiceNew extends Service {
             return;
         }
         tel3 =  SharedPreferencesUtil.getString(this,"tel3","");
+    //    tel3="15771851927";
         Log.i("sss","tel3  "+tel3);
         if(TextUtils.isEmpty(tel3)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
@@ -146,6 +149,7 @@ public class GPIOBigServiceNew extends Service {
             return;
         }
         tel4 =  SharedPreferencesUtil.getString(this,"tel4","");
+     //   tel4="13509154195";
         Log.i("sss","tel4  "+tel4);
         if(TextUtils.isEmpty(tel4)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
