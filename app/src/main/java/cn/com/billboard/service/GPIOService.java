@@ -121,7 +121,7 @@ public class GPIOService extends Service {
                        }
                    }
                  gpioNum = 6;
-             }else if(gpioNum == 6){
+             }else if(gpioNum == 6){//6是下面按钮
                  if(!isCalling){
                      //消防
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
@@ -141,7 +141,7 @@ public class GPIOService extends Service {
                          }
                      }
                  gpioNum = 7;
-             }else {
+             }else {//7上面按钮
                  //监督
                  if(!isCalling){
                      strResult = GpioUtill.executer( "cat " + strCmd + gpioNum + "/data");
