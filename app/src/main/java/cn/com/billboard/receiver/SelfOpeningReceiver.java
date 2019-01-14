@@ -3,9 +3,9 @@ package cn.com.billboard.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import cn.com.billboard.ui.LauncherActivity;
-import cn.com.library.kit.ToastManager;
 
 public class SelfOpeningReceiver extends BroadcastReceiver {
 
@@ -16,6 +16,6 @@ public class SelfOpeningReceiver extends BroadcastReceiver {
             intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent2);
         }
-        ToastManager.showShort(context, "开机启动成功");
+        Toast.makeText(context,"开机启动成功",Toast.LENGTH_LONG).show();
     }
 }
