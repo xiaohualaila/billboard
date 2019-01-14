@@ -9,12 +9,9 @@ import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.ProgressModel;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.library.event.BusProvider;
-import cn.com.library.log.XLog;
-import static cn.com.billboard.net.UserInfoKey.PIC_BIG_DOWM;
-import static cn.com.billboard.net.UserInfoKey.PIC_SMALL_DOWN;
-import static cn.com.billboard.net.UserInfoKey.PIC_UP;
+i import static cn.com.billboard.util.UserInfoKey.PIC_BIG_DOWM;
+import static cn.com.billboard.util.UserInfoKey.PIC_SMALL_DOWN;
+import static cn.com.billboard.util.UserInfoKey.PIC_UP;
 
 public class DownloadFileUtil {
 
@@ -194,7 +191,6 @@ public class DownloadFileUtil {
                     @Override
                     public void onNext(DownloadInfo value) {
                         super.onNext(value);
-                        XLog.e("url==" + url + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
                     }
 
                     @Override
@@ -202,7 +198,6 @@ public class DownloadFileUtil {
                         if (downloadInfo != null) {
                             files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
                             if (files.size() == images.size()) {//判断图片是否下载完成
-                                XLog.e("副屏图片下载完成！");
                                 files.clear();
                                 if (videos.size() > 0) {
                                     downSubLoadVideo(context, videos, callBack);
@@ -245,7 +240,6 @@ public class DownloadFileUtil {
                 @Override
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
-                    XLog.e("url==" + url + "\nprogress===" + value.getProgress() + "/" + value.getTotal());
                 }
 
                 @Override
@@ -253,7 +247,6 @@ public class DownloadFileUtil {
                     if (downloadInfo != null) {
                         files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
                         if (files.size() == videos.size()) {//判断视频是否下载完成
-                            XLog.e("副屏视频下载完成！");
                             callBack.onSubChangeUI();
                         }
                     }
