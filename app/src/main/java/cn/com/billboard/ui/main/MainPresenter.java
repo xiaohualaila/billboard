@@ -2,22 +2,14 @@ package cn.com.billboard.ui.main;
 
 import android.text.TextUtils;
 import android.util.Log;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.List;
-
-import cn.com.billboard.retrofit.Api;
-import cn.com.billboard.retrofit.ConnectUrl;
 import cn.com.billboard.ui.base.BasePresenter;
-import cn.com.billboard.util.SharedPreferencesUtil;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+
 
 
 /**
@@ -42,22 +34,22 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 上传报警
      */
     public void uploadAlarm(String macAddress,int telkey) {
-        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .uploadAlarm(macAddress, telkey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<JSONObject>() {
-                               @Override
-                               public void call(JSONObject jsonObject) {
-
-                               }
-                           }, new Action1<Throwable>() {
-                               @Override
-                               public void call(Throwable throwable) {
-
-                               }
-                           }
-                );
+//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+//                .uploadAlarm(macAddress, telkey)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<JSONObject>() {
+//                               @Override
+//                               public void call(JSONObject jsonObject) {
+//
+//                               }
+//                           }, new Action1<Throwable>() {
+//                               @Override
+//                               public void call(Throwable throwable) {
+//
+//                               }
+//                           }
+//                );
 
     }
 
@@ -65,22 +57,22 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 获取数据
      */
     public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .getData(mac, ipAddress)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<JSONObject>() {
-                               @Override
-                               public void call(JSONObject jsonObject) {
-
-                               }
-                           }, new Action1<Throwable>() {
-                               @Override
-                               public void call(Throwable throwable) {
-
-                               }
-                           }
-                );
+//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+//                .getData(mac, ipAddress)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<JSONObject>() {
+//                               @Override
+//                               public void call(JSONObject jsonObject) {
+//
+//                               }
+//                           }, new Action1<Throwable>() {
+//                               @Override
+//                               public void call(Throwable throwable) {
+//
+//                               }
+//                           }
+//                );
     }
 
     /**
@@ -118,22 +110,22 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
             e.printStackTrace();
         }
         Log.i("sss","开始上传");
-        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-                .uploadAlarmInfo(macAddress,recordId,list)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<JSONObject>() {
-                               @Override
-                               public void call(JSONObject jsonObject) {
-
-                               }
-                           }, new Action1<Throwable>() {
-                               @Override
-                               public void call(Throwable throwable) {
-
-                               }
-                           }
-                );
+//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
+//                .uploadAlarmInfo(macAddress,recordId,list)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Action1<JSONObject>() {
+//                               @Override
+//                               public void call(JSONObject jsonObject) {
+//
+//                               }
+//                           }, new Action1<Throwable>() {
+//                               @Override
+//                               public void call(Throwable throwable) {
+//
+//                               }
+//                           }
+//                );
     }
 
 

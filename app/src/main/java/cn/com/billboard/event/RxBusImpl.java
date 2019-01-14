@@ -1,6 +1,5 @@
 package cn.com.billboard.event;
 
-
 import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
@@ -40,6 +39,7 @@ public class RxBusImpl implements IBus {
     public void postSticky(IEvent event) {
 
     }
+
 
     public <T extends IEvent> Flowable<T> toFlowable(Class<T> eventType) {
         return bus.ofType(eventType).onBackpressureBuffer();

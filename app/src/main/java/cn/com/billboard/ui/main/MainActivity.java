@@ -20,9 +20,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
+import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 
+import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -31,8 +34,7 @@ import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 
 public class MainActivity extends AppCompatActivity implements AppDownload.Callback,MainContract.View  {
@@ -79,20 +81,23 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         instance = this;
     }
 
+    /**
+     * 报警
+     */
     private void getBusDate() {
-        /**
-         * 报警
-         */
-        RxBus.getDefault().toObserverable(AlarmRecordModel.class).subscribe(recordModel -> {
-            if (recordModel.isCalling) {
-                phoneType = recordModel.phoneType;
-                presenter.uploadAlarm(mac, phoneType);
-            }
-        });
-        RxBus.getDefault().toObserverable(AlarmRecordModel.class).subscribe(messageModel -> {
-         //   ToastManager.showShort(context, messageModel.message);
-        });
-
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                (AlarmRecordModel recordModel) -> {
+                    if (recordModel.isCalling) {
+                        phoneType = recordModel.phoneType;
+                      presenter.uploadAlarm(mac, phoneType);
+                    }
+                }
+        );
+        BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                messageModel -> {
+                   // ToastManager.showShort(context, messageModel.message);
+                }
+        );
     }
 
     /**

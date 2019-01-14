@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import cn.com.library.log.XLog;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -17,9 +17,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 
 /**
  * Created by 陈丰尧 on 2017/2/2.
@@ -145,7 +143,6 @@ public class DownloadManager {
             Call call = mClient.newCall(request);
             downCalls.put(url, call);//把这个添加到call里,方便取消
             Response response = call.execute();
-            XLog.e(downloadInfo.getFilePath());
             File folder = new File(downloadInfo.getFilePath());
             if (!folder.exists()){
                 folder.mkdirs();
