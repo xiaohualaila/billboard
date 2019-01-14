@@ -12,24 +12,19 @@ import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
 import cn.com.billboard.net.BillboardApi;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.FragmentActivity;
+import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.DownloadFileUtil;
-import cn.com.library.kit.Kits;
-import cn.com.library.log.XLog;
-import cn.com.library.mvp.XPresent;
-import cn.com.library.net.ApiSubscriber;
-import cn.com.library.net.NetError;
-import cn.com.library.net.XApi;
+
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 
-public class FragmentActivityPresent extends XPresent<FragmentActivity> {
+public class FragmentActivityPresent extends XPresent<MainActivity> {
 
     /**
      * 回调页面展示数据、启动及时服务、上报状态

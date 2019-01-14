@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -23,20 +25,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Calendar;
-
 import butterknife.BindView;
-import cn.com.billboard.R;
+import butterknife.ButterKnife;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.OpenCVPresent;
+import cn.com.billboard.rx.RxBus;
 import cn.com.billboard.util.SharedPreferencesUtil;
-import cn.com.library.event.BusProvider;
-import cn.com.library.mvp.XActivity;
-import cn.com.library.router.Router;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import rx.android.schedulers.AndroidSchedulers;
+
 
 //
-public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements CameraBridgeViewBase.CvCameraViewListener,JavaCameraView.PhotoSuccessCallback {
+public class OpenCVCameraActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener,JavaCameraView.PhotoSuccessCallback {
     @BindView(R.id.bottom_pic)
     ImageView bottom_pic;
     public static final String MAC = "mac";
@@ -77,7 +76,10 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getLayoutId());
+        ButterKnife.bind(this);
         openCvCameraView = (JavaCameraView) findViewById(R.id.jcv);
         openCvCameraView.setCameraIndex(1);
         openCvCameraView.setCvCameraViewListener(this);
@@ -86,7 +88,7 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         phoneType = intent.getIntExtra(PHONETYPE,0);
         mac = intent.getStringExtra(MAC);
         path = UserInfoKey.BILLBOARD_PICTURE_FACE_PATH;
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        RxBus.getDefault().toObserverable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         saveFileFinishActivity();
@@ -100,7 +102,6 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         }
 
 //        handler.postDelayed(runnable, 1000);
-
     }
 
     /**
@@ -193,22 +194,11 @@ public class OpenCVCameraActivity extends XActivity<OpenCVPresent> implements Ca
         Log.i("sss","拍好了！！！！！！！！！！！！");
     }
 
-    public static void launch(Activity activity, String mac, int phoneType) {
-        Router.newIntent(activity)
-                .to(OpenCVCameraActivity.class)
-                .putString(MAC, mac)
-                .putInt(PHONETYPE, phoneType)
-                .launch();
-    }
 
-    @Override
     public int getLayoutId() {
         return R.layout.activity_open_cv;
     }
 
-    @Override
-    public OpenCVPresent newP() {
-        return  new OpenCVPresent();
-    }
+
 
 }

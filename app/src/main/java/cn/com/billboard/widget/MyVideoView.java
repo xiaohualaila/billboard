@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.WindowManager;
 import android.widget.VideoView;
 
-import cn.com.library.log.XLog;
 
 public class MyVideoView extends VideoView {
 
@@ -33,7 +32,6 @@ public class MyVideoView extends VideoView {
         if (this.width > 0 && this.height > 0) {
             height = this.height * width / this.width;
         }
-        XLog.e("width=====" + width + "height======" + height);
         setMeasuredDimension(width, height);
     }
 

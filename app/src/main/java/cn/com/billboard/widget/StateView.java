@@ -7,8 +7,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import butterknife.BindView;
-import cn.com.billboard.R;
-import cn.com.library.kit.KnifeKit;
+
 
 /**
  * Created by wanglei on 2016/12/31.

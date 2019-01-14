@@ -3,7 +3,6 @@ package cn.com.billboard.ui.fragment;
 
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,7 +11,7 @@ import java.util.List;
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.FragmentActivity;
+import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
@@ -82,7 +81,7 @@ public class FragmentPic extends BaseFragment {
      * 重复播放小图片和视频
      */
     private void backplay(){
-        FragmentActivity.instance().toFragemntMain();
+        MainActivity.instance().toFragemntMain();
     }
 
     /**初始化banner数据*/

@@ -1,38 +1,32 @@
 package cn.com.billboard.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
-
 import java.io.File;
-
 import butterknife.BindView;
-import cn.com.billboard.R;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.present.RecordVideoPresent;
+import cn.com.billboard.rx.RxBus;
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
-import cn.com.library.event.BusProvider;
-import cn.com.library.kit.ToastManager;
-import cn.com.library.mvp.XActivity;
-import cn.com.library.router.Router;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+
+
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * 录制视频的页面
  */
-public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implements SurfaceHolder.Callback {
+public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHolder.Callback {
 
     private static final String TAG = "RecordvideoActivity";
 
@@ -55,9 +49,10 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
     public static final String MAC = "mac";
     public static final String PHONETYPE = "phoneType";
     private boolean isCalling = true;//是否是因为挂断电话停止的视频
-
     @Override
-    public void initData(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getLayoutId() );
 
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
@@ -71,7 +66,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             handler.postDelayed(runnable, 1000);
         },500);
 
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        RxBus.getDefault().toObserverable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         isCalling  = false;
@@ -85,6 +80,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             bottom_pic.setImageResource(R.drawable.police);
         }
     }
+
 
     private Runnable runnable = new Runnable() {
         @Override
@@ -144,7 +140,7 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
             camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
         } catch (Exception e) {
             e.printStackTrace();
-            ToastManager.showShort(context, "请检查摄像头！");
+         //   ToastManager.showShort(context, "请检查摄像头！");
             SharedPreferencesUtil.putString(this,"videoFile","");
             finish();
         }
@@ -223,22 +219,10 @@ public class RecordvideoActivity  extends XActivity<RecordVideoPresent> implemen
         mStartedFlg = false;
     }
 
-    public static void launch(Activity activity, String mac, int phoneType) {
-        Router.newIntent(activity)
-                .to(RecordvideoActivity.class)
-                .putString(MAC, mac)
-                .putInt(PHONETYPE, phoneType)
-                .launch();
-    }
-
-    @Override
     public int getLayoutId() {
         return R.layout.activity_record_video;
     }
 
-    @Override
-    public RecordVideoPresent newP() {
-        return new RecordVideoPresent();
-    }
+
 
 }

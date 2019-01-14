@@ -1,7 +1,6 @@
 package cn.com.billboard.ui.fragment;
 
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,7 +10,7 @@ import java.util.List;
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.FragmentActivity;
+import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
@@ -40,7 +39,7 @@ public class FragmentMain extends BaseFragment {
         images_small = FileUtil.getFilePath(UserInfoKey.PIC_SMALL_DOWN);
         images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
         if(videos.size()==0||images_small.size()==0){
-            FragmentActivity.instance().showError("视频或图片不能为空！");
+            MainActivity.instance().showError("视频或图片不能为空！");
             return;
         }
     }
@@ -69,7 +68,7 @@ public class FragmentMain extends BaseFragment {
                 videoIndex = 0;
                 video_finish = true;
                     if(images_big.size()>0 && pic_finish){
-                        FragmentActivity.instance().toFragemntBigPic();
+                        MainActivity.instance().toFragemntBigPic();
                     }else {
                         playVideo();
                     }
@@ -80,6 +79,7 @@ public class FragmentMain extends BaseFragment {
             return true;
         });
         video.setVideoPath(videos.get(videoIndex));
+        video.requestFocus();
         video.start();
     }
 
@@ -100,7 +100,7 @@ public class FragmentMain extends BaseFragment {
                 if(position == images_small.size()-1){
                     pic_finish = true;
                     if(images_big.size()>0 && video_finish){
-                        FragmentActivity.instance().toFragemntBigPic();
+                        MainActivity.instance().toFragemntBigPic();
                     }
                 }
             }
