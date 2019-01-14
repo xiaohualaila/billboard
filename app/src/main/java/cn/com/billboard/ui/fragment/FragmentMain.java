@@ -10,6 +10,7 @@ import java.util.List;
 import butterknife.BindView;
 import cn.com.billboard.R;
 
+import cn.com.billboard.imageloader.ILFactory;
 import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.UserInfoKey;
