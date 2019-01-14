@@ -4,7 +4,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import java.io.File;
 import java.util.List;
-
 import cn.com.billboard.retrofitdemo.GetRequest_Interface;
 import cn.com.billboard.retrofitdemo.PostRequest_Interface;
 import cn.com.billboard.ui.base.BasePresenter;
@@ -12,6 +11,7 @@ import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -72,20 +72,20 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
 
         //对 发送请求 进行封装
-        Call<RequestBody> call = request.getCall();
+        Call<ResponseBody> call = request.getBigScreenData("","");
 
         //步骤6:发送网络请求(异步)
-        call.enqueue(new Callback<RequestBody>() {
+        call.enqueue(new Callback<ResponseBody>() {
             //请求成功时候的回调
             @Override
-            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 //请求处理,输出结果
 
             }
 
             //请求失败时候的回调
             @Override
-            public void onFailure(Call<RequestBody> call, Throwable throwable) {
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
                 System.out.println("连接失败");
             }
         });
@@ -103,26 +103,26 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         PostRequest_Interface request = retrofit.create(PostRequest_Interface.class);
 
         //对 发送请求 进行封装(设置需要翻译的内容)
-        Call<RequestBody> call = request.getCall("I love you");
+//        Call<RequestBody> call = request.getCall("I love you");
 
         //步骤6:发送网络请求(异步)
-        call.enqueue(new Callback<RequestBody>() {
-
-            //请求成功时回调
-            @Override
-            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
-                // 请求处理,输出结果
-                // 输出翻译的内容
-
-            }
-
-            //请求失败时回调
-            @Override
-            public void onFailure(Call<RequestBody> call, Throwable throwable) {
-                System.out.println("请求失败");
-                System.out.println(throwable.getMessage());
-            }
-        });
+//        call.enqueue(new Callback<RequestBody>() {
+//
+//            //请求成功时回调
+//            @Override
+//            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+//                // 请求处理,输出结果
+//                // 输出翻译的内容
+//
+//            }
+//
+//            //请求失败时回调
+//            @Override
+//            public void onFailure(Call<RequestBody> call, Throwable throwable) {
+//                System.out.println("请求失败");
+//                System.out.println(throwable.getMessage());
+//            }
+//        });
     }
 
     /**

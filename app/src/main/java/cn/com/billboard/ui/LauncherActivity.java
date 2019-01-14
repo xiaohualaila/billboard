@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.com.billboard.R;
 import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.APKVersionCodeUtils;
 
@@ -29,7 +30,7 @@ public class LauncherActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                toActivity();
+//                toActivity();
             }
         },3000);
 

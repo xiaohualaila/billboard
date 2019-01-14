@@ -7,6 +7,7 @@ import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.ProgressModel;
 
@@ -88,7 +89,7 @@ public class DownloadFileUtil {
             @Override
             public void onNext(DownloadInfo value) {
                 super.onNext(value);
-                RxBus.getDefault().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
+                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
                 Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
             }
 
@@ -142,7 +143,7 @@ public class DownloadFileUtil {
                 @Override
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
-                    RxBus.getDefault().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
+                    BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
                //     Log.i("sss", " finalI  " + index+1 + " videos size " + voides.size() + " FileName " + value.getFileName());
                 }
 

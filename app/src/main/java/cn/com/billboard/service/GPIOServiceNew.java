@@ -9,11 +9,13 @@ import android.util.Log;
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
 import java.io.IOException;
+
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.SharedPreferencesUtil;
-import cn.com.library.event.BusProvider;
+
 
 //        Hold1 摘机，发送0x21， 挂机，发送0x20；
 //        KEY1  按下，发送0x11， 弹起，发送0x12；

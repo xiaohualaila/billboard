@@ -11,12 +11,13 @@ import com.bjw.utils.SerialHelper;
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
-import cn.com.library.event.BusProvider;
 
 
 public class GPIOService extends Service {
