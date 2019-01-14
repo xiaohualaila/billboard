@@ -9,7 +9,8 @@ import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.ProgressModel;
-i import static cn.com.billboard.util.UserInfoKey.PIC_BIG_DOWM;
+
+import static cn.com.billboard.util.UserInfoKey.PIC_BIG_DOWM;
 import static cn.com.billboard.util.UserInfoKey.PIC_SMALL_DOWN;
 import static cn.com.billboard.util.UserInfoKey.PIC_UP;
 
@@ -87,7 +88,7 @@ public class DownloadFileUtil {
             @Override
             public void onNext(DownloadInfo value) {
                 super.onNext(value);
-                BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
+                RxBus.getDefault().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
                 Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
             }
 
@@ -141,11 +142,11 @@ public class DownloadFileUtil {
                 @Override
                 public void onNext(DownloadInfo value) {
                     super.onNext(value);
-                    BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
+                    RxBus.getDefault().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, voides.size(), value.getFileName(), "视频"));
                //     Log.i("sss", " finalI  " + index+1 + " videos size " + voides.size() + " FileName " + value.getFileName());
                 }
 
-                @Override
+
                 public void onComplete() {
                     if (downloadInfo != null) {
                         index ++;
@@ -242,7 +243,7 @@ public class DownloadFileUtil {
                     super.onNext(value);
                 }
 
-                @Override
+
                 public void onComplete() {
                     if (downloadInfo != null) {
                         files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());

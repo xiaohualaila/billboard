@@ -1,7 +1,9 @@
 package cn.com.billboard.download;
 
 
-import rx.Observer;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 
 /**
  * Created by 陈丰尧 on 2017/2/2.

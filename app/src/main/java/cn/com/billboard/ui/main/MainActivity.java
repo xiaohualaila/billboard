@@ -22,14 +22,15 @@ import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.model.AlarmRecordModel;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.rx.RxBus;
-import cn.com.billboard.ui.RecordvideoActivity;
+
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.SharedPreferencesUtil;
+import cn.com.billboard.util.UserInfoKey;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -153,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     public void getAlarmId(String s) {
         if (!TextUtils.isEmpty(s)) {
             recordId = s;
-            RecordvideoActivity.launch(this, mac, phoneType);
+      //      RecordvideoActivity.launch(this, mac, phoneType);
         }
     }
 

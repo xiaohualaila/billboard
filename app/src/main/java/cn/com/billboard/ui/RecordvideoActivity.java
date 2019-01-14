@@ -16,7 +16,6 @@ import java.io.File;
 import butterknife.BindView;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.rx.RxBus;
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 

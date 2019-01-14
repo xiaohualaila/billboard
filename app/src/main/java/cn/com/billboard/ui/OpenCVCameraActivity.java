@@ -1,6 +1,5 @@
 package cn.com.billboard.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,9 +27,8 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.billboard.model.AlarmRecordModel;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.rx.RxBus;
 import cn.com.billboard.util.SharedPreferencesUtil;
+import cn.com.billboard.util.UserInfoKey;
 import rx.android.schedulers.AndroidSchedulers;
 
 

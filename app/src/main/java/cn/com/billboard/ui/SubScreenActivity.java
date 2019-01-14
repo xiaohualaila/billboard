@@ -30,6 +30,7 @@ import cn.com.billboard.App;
 import cn.com.billboard.R;
 import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.FileUtil;
+import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.billboard.widget.MyVideoView;
@@ -39,6 +40,8 @@ import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class SubScreenActivity extends Presentation {
@@ -74,8 +77,7 @@ public class SubScreenActivity extends Presentation {
         images = FileUtil.getFilePath(UserInfoKey.PIC_UP);
         videos = FileUtil.getFilePath(UserInfoKey.VIDEO_UP);
 
-        XLog.e("副屏图片===" + images);
-        XLog.e("副屏视频===" + videos);
+
         if (images.size() > 0 && videos.size() > 0) {
             type = 3;
             playVideo();
@@ -87,7 +89,7 @@ public class SubScreenActivity extends Presentation {
             playVideo();
         } else {
             subTip.setVisibility(View.VISIBLE);
-            ToastManager.showShort(App.getContext(), "暂无数据");
+        //    ToastManager.showShort(App.getContext(), "暂无数据");
         }
     }
 
@@ -129,7 +131,7 @@ public class SubScreenActivity extends Presentation {
             @Override
             public void onPageSelected(int position) {
                 if (position == images.size() - 1 && type == 3) {
-                    XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
+                   // XLog.e("图片播放完毕,休眠图片播放时长后播放视频");
                     Observable.timer(10, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
                         @Override
                         public void onSubscribe(Disposable d) {
@@ -266,7 +268,7 @@ public class SubScreenActivity extends Presentation {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float value = (Float) animation.getAnimatedValue();
-                XLog.d(value + "========value");
+              //  XLog.d(value + "========value");
             }
         });
 
