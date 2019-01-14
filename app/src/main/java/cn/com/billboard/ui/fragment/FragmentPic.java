@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import cn.com.billboard.R;
-import cn.com.billboard.net.UserInfoKey;
+
 import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
+import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.library.imageloader.ILFactory;

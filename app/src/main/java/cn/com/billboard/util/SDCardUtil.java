@@ -3,10 +3,8 @@ package cn.com.billboard.util;
 import android.content.Context;
 import android.os.storage.StorageManager;
 import android.util.Log;
-
 import java.lang.reflect.Method;
 
-import cn.com.library.log.XLog;
 
 public class SDCardUtil {
 

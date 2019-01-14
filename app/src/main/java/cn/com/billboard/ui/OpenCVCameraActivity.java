@@ -26,10 +26,12 @@ import java.io.InputStream;
 import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.com.billboard.R;
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
-import rx.android.schedulers.AndroidSchedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 //
@@ -86,7 +88,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
         phoneType = intent.getIntExtra(PHONETYPE,0);
         mac = intent.getStringExtra(MAC);
         path = UserInfoKey.BILLBOARD_PICTURE_FACE_PATH;
-        RxBus.getDefault().toObserverable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         saveFileFinishActivity();

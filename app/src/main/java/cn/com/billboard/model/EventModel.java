@@ -1,6 +1,7 @@
 package cn.com.billboard.model;
 
-import cn.com.library.event.IBus;
+
+import cn.com.billboard.event.IBus;
 
 public class EventModel implements IBus.IEvent{
 

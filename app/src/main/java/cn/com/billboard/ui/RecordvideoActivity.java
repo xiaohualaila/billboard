@@ -14,13 +14,15 @@ import android.view.SurfaceView;
 import android.widget.ImageView;
 import java.io.File;
 import butterknife.BindView;
+import cn.com.billboard.R;
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
-import cn.com.billboard.net.UserInfoKey;
+
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
+import cn.com.billboard.util.UserInfoKey;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
-
-import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * 录制视频的页面
@@ -65,7 +67,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
             handler.postDelayed(runnable, 1000);
         },500);
 
-        RxBus.getDefault().toObserverable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
                         isCalling  = false;
@@ -206,7 +208,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
                     SharedPreferencesUtil.putString(this,"videoFile","");
                 }
                 if(isCalling){
-                    OpenCVCameraActivity.launch(this,mac,phoneType);
+                  //  OpenCVCameraActivity.launch(this,mac,phoneType);
                 }
                     finish();
 

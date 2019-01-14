@@ -7,8 +7,8 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import cn.com.billboard.R;
+import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.ProgressModel;
-import cn.com.library.event.BusProvider;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FragmentUpdate extends BaseFragment {

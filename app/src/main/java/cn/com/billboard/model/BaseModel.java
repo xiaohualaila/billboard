@@ -1,6 +1,5 @@
 package cn.com.billboard.model;
 
-import cn.com.library.net.IModel;
 
 /**
  * Created by wanglei on 2016/12/11.

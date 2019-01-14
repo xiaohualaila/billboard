@@ -28,20 +28,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.billboard.App;
 import cn.com.billboard.R;
-import cn.com.billboard.net.UserInfoKey;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 import cn.com.billboard.widget.MyVideoView;
-import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
+
+
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
 public class SubScreenActivity extends Presentation {
@@ -135,7 +133,6 @@ public class SubScreenActivity extends Presentation {
                     Observable.timer(10, TimeUnit.SECONDS, AndroidSchedulers.mainThread()).subscribe(new Observer<Long>() {
                         @Override
                         public void onSubscribe(Disposable d) {
-                            XLog.e("开始倒计时");
                         }
 
                         @Override
@@ -150,7 +147,7 @@ public class SubScreenActivity extends Presentation {
 
                         @Override
                         public void onComplete() {
-                            XLog.e("结束倒计时");
+
                         }
                     });
                 }

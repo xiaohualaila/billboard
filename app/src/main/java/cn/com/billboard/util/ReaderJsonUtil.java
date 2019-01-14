@@ -2,22 +2,15 @@ package cn.com.billboard.util;
 
 import android.content.Context;
 import android.text.TextUtils;
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.com.billboard.model.ScreenDetailModel;
 import cn.com.billboard.model.ScreenShowModel;
-import cn.com.billboard.net.BillboardApi;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.library.kit.ToastManager;
-import cn.com.library.log.XLog;
+import cn.com.billboard.retrofitdemo.BillboardApi;
+
 
 /**
  * @fileName: ReaderJsonUtil
@@ -50,11 +43,10 @@ public class ReaderJsonUtil {
             is.read(buff);
             is.close();
             result = new String(buff, "utf-8");
-            XLog.e(result);
             return result;
         } catch (Exception e){
             e.printStackTrace();
-            ToastManager.showShort(context, "没有找到指定的文件");
+            //ToastManager.showShort(context, "没有找到指定的文件");
         }
         return "";
     }
@@ -69,11 +61,11 @@ public class ReaderJsonUtil {
             fin.read(buff);
             fin.close();
             result = new String(buff, "utf-8");
-            XLog.e(result);
+         //   XLog.e(result);
             return result;
         } catch (Exception e){
             e.printStackTrace();
-            ToastManager.showShort(context, "没有找到指定的文件");
+        //    ToastManager.showShort(context, "没有找到指定的文件");
         }
         return "";
     }
