@@ -4,12 +4,19 @@ import android.text.TextUtils;
 import android.util.Log;
 import java.io.File;
 import java.util.List;
+
+import cn.com.billboard.retrofitdemo.GetRequest_Interface;
+import cn.com.billboard.retrofitdemo.PostRequest_Interface;
 import cn.com.billboard.ui.base.BasePresenter;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -51,6 +58,71 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
 //                           }
 //                );
 
+    }
+
+    public void request() {
+
+        //步骤4:创建Retrofit对象
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://fy.iciba.com/") // 设置 网络请求 Url
+                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                .build();
+
+        // 步骤5:创建 网络请求接口 的实例
+        GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
+
+        //对 发送请求 进行封装
+        Call<RequestBody> call = request.getCall();
+
+        //步骤6:发送网络请求(异步)
+        call.enqueue(new Callback<RequestBody>() {
+            //请求成功时候的回调
+            @Override
+            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+                //请求处理,输出结果
+
+            }
+
+            //请求失败时候的回调
+            @Override
+            public void onFailure(Call<RequestBody> call, Throwable throwable) {
+                System.out.println("连接失败");
+            }
+        });
+    }
+
+    public void requestPost() {
+
+        //步骤4:创建Retrofit对象
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://fanyi.youdao.com/") // 设置 网络请求 Url
+                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
+                .build();
+
+        // 步骤5:创建 网络请求接口 的实例
+        PostRequest_Interface request = retrofit.create(PostRequest_Interface.class);
+
+        //对 发送请求 进行封装(设置需要翻译的内容)
+        Call<RequestBody> call = request.getCall("I love you");
+
+        //步骤6:发送网络请求(异步)
+        call.enqueue(new Callback<RequestBody>() {
+
+            //请求成功时回调
+            @Override
+            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
+                // 请求处理,输出结果
+                // 输出翻译的内容
+
+            }
+
+            //请求失败时回调
+            @Override
+            public void onFailure(Call<RequestBody> call, Throwable throwable) {
+                System.out.println("请求失败");
+                System.out.println(throwable.getMessage());
+            }
+        });
     }
 
     /**
