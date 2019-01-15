@@ -44,168 +44,79 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
-    public static final String BASE_URL = "http://www.xazhsq.cn:8080/yykjZhCommunity/";
-    private MainContract.View view;
-
-    public MainPresenter(MainContract.View view) {
-        this.view = view;
-        this.view.setPresenter(this);
-    }
-
-    @Override
-    public void start() {
-
-    }
 
     /**
      * 回调页面展示数据、启动及时服务、上报状态
      */
-    CallBack callBack = new CallBack() {
-        @Override
-        public void onMainChangeUI() {
-            selectFragment();
-        }
+    BigScreenCallBack callBack = new BigScreenCallBack() {
 
         @Override
-        public void onMainUpdateUI() {
-            selectFragment();
-            updateState(SharedPreferencesUtil.getString(MainActivity.instance(), UserInfoKey.MAC, ""));
-        }
+        public void onScreenChangeUI() {
+            List<String> images = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
+            if(images.size()>0){
+                getV().toFragmentImg();
+            }else {
+                getV().toFragmentVideo();
+            }
 
-        @SuppressLint("NewApi")
-        @Override
-        public void onSubChangeUI() {
-            view.showSubData();
+            updateState(SharedPreferencesUtil.getString(getV(), UserInfoKey.MAC, ""));
         }
 
         @Override
         public void onErrorChangeUI(String error) {
-            view.showError(error);
+            getV().showError(error);
         }
-
     };
 
-    private void selectFragment() {
-        List<String> images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
-        if(images_big.size() > 0 ){
-            view.toFragemntBigPic();
-        }else {
-            view.toFragemntMain();
-        }
-    }
-
-    /**
-     * 上报状态
-     */
-    private void updateState(String mac) {
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.upState(mac)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            Log.i("sss","状态上报成功");
-                        } else {
-                            Log.i("sss","状态上报失败");
-                        }
-
-                    }
-                });
-
-    }
-
-
-    /**
-     * 上传报警
-     */
-    public void uploadAlarm(String macAddress,int telkey) {
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.uploadAlarm(macAddress, telkey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        view.showError("网络异常！");
-                    }
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            String str = (String) model.getMessageBody();
-                            view.getAlarmId(str);//返回报警ID
-                        } else {
-                            view.showError("未获取到报警ID");
-                        }
-                    }
-                });
-    }
 
     /**
      * 获取数据
      */
-    public void getScreenData(boolean isRefresh, String mac, String ipAddress, Context context) {
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-         request.getData(mac, ipAddress)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean<TwoScreenModel>>() {
+    public void getScreenData(boolean isRefresh, String mac, String ipAddress) {
+        BillboardApi.getDataService().getBigScreenData(mac, ipAddress)
+                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
+                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
+                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean<MessageBodyBean>>() {
                     @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i("sss","++++"+e.toString());
+                    protected void onFail(NetError error) {
                         if (isRefresh) {
-                            callBack.onMainChangeUI();
-                            callBack.onSubChangeUI();
+                            callBack.onScreenChangeUI();
                         }
-                        view.showError("网络异常！");
+                        callBack.onErrorChangeUI(error.getMessage());
                     }
+
                     @Override
-                    public void onNext(BaseBean<TwoScreenModel> model) {
+                    public void onNext(BaseBean<MessageBodyBean> model) {
                         if (model.isSuccess()) {
-                            dealData(model.getMessageBody(),context);
+                            getV().toFragmentUpdate();
+                            dealData(model.getMessageBody());
                         } else {
                             if (isRefresh) {
-                                callBack.onMainChangeUI();
-                                callBack.onSubChangeUI();
+                                callBack.onScreenChangeUI();
                             }
-                            view.showError(model.getDescribe());
+                            callBack.onErrorChangeUI(model.getDescribe());
                         }
-
                     }
                 });
     }
 
     /**
      * 处理数据
+     *
      * @param model
      */
-    private void dealData(TwoScreenModel model,Context context){
-        String s_version= model.getBuild();
-        if(s_version != null){
-            int v_no = APKVersionCodeUtils.getVersionCode(context);
+    private void dealData(MessageBodyBean model) {
+
+        String s_version = model.getBuild();
+        if (s_version != null) {
+            int v_no = APKVersionCodeUtils.getVersionCode(getV());
             int a = Integer.parseInt(s_version);
-            if(a > v_no){
+            if (a > v_no) {
                 //更新app
-                view.toUpdateVer(model.getApkurl(),s_version);
-            }else {
-                downloadAndSaveData(model,context);
+                getV().toUpdateVer(model.getApkurl(), s_version);
+            } else {
+                downloadAndSaveData(model);
             }
         }
     }
@@ -213,136 +124,105 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(TwoScreenModel model,Context context) {
-        String tell = model.getTel1();
-        String tel2 = model.getTel2();
-        int time = Integer.parseInt(model.getHeartinterval());
-        SharedPreferencesUtil.putString(context, "tell", tell);
-        SharedPreferencesUtil.putString(context,"tel2",tel2);
-        SharedPreferencesUtil.putInt(context,"time",time);
-        if(model.getHalfdowndisplay() == null && model.getDowndisplay()== null && model.getDowndisplay() == null && model.getUpdisplay()==null ){
-            callBack.onMainChangeUI();
-            callBack.onSubChangeUI();
+    private void downloadAndSaveData(MessageBodyBean model) {
+        String  tel1 = model.getTel1();
+        String  tel2 = model.getTel2();
+        String  tel3 = model.getTel3();
+        String  tel4 = model.getTel4();
+        Log.i("sss","tel1  "+tel1);
+        Log.i("sss","tel2  "+tel2);
+        Log.i("sss","tel3  "+tel3);
+        Log.i("sss","tel4  "+tel4);
+        SharedPreferencesUtil.putString(getV(),"tel1",tel1);
+        SharedPreferencesUtil.putString(getV(),"tel2",tel2);
+        SharedPreferencesUtil.putString(getV(),"tel3",tel3);
+        SharedPreferencesUtil.putString(getV(),"tel4",tel4);
+        if( model.getFullPics()== null && model.getFullVideos() == null  ){
+            callBack.onScreenChangeUI();
             return;
         }
-       view.toFragemntUpdate();
+        //图片
+        List<String> lists_pic = new ArrayList<>();
 
-        //下屏小图片
-        List<String> lists_pic_small_dowm = new ArrayList<>();
-        List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
-        if(halfdowndisplayBeanList!=null){
-            if(halfdowndisplayBeanList.size()>0){
-                for(int i=0;i<halfdowndisplayBeanList.size();i++){
-                    lists_pic_small_dowm.add(halfdowndisplayBeanList.get(i).getUrl());
+        List<MessageBodyBean.FullPicsBean> halfdowndisplayBeanList = model.getFullPics();
+        if (halfdowndisplayBeanList != null) {
+            if (halfdowndisplayBeanList.size() > 0) {
+                for (int i = 0; i < halfdowndisplayBeanList.size(); i++) {
+                    lists_pic.add(halfdowndisplayBeanList.get(i).getUrl());
                 }
             }
         }
 
-        //下屏大图片
-        List<String> lists_pic_big_dowm = new ArrayList<>();
-        List<TwoScreenModel.DowndisplayBean> downdisplayBean =  model.getDowndisplay();
-        if(downdisplayBean!=null){
-            if(downdisplayBean.size()>0){
-                for(int i=0;i<downdisplayBean.size();i++){
-                    lists_pic_big_dowm.add(downdisplayBean.get(i).getUrl());
-                }
-            }
-        }
-
-        //上屏图片
-        List<String> lists_pic_up = new ArrayList<>();
-        List<TwoScreenModel.UpdisplayBean> updisplayBean =  model.getUpdisplay();
-        if(updisplayBean!=null){
-            if(updisplayBean.size()>0){
-                for(int i=0;i<updisplayBean.size();i++){
-                    lists_pic_up.add(updisplayBean.get(i).getUrl());
-                }
-            }
-        }
-
-        //下屏视频
+        //视频
         List<String> lists_video = new ArrayList<>();
-        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
-        if(halfupdisplayBean!=null){
-            if(halfupdisplayBean.size()>0){
-                for(int i=0;i<halfupdisplayBean.size();i++){
+        List<MessageBodyBean.FullVideosBean> halfupdisplayBean = model.getFullVideos();
+        if (halfupdisplayBean != null) {
+            if (halfupdisplayBean.size() > 0) {
+                for (int i = 0; i < halfupdisplayBean.size(); i++) {
                     lists_video.add(halfupdisplayBean.get(i).getUrl());
                 }
             }
         }
 
-
-        DownloadFileUtil.getInstance().downMainLoadPicture(context, lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
+        DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
     }
 
+
     /**
-     * 上传打电话人员的视频
+     * 上报状态
      */
-    public void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path) {
-        Log.i("sss","准备上传");
-        if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
-            return;
-        }
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        RequestBody requestBody = null;
-        if(!TextUtils.isEmpty(video_path)){
-            File v_file =new File(video_path);
-            if(v_file.exists()){
-                requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
-                builder.addFormDataPart("video", v_file.getName(), requestBody);
-            }
-        }
-        if(!TextUtils.isEmpty(pic_path)){
-            File p_file =new File(pic_path);
-            if (p_file.exists()){
-                builder.addPart( Headers.of("Content-Disposition", "form-data; name=\"pic\";filename=\"file.jpeg\""),
-                        RequestBody.create(MediaType.parse("image/png"),p_file)).build();
-
-            }
-        }
-        List<MultipartBody.Part> list = null;
-        try {
-            list = builder.build().parts();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.i("sss","开始上传");
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.uploadAlarmInfo(macAddress,recordId,list)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
+    private void updateState(String mac) {
+        BillboardApi.getDataService().upState(mac)
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
                     @Override
-                    public void onComplete() {
+                    protected void onFail(NetError error) {
+                        getV().showError(error.getMessage());
+                    }
 
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        view.showError("网络异常！");
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-                        Log.i("sss","上传失败");
-                        Log.i("sss",e.getMessage());
-                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            view.showError("上报成功！");
-                            Log.i("sss","上报成功");
+                            XLog.e("状态上报成功");
                         } else {
-                            view.showError("上报失败！");
-                            Log.i("sss","上传失败");
+                            XLog.e("状态上报失败");
                         }
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-
                     }
                 });
+    }
 
+    /**
+     * 上传报警
+     */
+    public void uploadAlarm(String macAddress,int telkey) {
 
+        BillboardApi.getDataService().uploadAlarm(macAddress,telkey)
+                .compose(XApi.<BaseBean>getApiTransformer())
+                .compose(XApi.<BaseBean>getScheduler())
+                .compose(getV().<BaseBean>bindToLifecycle())
+                .subscribe(new ApiSubscriber<BaseBean>() {
+                    @Override
+                    protected void onFail(NetError error) {
+                        XLog.e("状态上报失败");
+                        getV().showError("网络异常！");
+                    }
 
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            XLog.e("状态上报成功");
+                        } else {
+                            XLog.e("状态上报失败");
+                        }
+                    }
+                });
     }
 
 
+    @Override
+    public void start() {
 
+    }
 }

@@ -6,8 +6,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
+
 import java.io.IOException;
 
 import cn.com.billboard.event.BusProvider;
@@ -17,23 +19,23 @@ import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.SharedPreferencesUtil;
 
 
-//        Hold1 摘机，发送0x21， 挂机，发送0x20；
+//        Hold1 挂机，发送0x21， 摘机，发送0x20；
 //        KEY1  按下，发送0x11， 弹起，发送0x12；
 //        KEY2  按下，发送0x13， 弹起，发送0x14；
 //
-//        Hold2 摘机，发送0x31， 挂机，发送0x30；
+//        Hold2 挂机，发送0x31， 摘机，发送0x30；
 //        KEY3  按下，发送0x15， 弹起，发送0x16；
 //        KEY4  按下，发送0x17， 弹起，发送0x18；
 
-public class GPIOServiceNew extends Service {
+public class GPIOBigServiceNew extends Service {
 
-    private static GPIOServiceNew service;
+    private static GPIOBigServiceNew service;
 
-    public static GPIOServiceNew getInstance() {
+    public static GPIOBigServiceNew getInstance() {
         if (service == null) {
-            synchronized (GPIOServiceNew.class) {
+            synchronized (GPIOBigServiceNew.class) {
                 if (service == null) {
-                    service = new GPIOServiceNew();
+                    service = new GPIOBigServiceNew();
                 }
             }
         }
@@ -43,6 +45,8 @@ public class GPIOServiceNew extends Service {
     private SerialHelper serialHelper;
     String tell;
     String tel2;
+    String tel3;
+    String tel4;
     private boolean isCalling = false;
     @Override
     public void onCreate() {
@@ -66,11 +70,18 @@ public class GPIOServiceNew extends Service {
                     telephone2();
                 }
 
+                if(back.equals("31")){
+                    stopCall();
+                }else if (back.equals("15")){
+                    telephone3();
+                }else if(back.equals("17")){
+                    telephone4();
+                }
+
                 String back_phone = ChangeTool.decodeHexStr(back);
                 Log.i("xxx",back_phone);
                 if(back_phone.contains("NO CARRIER")||back_phone.contains("ERROR")||back_phone.contains("NO DIALTONE")){
                     isCalling =false;
-                    BusProvider.getBus().post(new AlarmRecordModel(false, 0));
                 }else if(back_phone.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
                 }
@@ -91,6 +102,7 @@ public class GPIOServiceNew extends Service {
             return;
         }
         tell =  SharedPreferencesUtil.getString(this,"tell","");
+   //     tell="19909157722";
         Log.i("sss","tel1  "+tell);
         if(TextUtils.isEmpty(tell)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
@@ -106,6 +118,7 @@ public class GPIOServiceNew extends Service {
             return;
         }
         tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
+    //   tel2="09153213474";
         Log.i("sss","tel2  "+tel2);
         if(TextUtils.isEmpty(tel2)){
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
@@ -113,6 +126,38 @@ public class GPIOServiceNew extends Service {
             isCalling = true;
             sendTest("ATD"+tel2+";\r\n");
             BusProvider.getBus().post(new AlarmRecordModel(true, 2));
+        }
+    }
+
+    private void telephone3() {
+        if(isCalling){
+            return;
+        }
+        tel3 =  SharedPreferencesUtil.getString(this,"tel3","");
+    //    tel3="15771851927";
+        Log.i("sss","tel3  "+tel3);
+        if(TextUtils.isEmpty(tel3)){
+            BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
+        }else {
+            isCalling = true;
+            sendTest("ATD"+tel3+";\r\n");
+            BusProvider.getBus().post(new AlarmRecordModel(true, 3));
+        }
+    }
+
+    private void telephone4() {
+        if(isCalling){
+            return;
+        }
+        tel4 =  SharedPreferencesUtil.getString(this,"tel4","");
+     //   tel4="13509154195";
+        Log.i("sss","tel4  "+tel4);
+        if(TextUtils.isEmpty(tel4)){
+            BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
+        }else {
+            isCalling = true;
+            sendTest("ATD"+tel4+";\r\n");
+            BusProvider.getBus().post(new AlarmRecordModel(true, 4));
         }
     }
 

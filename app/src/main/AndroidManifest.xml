@@ -44,21 +44,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.RecordvideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTask" />
-        <activity
-            android:name=".ui.OpenCVCameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTask"/>
-        <activity
             android:name=".ui.main.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask">
         </activity>
 
-        <service android:name=".service.GPIOService" />
-        <service android:name=".service.GPIOServiceNew" />
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"

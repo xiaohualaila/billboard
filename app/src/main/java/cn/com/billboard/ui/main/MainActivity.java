@@ -1,149 +1,98 @@
 package cn.com.billboard.ui.main;
 
 import android.app.smdt.SmdtManager;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import butterknife.ButterKnife;
+
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 
 import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.service.GPIOServiceNew;
-import cn.com.billboard.ui.RecordvideoActivity;
-import cn.com.billboard.ui.SubScreenActivity;
-import cn.com.billboard.ui.fragment.FragmentPic;
-import cn.com.billboard.ui.fragment.FragmentMain;
+import cn.com.billboard.service.GPIOBigServiceNew;
+import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
+import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
-import cn.com.billboard.util.UserInfoKey;
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
+import io.reactivex.disposables.Disposable;
 
 
 public class MainActivity extends AppCompatActivity implements AppDownload.Callback,MainContract.View  {
-    private MainContract.Presenter presenter;
+    private static MainActivity instance;
     private Fragment updateFrag;
-    private Fragment mainFrag;
-    private Fragment bigPigFrag;
-    DisplayManager displayManager;//屏幕管理类
-    Display[] displays;//屏幕数组
-
+    private Fragment imgFrg;
+    private Fragment videoFrg;
     private SmdtManager smdt;
     private String mac = "";
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
-
-    private int phoneType = 1;
-    private String recordId = "";
-    private static MainActivity instance;
-
+    private Disposable mDisposable;
     private boolean isFirst = true;
+    private MainContract.Presenter presenter;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-        ButterKnife.bind(this);
-        new MainPresenter(this);
-        displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
-        displays = displayManager.getDisplays();
-        updateFrag = new FragmentUpdate();
-        mainFrag = new FragmentMain();
-        bigPigFrag = new FragmentPic();
 
-        /**
-         * 喂狗api
-         */
+        updateFrag = new FragmentUpdate();
+        imgFrg = new FragmentBigScreenPic();
+        videoFrg = new FragmentBigScreenVideo();
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
-       //   startService(new Intent(this, GPIOService.class));
-        startService(new Intent(this, GPIOServiceNew.class));
-        getBusDate();
+//        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
+        //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
+        startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
+        getBus();
         instance = this;
+
     }
 
-    /**
-     * 报警
-     */
-    private void getBusDate() {
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                (AlarmRecordModel recordModel) -> {
-                    if (recordModel.isCalling) {
-                        phoneType = recordModel.phoneType;
-                      presenter.uploadAlarm(mac, phoneType);
-                    }
-                }
-        );
+
+
+    private void getBus() {
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     Toast.makeText(this,messageModel.message,Toast.LENGTH_LONG).show();
                 }
         );
-    }
-
-    /**
-     * 发送心跳数据
-     */
-    private void heartinterval() {
-        int time =  SharedPreferencesUtil.getInt(this, "time", 10);
-         Observable.interval(0, time, TimeUnit.MINUTES)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> {
-                    mac = smdt.smdtGetEthMacAddress();
-                    ipAddress = smdt.smdtGetEthIPAddress();
-                    if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
-                        Toast.makeText(this,"Mac地址或IP地址不能为空，请检查网络！",Toast.LENGTH_LONG).show();
-                        toFragemntMain();
-                        isFirst = false;
-                        return;
-                    }
-                    SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-                    presenter.getScreenData(isFirst, mac, ipAddress,this);
-                    isFirst = false;
-                });
-
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
         /**
-         * 上传报警信息图片，视频
+         * 报警
          */
-        String video_path =  SharedPreferencesUtil.getString(this, "videoFile", "");
-        String pic_path =  SharedPreferencesUtil.getString(this, "picFile", "");
-        presenter.uploadAlarmInfo(mac, recordId,video_path,pic_path);
+        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                (AlarmRecordModel recordModel) -> {
+                    if (recordModel.isCalling) {
+                        int phoneType = recordModel.phoneType;
+                        getP().uploadAlarm(mac, phoneType);
+                    }
+                }
+        );
     }
+
+
 
     TimerTask timerTask = new TimerTask() {
         @Override
@@ -153,45 +102,42 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     };
 
     /**
-     * 展示副屏数据
+     * 发送心跳数据
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public void showSubData() {
-       // XLog.e("屏幕数量===" + displays.length);
-        if (displays != null && displays.length > 1) {
-            SubScreenActivity subScreenActivity = new SubScreenActivity(this, displays[1]);//displays[1]是副屏
-            subScreenActivity.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
-            subScreenActivity.show();
-            subScreenActivity.showData();
-        }
-    }
-
-    public void getAlarmId(String s) {
-        if (!TextUtils.isEmpty(s)) {
-            recordId = s;
-            Intent intent = new Intent(this,RecordvideoActivity.class);
-            intent.putExtra("mac",mac);
-            intent.putExtra("phoneType",phoneType);
-            startActivity(intent);
-        }
+    private void heartinterval() {
+        int time =  SharedPreferencesUtil.getInt(this, "time", 10);
+        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    mac = smdt.smdtGetEthMacAddress();
+                    ipAddress = smdt.smdtGetEthIPAddress();
+                    if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
+                        showError("Mac地址或IP地址不能为空，请检查网络！");
+                        toFragmentVideo();
+                        isFirst = false;
+                        return;
+                    }
+                    getP().getScreenData(isFirst, mac, ipAddress);
+                    isFirst = false;
+                });
     }
 
     public void switchContent(Fragment to) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_content, to)
-                .commitAllowingStateLoss();
+                .commit();
     }
 
-    public void toFragemntUpdate() {
-            switchContent(updateFrag);
+    public void toFragmentUpdate() {
+        switchContent(updateFrag);
     }
 
-    public void toFragemntBigPic() {
-        switchContent(bigPigFrag);
+    public void toFragmentImg() {
+        switchContent(imgFrg);
     }
 
-    public void toFragemntMain() {
-        switchContent(mainFrag);
+    public void toFragmentVideo() {
+        switchContent(videoFrg);
     }
 
 
@@ -203,9 +149,13 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        smdt.smdtWatchDogEnable((char) 0);//停止喂狗
-      //   stopService(new Intent(this, GPIOService.class));
-        stopService(new Intent(this, GPIOServiceNew.class));
+        smdt.smdtWatchDogEnable((char) 0);
+        //  stopService(new Intent(this, GPIOBigService.class));
+        //  stopService(new Intent(this, GPIOBigService2.class));
+        stopService(new Intent(this, GPIOBigServiceNew.class));
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     public void toUpdateVer(String apkurl, String version) {
@@ -217,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         dialog_app.getFile_num().setText("版本号" + version);
         AppDownload appDownload = new AppDownload();
         appDownload.setProgressInterface(this);
+
         appDownload.downApk(apkurl, this);
     }
 
@@ -265,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         }
     }
 
+
     /**
      * 请求失败返回
      */
@@ -272,15 +224,12 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         Toast.makeText(this,error,Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public void setPresenter(MainContract.Presenter presenter) {
+         this.presenter = presenter;
+    }
 
     public static MainActivity instance() {
         return instance;
     }
-
-    @Override
-    public void setPresenter(MainContract.Presenter presenter) {
-        this.presenter = presenter;
-    }
-
-
 }
