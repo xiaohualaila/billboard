@@ -19,6 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
@@ -55,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
-
+        ButterKnife.bind(this);
+        new MainPresenter(this);
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentBigScreenPic();
         videoFrg = new FragmentBigScreenVideo();
