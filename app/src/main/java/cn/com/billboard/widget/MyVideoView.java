@@ -1,10 +1,7 @@
 package cn.com.billboard.widget;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.util.AttributeSet;
-import android.view.WindowManager;
 import android.widget.VideoView;
 
 
