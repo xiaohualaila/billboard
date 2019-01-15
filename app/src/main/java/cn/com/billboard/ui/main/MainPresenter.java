@@ -4,16 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.CallBack;
 import cn.com.billboard.model.TwoScreenModel;
-import cn.com.billboard.retrofitdemo.BillboardApi;
 import cn.com.billboard.retrofitdemo.Request_Interface;
 import cn.com.billboard.retrofitdemo.RetrofitManager;
 import cn.com.billboard.ui.base.BasePresenter;
@@ -30,21 +26,12 @@ import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-
 
 /**
  * Created by Administrator on 2017/6/3.
  */
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
-    public static final String BASE_URL = "http://www.xazhsq.cn:8080/yykjZhCommunity/";
     private MainContract.View view;
 
     public MainPresenter(MainContract.View view) {

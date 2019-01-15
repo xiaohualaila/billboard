@@ -34,7 +34,7 @@ public class RetrofitManager {
                 .client(builder.build())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
+                .baseUrl(BillboardApi.API_BASE_URL)
                 .build();
     }
 
