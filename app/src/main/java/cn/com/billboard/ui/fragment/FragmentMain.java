@@ -1,6 +1,7 @@
 package cn.com.billboard.ui.fragment;
 
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -50,6 +51,8 @@ public class FragmentMain extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+         pic_finish = false;
+         video_finish = false;
         playVideo();
         playBanner();
     }
@@ -63,6 +66,7 @@ public class FragmentMain extends BaseFragment {
         video.setOnPreparedListener(mp -> { });
         video.setOnCompletionListener(mp -> {
             videoIndex++;
+            Log.i("sss"," video Index " + videoIndex);
             if (videoIndex != videos.size()) {
                 //继续播放视频
                 playVideo();
@@ -79,6 +83,7 @@ public class FragmentMain extends BaseFragment {
         });
         video.setOnErrorListener((mp, what, extra) -> {
             video.stopPlayback();
+            Log.i("sss","video.setOnErrorListener");
             return true;
         });
         video.setVideoPath(videos.get(videoIndex));
@@ -106,6 +111,7 @@ public class FragmentMain extends BaseFragment {
                         MainActivity.instance().toFragemntBigPic();
                     }
                 }
+                Log.i("sss","小图片轮播 playBanner" + position);
             }
 
             @Override

@@ -3,6 +3,7 @@ package cn.com.billboard.ui.fragment;
 
 import android.os.Handler;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -57,7 +58,7 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-               // Log.i("sss","position " + position);
+                Log.i("sss","大图轮播 position " + position);
                 if (position == images_big.size() - 1) {
                     if(video.size()>0){
                         mHandler.postDelayed(() -> backplay(),5000);
