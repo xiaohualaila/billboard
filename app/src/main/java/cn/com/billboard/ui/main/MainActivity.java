@@ -43,7 +43,7 @@ import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-
+import io.reactivex.disposables.Disposable;
 
 
 public class MainActivity extends AppCompatActivity implements AppDownload.Callback,MainContract.View  {
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private static MainActivity instance;
 
     private boolean isFirst = true;
-
+    private Disposable mDisposable;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      */
     private void heartinterval() {
         int time =  SharedPreferencesUtil.getInt(this, "time", 10);
-        Flowable.interval(0, time, TimeUnit.MINUTES)
+        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     mac = smdt.smdtGetEthMacAddress();
@@ -207,6 +207,9 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
       //   stopService(new Intent(this, GPIOService.class));
         stopService(new Intent(this, GPIOServiceNew.class));
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     public void toUpdateVer(String apkurl, String version) {
