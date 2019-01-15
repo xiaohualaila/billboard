@@ -124,7 +124,6 @@ public class FragmentMain extends BaseFragment {
         List<View> bannerView = new ArrayList<View>();
         for (int i = 0; i < urls.size(); i++) {
             ImageView guidView = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.item_image, null);
-        //    ILFactory.getLoader().loadNet(guidView, urls.get(i), null);
             Glide.with(this).load(urls.get(i)).into(guidView);
             bannerView.add(guidView);
         }
