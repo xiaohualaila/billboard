@@ -6,9 +6,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import cn.com.billboard.R;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.FragmentBigScreenActivity;
+import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
+import cn.com.billboard.util.UserInfoKey;
 
 public class FragmentBigScreenVideo extends BaseFragment {
     @BindView(R.id.main_video)
@@ -26,7 +26,7 @@ public class FragmentBigScreenVideo extends BaseFragment {
         videos =  FileUtil.getFilePath(UserInfoKey.BIG_VIDEO);
         images = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
         if(videos.size()==0 && images.size()==0){
-            FragmentBigScreenActivity.instance().showError("没有要播放的视频和图片！");
+            MainActivity.instance().showError("没有要播放的视频和图片！");
             return;
         }
     }
@@ -38,9 +38,9 @@ public class FragmentBigScreenVideo extends BaseFragment {
             playVideo();
         }else {
             if(images.size()>0){
-                FragmentBigScreenActivity.instance().toFragmentImg();
+                MainActivity.instance().toFragmentImg();
             }else {
-                FragmentBigScreenActivity.instance().showError("视频或图片不能为空！");
+                MainActivity.instance().showError("视频或图片不能为空！");
             }
         }
     }
@@ -58,14 +58,14 @@ public class FragmentBigScreenVideo extends BaseFragment {
             } else {
                     videoIndex = 0;
                     if(images.size()>0){
-                        FragmentBigScreenActivity.instance().toFragmentImg();
+                        MainActivity.instance().toFragmentImg();
                     }else {
                         playVideo();
                     }
             }
         });
         video.setOnErrorListener((mp, what, extra) -> {
-            FragmentBigScreenActivity.instance().toFragmentImg();
+            MainActivity.instance().toFragmentImg();
             return true;
         });
         video.setVideoPath(videos.get(videoIndex));

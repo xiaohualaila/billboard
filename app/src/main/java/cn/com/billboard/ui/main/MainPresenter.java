@@ -1,42 +1,24 @@
 package cn.com.billboard.ui.main;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import cn.com.billboard.model.BaseBean;
-import cn.com.billboard.model.CallBack;
-import cn.com.billboard.model.TwoScreenModel;
+import cn.com.billboard.model.BigScreenCallBack;
+import cn.com.billboard.model.MessageBodyBean;
 import cn.com.billboard.retrofitdemo.BillboardApi;
 import cn.com.billboard.retrofitdemo.Request_Interface;
 import cn.com.billboard.retrofitdemo.RetrofitManager;
 import cn.com.billboard.ui.base.BasePresenter;
 import cn.com.billboard.util.APKVersionCodeUtils;
-import cn.com.billboard.util.DownloadFileUtil;
+import cn.com.billboard.util.DownloadBigScreenFileUtil;
 import cn.com.billboard.util.FileUtil;
-import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 /**
@@ -44,7 +26,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
+    private MainContract.View view;
 
+    public MainPresenter(MainContract.View view) {
+        this.view = view;
+        this.view.setPresenter(this);
+    }
     /**
      * 回调页面展示数据、启动及时服务、上报状态
      */
@@ -54,17 +41,17 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         public void onScreenChangeUI() {
             List<String> images = FileUtil.getFilePath(UserInfoKey.PIC_BIG_IMAGE_DOWN);
             if(images.size()>0){
-                getV().toFragmentImg();
+                view.toFragmentImg();
             }else {
-                getV().toFragmentVideo();
+                view.toFragmentVideo();
             }
 
-            updateState(SharedPreferencesUtil.getString(getV(), UserInfoKey.MAC, ""));
+            updateState(SharedPreferencesUtil.getString(MainActivity.instance(), UserInfoKey.MAC, ""));
         }
 
         @Override
         public void onErrorChangeUI(String error) {
-            getV().showError(error);
+            view.showError(error);
         }
     };
 
@@ -72,25 +59,28 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
     /**
      * 获取数据
      */
-    public void getScreenData(boolean isRefresh, String mac, String ipAddress) {
-        BillboardApi.getDataService().getBigScreenData(mac, ipAddress)
-                .compose(XApi.<BaseBean<MessageBodyBean>>getApiTransformer())
-                .compose(XApi.<BaseBean<MessageBodyBean>>getScheduler())
-                .compose(getV().<BaseBean<MessageBodyBean>>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean<MessageBodyBean>>() {
+    public void getScreenData(Context context,boolean isRefresh, String mac, String ipAddress) {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.getBigScreenData(mac, ipAddress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean<MessageBodyBean>>() {
                     @Override
-                    protected void onFail(NetError error) {
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
                         if (isRefresh) {
                             callBack.onScreenChangeUI();
                         }
-                        callBack.onErrorChangeUI(error.getMessage());
+                        callBack.onErrorChangeUI(e.getMessage());
                     }
-
                     @Override
                     public void onNext(BaseBean<MessageBodyBean> model) {
                         if (model.isSuccess()) {
-                            getV().toFragmentUpdate();
-                            dealData(model.getMessageBody());
+                            view.toFragmentUpdate();
+                            dealData(model.getMessageBody(),context);
                         } else {
                             if (isRefresh) {
                                 callBack.onScreenChangeUI();
@@ -106,17 +96,17 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      *
      * @param model
      */
-    private void dealData(MessageBodyBean model) {
+    private void dealData(MessageBodyBean model,Context context) {
 
         String s_version = model.getBuild();
         if (s_version != null) {
-            int v_no = APKVersionCodeUtils.getVersionCode(getV());
+            int v_no = APKVersionCodeUtils.getVersionCode(context);
             int a = Integer.parseInt(s_version);
             if (a > v_no) {
                 //更新app
-                getV().toUpdateVer(model.getApkurl(), s_version);
+                view.toUpdateVer(model.getApkurl(), s_version);
             } else {
-                downloadAndSaveData(model);
+                downloadAndSaveData(model,context);
             }
         }
     }
@@ -124,7 +114,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(MessageBodyBean model) {
+    private void downloadAndSaveData(MessageBodyBean model,Context context) {
         String  tel1 = model.getTel1();
         String  tel2 = model.getTel2();
         String  tel3 = model.getTel3();
@@ -133,10 +123,10 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         Log.i("sss","tel2  "+tel2);
         Log.i("sss","tel3  "+tel3);
         Log.i("sss","tel4  "+tel4);
-        SharedPreferencesUtil.putString(getV(),"tel1",tel1);
-        SharedPreferencesUtil.putString(getV(),"tel2",tel2);
-        SharedPreferencesUtil.putString(getV(),"tel3",tel3);
-        SharedPreferencesUtil.putString(getV(),"tel4",tel4);
+        SharedPreferencesUtil.putString(context,"tel1",tel1);
+        SharedPreferencesUtil.putString(context,"tel2",tel2);
+        SharedPreferencesUtil.putString(context,"tel3",tel3);
+        SharedPreferencesUtil.putString(context,"tel4",tel4);
         if( model.getFullPics()== null && model.getFullVideos() == null  ){
             callBack.onScreenChangeUI();
             return;
@@ -172,22 +162,25 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 上报状态
      */
     private void updateState(String mac) {
-        BillboardApi.getDataService().upState(mac)
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.upState(mac)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        getV().showError(error.getMessage());
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError("网络异常！");
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            XLog.e("状态上报成功");
+                            Log.i("sss","状态上报成功");
                         } else {
-                            XLog.e("状态上报失败");
+                            Log.i("sss","状态上报失败");
                         }
                     }
                 });
@@ -197,24 +190,25 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 上传报警
      */
     public void uploadAlarm(String macAddress,int telkey) {
-
-        BillboardApi.getDataService().uploadAlarm(macAddress,telkey)
-                .compose(XApi.<BaseBean>getApiTransformer())
-                .compose(XApi.<BaseBean>getScheduler())
-                .compose(getV().<BaseBean>bindToLifecycle())
-                .subscribe(new ApiSubscriber<BaseBean>() {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.uploadAlarm(macAddress,telkey)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
-                    protected void onFail(NetError error) {
-                        XLog.e("状态上报失败");
-                        getV().showError("网络异常！");
-                    }
+                    public void onComplete() {
 
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError("网络异常！");
+                    }
                     @Override
                     public void onNext(BaseBean model) {
                         if (model.isSuccess()) {
-                            XLog.e("状态上报成功");
+                            Log.i("sss","状态上报成功");
                         } else {
-                            XLog.e("状态上报失败");
+                            Log.i("sss","状态上报失败");
                         }
                     }
                 });

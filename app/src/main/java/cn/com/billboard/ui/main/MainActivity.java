@@ -8,23 +8,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.Toast;
-
 import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-
 import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
-
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.service.GPIOBigServiceNew;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
@@ -88,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
                         int phoneType = recordModel.phoneType;
-                        getP().uploadAlarm(mac, phoneType);
+                        presenter.uploadAlarm(mac, phoneType);
                     }
                 }
         );
@@ -119,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                         isFirst = false;
                         return;
                     }
-                    getP().getScreenData(isFirst, mac, ipAddress);
+                    presenter.getScreenData(this,isFirst, mac, ipAddress);
                     isFirst = false;
                 });
     }
