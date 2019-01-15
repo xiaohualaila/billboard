@@ -6,22 +6,16 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import cn.com.billboard.R;
-import cn.com.billboard.net.UserInfoKey;
-import cn.com.billboard.ui.FragmentBigScreenActivity;
 import cn.com.billboard.ui.main.MainActivity;
 import cn.com.billboard.util.FileUtil;
 import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
-import cn.com.library.imageloader.ILFactory;
 
 public class FragmentBigScreenPic extends BaseFragment {
 
@@ -97,8 +91,7 @@ public class FragmentBigScreenPic extends BaseFragment {
         List<View> bannerView = new ArrayList<View>();
         for (int i = 0; i < urls.size(); i++) {
             ImageView guidView = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.item_image, null);
-            ILFactory.getLoader().loadNet(guidView, urls.get(i), null);
-            Glide.
+            Glide.with(this).load(urls.get(i)).into(guidView);
             bannerView.add(guidView);
         }
         return bannerView;
