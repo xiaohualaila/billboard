@@ -80,7 +80,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
-        openCvCameraView = (JavaCameraView) findViewById(R.id.jcv);
+        openCvCameraView =  findViewById(R.id.jcv);
         openCvCameraView.setCameraIndex(1);
         openCvCameraView.setCvCameraViewListener(this);
         openCvCameraView.setPhotoSuccessCallback(this);

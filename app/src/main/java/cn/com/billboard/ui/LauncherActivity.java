@@ -30,7 +30,7 @@ public class LauncherActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-//                toActivity();
+                toActivity();
             }
         },3000);
 
@@ -38,6 +38,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     private void toActivity() {
         startActivity(new Intent(this,MainActivity.class));
+        finish();
     }
 
 

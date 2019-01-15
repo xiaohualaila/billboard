@@ -1,7 +1,8 @@
 package cn.com.billboard.ui.main;
 
 
-import java.io.File;
+
+import android.content.Context;
 
 import cn.com.billboard.ui.base.IBasePresenter;
 import cn.com.billboard.ui.base.IBaseView;
@@ -13,14 +14,25 @@ import cn.com.billboard.ui.base.IBaseView;
 
 public interface MainContract {
     interface View extends IBaseView<Presenter> {
+        void showError(String msg);
 
+        void toUpdateVer(String apkurl, String version);
 
+        void toFragemntUpdate();
+
+        void toFragemntMain();
+
+        void toFragemntBigPic();
+
+        void showSubData();
+
+        void getAlarmId(String alarmId);
     }
 
     interface Presenter extends IBasePresenter {
         void uploadAlarm(String macAddress,int telkey);
 
-        void getScreenData(boolean isRefresh,String mac,String ipAddress);
+        void getScreenData(boolean isRefresh, String mac, String ipAddress, Context context);
 
         void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path);
     }

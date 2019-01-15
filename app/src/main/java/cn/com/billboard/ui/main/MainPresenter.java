@@ -1,12 +1,31 @@
 package cn.com.billboard.ui.main;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-import cn.com.billboard.retrofitdemo.GetRequest_Interface;
-import cn.com.billboard.retrofitdemo.PostRequest_Interface;
+
+import cn.com.billboard.model.BaseBean;
+import cn.com.billboard.model.CallBack;
+import cn.com.billboard.model.TwoScreenModel;
+import cn.com.billboard.retrofitdemo.BillboardApi;
+import cn.com.billboard.retrofitdemo.Request_Interface;
+import cn.com.billboard.retrofitdemo.RetrofitManager;
 import cn.com.billboard.ui.base.BasePresenter;
+import cn.com.billboard.util.APKVersionCodeUtils;
+import cn.com.billboard.util.DownloadFileUtil;
+import cn.com.billboard.util.FileUtil;
+import cn.com.billboard.util.Kits;
+import cn.com.billboard.util.SharedPreferencesUtil;
+import cn.com.billboard.util.UserInfoKey;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -16,6 +35,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
@@ -24,6 +44,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
+    public static final String BASE_URL = "http://www.xazhsq.cn:8080/yykjZhCommunity/";
     private MainContract.View view;
 
     public MainPresenter(MainContract.View view) {
@@ -36,115 +57,222 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
 
     }
 
+    /**
+     * 回调页面展示数据、启动及时服务、上报状态
+     */
+    CallBack callBack = new CallBack() {
+        @Override
+        public void onMainChangeUI() {
+            selectFragment();
+        }
+
+        @Override
+        public void onMainUpdateUI() {
+            selectFragment();
+            updateState(SharedPreferencesUtil.getString(MainActivity.instance(), UserInfoKey.MAC, ""));
+        }
+
+        @SuppressLint("NewApi")
+        @Override
+        public void onSubChangeUI() {
+            view.showSubData();
+        }
+
+        @Override
+        public void onErrorChangeUI(String error) {
+            view.showError(error);
+        }
+
+    };
+
+    private void selectFragment() {
+        List<String> images_big = FileUtil.getFilePath(UserInfoKey.PIC_BIG_DOWM);
+        if(images_big.size() > 0 ){
+            view.toFragemntBigPic();
+        }else {
+            view.toFragemntMain();
+        }
+    }
+
+    /**
+     * 上报状态
+     */
+    private void updateState(String mac) {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.upState(mac)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
+                    @Override
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            Log.i("sss","状态上报成功");
+                        } else {
+                            Log.i("sss","状态上报失败");
+                        }
+
+                    }
+                });
+
+    }
+
 
     /**
      * 上传报警
      */
     public void uploadAlarm(String macAddress,int telkey) {
-//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-//                .uploadAlarm(macAddress, telkey)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<JSONObject>() {
-//                               @Override
-//                               public void call(JSONObject jsonObject) {
-//
-//                               }
-//                           }, new Action1<Throwable>() {
-//                               @Override
-//                               public void call(Throwable throwable) {
-//
-//                               }
-//                           }
-//                );
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.uploadAlarm(macAddress, telkey)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
+                    @Override
+                    public void onComplete() {
 
-    }
-
-    public void request() {
-
-        //步骤4:创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://fy.iciba.com/") // 设置 网络请求 Url
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
-
-        // 步骤5:创建 网络请求接口 的实例
-        GetRequest_Interface request = retrofit.create(GetRequest_Interface.class);
-
-        //对 发送请求 进行封装
-        Call<ResponseBody> call = request.getBigScreenData("","");
-
-        //步骤6:发送网络请求(异步)
-        call.enqueue(new Callback<ResponseBody>() {
-            //请求成功时候的回调
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                //请求处理,输出结果
-
-            }
-
-            //请求失败时候的回调
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                System.out.println("连接失败");
-            }
-        });
-    }
-
-    public void requestPost() {
-
-        //步骤4:创建Retrofit对象
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://fanyi.youdao.com/") // 设置 网络请求 Url
-                .addConverterFactory(GsonConverterFactory.create()) //设置使用Gson解析(记得加入依赖)
-                .build();
-
-        // 步骤5:创建 网络请求接口 的实例
-        PostRequest_Interface request = retrofit.create(PostRequest_Interface.class);
-
-        //对 发送请求 进行封装(设置需要翻译的内容)
-//        Call<RequestBody> call = request.getCall("I love you");
-
-        //步骤6:发送网络请求(异步)
-//        call.enqueue(new Callback<RequestBody>() {
-//
-//            //请求成功时回调
-//            @Override
-//            public void onResponse(Call<RequestBody> call, Response<RequestBody> response) {
-//                // 请求处理,输出结果
-//                // 输出翻译的内容
-//
-//            }
-//
-//            //请求失败时回调
-//            @Override
-//            public void onFailure(Call<RequestBody> call, Throwable throwable) {
-//                System.out.println("请求失败");
-//                System.out.println(throwable.getMessage());
-//            }
-//        });
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError("网络异常！");
+                    }
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            String str = (String) model.getMessageBody();
+                            view.getAlarmId(str);//返回报警ID
+                        } else {
+                            view.showError("未获取到报警ID");
+                        }
+                    }
+                });
     }
 
     /**
      * 获取数据
      */
-    public void getScreenData(boolean isRefresh,String mac,String ipAddress) {
-//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-//                .getData(mac, ipAddress)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<JSONObject>() {
-//                               @Override
-//                               public void call(JSONObject jsonObject) {
-//
-//                               }
-//                           }, new Action1<Throwable>() {
-//                               @Override
-//                               public void call(Throwable throwable) {
-//
-//                               }
-//                           }
-//                );
+    public void getScreenData(boolean isRefresh, String mac, String ipAddress, Context context) {
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+         request.getData(mac, ipAddress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean<TwoScreenModel>>() {
+                    @Override
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i("sss","++++"+e.toString());
+                        if (isRefresh) {
+                            callBack.onMainChangeUI();
+                            callBack.onSubChangeUI();
+                        }
+                        view.showError("网络异常！");
+                    }
+                    @Override
+                    public void onNext(BaseBean<TwoScreenModel> model) {
+                        if (model.isSuccess()) {
+                            dealData(model.getMessageBody(),context);
+                        } else {
+                            if (isRefresh) {
+                                callBack.onMainChangeUI();
+                                callBack.onSubChangeUI();
+                            }
+                            view.showError(model.getDescribe());
+                        }
+
+                    }
+                });
+    }
+
+    /**
+     * 处理数据
+     * @param model
+     */
+    private void dealData(TwoScreenModel model,Context context){
+        String s_version= model.getBuild();
+        if(s_version != null){
+            int v_no = APKVersionCodeUtils.getVersionCode(context);
+            int a = Integer.parseInt(s_version);
+            if(a > v_no){
+                //更新app
+                view.toUpdateVer(model.getApkurl(),s_version);
+            }else {
+                downloadAndSaveData(model,context);
+            }
+        }
+    }
+
+    /**
+     * 下载并保存数据
+     */
+    private void downloadAndSaveData(TwoScreenModel model,Context context) {
+        String tell = model.getTel1();
+        String tel2 = model.getTel2();
+        int time = Integer.parseInt(model.getHeartinterval());
+        SharedPreferencesUtil.putString(context, "tell", tell);
+        SharedPreferencesUtil.putString(context,"tel2",tel2);
+        SharedPreferencesUtil.putInt(context,"time",time);
+        if(model.getHalfdowndisplay() == null && model.getDowndisplay()== null && model.getDowndisplay() == null && model.getUpdisplay()==null ){
+            callBack.onMainChangeUI();
+            callBack.onSubChangeUI();
+            return;
+        }
+       view.toFragemntUpdate();
+
+        //下屏小图片
+        List<String> lists_pic_small_dowm = new ArrayList<>();
+        List<TwoScreenModel.HalfdowndisplayBean> halfdowndisplayBeanList =  model.getHalfdowndisplay();
+        if(halfdowndisplayBeanList!=null){
+            if(halfdowndisplayBeanList.size()>0){
+                for(int i=0;i<halfdowndisplayBeanList.size();i++){
+                    lists_pic_small_dowm.add(halfdowndisplayBeanList.get(i).getUrl());
+                }
+            }
+        }
+
+        //下屏大图片
+        List<String> lists_pic_big_dowm = new ArrayList<>();
+        List<TwoScreenModel.DowndisplayBean> downdisplayBean =  model.getDowndisplay();
+        if(downdisplayBean!=null){
+            if(downdisplayBean.size()>0){
+                for(int i=0;i<downdisplayBean.size();i++){
+                    lists_pic_big_dowm.add(downdisplayBean.get(i).getUrl());
+                }
+            }
+        }
+
+        //上屏图片
+        List<String> lists_pic_up = new ArrayList<>();
+        List<TwoScreenModel.UpdisplayBean> updisplayBean =  model.getUpdisplay();
+        if(updisplayBean!=null){
+            if(updisplayBean.size()>0){
+                for(int i=0;i<updisplayBean.size();i++){
+                    lists_pic_up.add(updisplayBean.get(i).getUrl());
+                }
+            }
+        }
+
+        //下屏视频
+        List<String> lists_video = new ArrayList<>();
+        List<TwoScreenModel.HalfupdisplayBean> halfupdisplayBean =  model.getHalfupdisplay();
+        if(halfupdisplayBean!=null){
+            if(halfupdisplayBean.size()>0){
+                for(int i=0;i<halfupdisplayBean.size();i++){
+                    lists_video.add(halfupdisplayBean.get(i).getUrl());
+                }
+            }
+        }
+
+
+        DownloadFileUtil.getInstance().downMainLoadPicture(context, lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
 
     /**
@@ -152,7 +280,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      */
     public void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path) {
         Log.i("sss","准备上传");
-
         if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
             return;
         }
@@ -168,8 +295,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         if(!TextUtils.isEmpty(pic_path)){
             File p_file =new File(pic_path);
             if (p_file.exists()){
-                //   requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), pic_path);
-                //    builder.addFormDataPart("pic", p_file.getName(), requestBody);
                 builder.addPart( Headers.of("Content-Disposition", "form-data; name=\"pic\";filename=\"file.jpeg\""),
                         RequestBody.create(MediaType.parse("image/png"),p_file)).build();
 
@@ -182,22 +307,40 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
             e.printStackTrace();
         }
         Log.i("sss","开始上传");
-//        Api.getBaseApiWithOutFormat(ConnectUrl.URL)
-//                .uploadAlarmInfo(macAddress,recordId,list)
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Action1<JSONObject>() {
-//                               @Override
-//                               public void call(JSONObject jsonObject) {
-//
-//                               }
-//                           }, new Action1<Throwable>() {
-//                               @Override
-//                               public void call(Throwable throwable) {
-//
-//                               }
-//                           }
-//                );
+        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
+        request.uploadAlarmInfo(macAddress,recordId,list)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new DisposableObserver<BaseBean>() {
+                    @Override
+                    public void onComplete() {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        view.showError("网络异常！");
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                        Log.i("sss","上传失败");
+                        Log.i("sss",e.getMessage());
+                    }
+                    @Override
+                    public void onNext(BaseBean model) {
+                        if (model.isSuccess()) {
+                            view.showError("上报成功！");
+                            Log.i("sss","上报成功");
+                        } else {
+                            view.showError("上报失败！");
+                            Log.i("sss","上传失败");
+                        }
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+
+                    }
+                });
+
+
+
     }
 
 

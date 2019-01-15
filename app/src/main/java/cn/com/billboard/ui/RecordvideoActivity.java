@@ -1,5 +1,6 @@
 package cn.com.billboard.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
@@ -12,8 +13,11 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import java.io.File;
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
@@ -54,7 +58,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId() );
-
+        ButterKnife.bind(this);
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
 
@@ -94,6 +98,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
             handler.postDelayed(this, 1000);
         }
     };
+
 
 
 
@@ -141,7 +146,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
             camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
         } catch (Exception e) {
             e.printStackTrace();
-         //   ToastManager.showShort(context, "请检查摄像头！");
+            Toast.makeText(this,"请检查摄像头！",Toast.LENGTH_LONG).show();
             SharedPreferencesUtil.putString(this,"videoFile","");
             finish();
         }
@@ -208,11 +213,12 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
                     SharedPreferencesUtil.putString(this,"videoFile","");
                 }
                 if(isCalling){
-                  //  OpenCVCameraActivity.launch(this,mac,phoneType);
+                    Intent intent = new Intent(this,OpenCVCameraActivity.class);
+                    intent.putExtra(MAC,mac);
+                    intent.putExtra(PHONETYPE,phoneType);
+                    startActivity(intent);
                 }
                     finish();
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
