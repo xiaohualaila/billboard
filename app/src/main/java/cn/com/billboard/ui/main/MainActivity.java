@@ -40,6 +40,7 @@ import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      */
     private void heartinterval() {
         int time =  SharedPreferencesUtil.getInt(this, "time", 10);
-         Observable.interval(0, time, TimeUnit.MINUTES)
+        Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     mac = smdt.smdtGetEthMacAddress();
