@@ -23,7 +23,7 @@ import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.service.GPIOBigServiceNew;
-import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
+import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMediaPlayer;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         ButterKnife.bind(this);
         new MainPresenter(this);
         updateFrag = new FragmentUpdate();
-        imgFrg = new FragmentBigScreenPic();
+        imgFrg = new FragmentPic();
         videoFrg = new FragmentMediaPlayer();
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗

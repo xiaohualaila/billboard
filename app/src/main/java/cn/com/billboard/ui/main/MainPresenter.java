@@ -27,6 +27,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
     private MainContract.View view;
+    private boolean isFirst = true;
 
     public MainPresenter(MainContract.View view) {
         this.view = view;
@@ -60,6 +61,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 获取数据
      */
     public void getScreenData(Context context,boolean isRefresh, String mac, String ipAddress) {
+        isFirst = isRefresh;
         Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
         request.getBigScreenData(mac, ipAddress)
                 .subscribeOn(Schedulers.io())
@@ -79,7 +81,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                     @Override
                     public void onNext(BaseBean<MessageBodyBean> model) {
                         if (model.isSuccess()) {
-                            dealData(model.getMessageBody(),context);
+                            dealData(model.getMessageBody(),context,isRefresh);
                         } else {
                             if (isRefresh) {
                                 callBack.onScreenChangeUI();
@@ -95,7 +97,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      *
      * @param model
      */
-    private void dealData(MessageBodyBean model,Context context) {
+    private void dealData(MessageBodyBean model,Context context,boolean isRefresh) {
 
         String s_version = model.getBuild();
         if (s_version != null) {
@@ -103,9 +105,10 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
             int a = Integer.parseInt(s_version);
             if (a > v_no) {
                 //更新app
+                view.toFragmentUpdate();
                 view.toUpdateVer(model.getApkurl(), s_version);
             } else {
-                downloadAndSaveData(model,context);
+                downloadAndSaveData(model,context,isRefresh);
             }
         }
     }
@@ -113,15 +116,15 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
     /**
      * 下载并保存数据
      */
-    private void downloadAndSaveData(MessageBodyBean model,Context context) {
+    private void downloadAndSaveData(MessageBodyBean model,Context context,boolean isRefresh) {
         String  tel1 = model.getTel1();
         String  tel2 = model.getTel2();
         String  tel3 = model.getTel3();
         String  tel4 = model.getTel4();
-        Log.i("sss","tel1  "+tel1);
-        Log.i("sss","tel2  "+tel2);
-        Log.i("sss","tel3  "+tel3);
-        Log.i("sss","tel4  "+tel4);
+//        Log.i("sss","tel1  "+tel1);
+//        Log.i("sss","tel2  "+tel2);
+//        Log.i("sss","tel3  "+tel3);
+//        Log.i("sss","tel4  "+tel4);
         SharedPreferencesUtil.putString(context,"tel1",tel1);
         SharedPreferencesUtil.putString(context,"tel2",tel2);
         SharedPreferencesUtil.putString(context,"tel3",tel3);
@@ -130,10 +133,9 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
             callBack.onScreenChangeUI();
             return;
         }
-        view.toFragmentUpdate();
+
         //图片
         List<String> lists_pic = new ArrayList<>();
-
         List<MessageBodyBean.FullPicsBean> halfdowndisplayBeanList = model.getFullPics();
         if (halfdowndisplayBeanList != null) {
             if (halfdowndisplayBeanList.size() > 0) {
@@ -153,8 +155,17 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                 }
             }
         }
+        List<String>  images  = FileUtil.getCommonFileNames(lists_pic,UserInfoKey.PIC_BIG_IMAGE_DOWN);
+        List<String>  videos  = FileUtil.getCommonFileNames(lists_video, UserInfoKey.BIG_VIDEO);
 
-        DownloadBigScreenFileUtil.getInstance().down(lists_pic, lists_video, callBack);//下载
+        if(images.size()==0 && videos.size()==0){
+            if(isRefresh){
+                callBack.onScreenChangeUI();
+            }
+            return;
+        }
+        view.toFragmentUpdate();
+        DownloadBigScreenFileUtil.getInstance().down(images, videos, callBack);//下载
     }
 
 

@@ -17,7 +17,7 @@ import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 
-public class FragmentBigScreenPic extends BaseFragment {
+public class FragmentPic extends BaseFragment {
 
     @BindView(R.id.main_banner)
     BaseViewPager banner;
@@ -27,7 +27,7 @@ public class FragmentBigScreenPic extends BaseFragment {
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_big_screen_pic;
+        return R.layout.fragment_pic;
     }
 
     @Override

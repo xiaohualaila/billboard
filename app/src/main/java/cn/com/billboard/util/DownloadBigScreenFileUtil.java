@@ -3,7 +3,6 @@ package cn.com.billboard.util;
 import android.util.Log;
 
 import java.util.List;
-
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
 import cn.com.billboard.download.DownloadManager;
@@ -16,7 +15,6 @@ public class DownloadBigScreenFileUtil {
 
     private static DownloadBigScreenFileUtil downloadFileUtil;
     int index =0;
-    List<String> images;
     List<String> videos;
 
     public static DownloadBigScreenFileUtil getInstance() {
@@ -32,14 +30,11 @@ public class DownloadBigScreenFileUtil {
 
     /**
      * 下载主屏图片
-     * @param list_img  图片
-     * @param lists_video   下屏视频
+     * @param images  图片
+     * @param videos   下屏视频
      * @param callBack 回调
      */
-    public void down( List<String> list_img, List<String> lists_video,BigScreenCallBack callBack) {
-        images  = FileUtil.getCommonFileNames(list_img,UserInfoKey.PIC_BIG_IMAGE_DOWN);
-        videos  = FileUtil.getCommonFileNames(lists_video, UserInfoKey.BIG_VIDEO);
-
+    public void down( List<String> images, List<String> videos,BigScreenCallBack callBack) {
         if (images.size() > 0) {
             index =0;
             downBigScreenFilePic( images, callBack,UserInfoKey.PIC_BIG_IMAGE_DOWN,"图片");
@@ -68,7 +63,7 @@ public class DownloadBigScreenFileUtil {
             public void onNext(DownloadInfo value) {
                 super.onNext(value);
                 BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
-                Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
+            //    Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
             }
 
             @Override
@@ -129,6 +124,4 @@ public class DownloadBigScreenFileUtil {
             callBack.onScreenChangeUI();
         }
     }
-
-
 }
