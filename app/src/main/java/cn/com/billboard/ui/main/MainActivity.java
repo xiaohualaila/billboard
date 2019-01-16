@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     DisplayManager displayManager;//屏幕管理类
     Display[] displays;//屏幕数组
 
-    private SmdtManager smdt;
+    private static SmdtManager smdt;
     private String mac = "";
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     private boolean isFirst = true;
     private Disposable mDisposable;
-
+    private TimerTask timerTask ;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -82,13 +82,27 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
          */
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        new Timer().schedule(timerTask, 0, 5000);
         heartinterval();
        //   startService(new Intent(this, GPIOService.class));
         startService(new Intent(this, GPIOServiceNew.class));
         getBusDate();
         instance = this;
+        timer();//开始定时喂狗程序
     }
+
+    void timer(){
+        timerTask = new MyTimerTask() ;
+        new Timer().schedule( timerTask ,0,5000 );  // 1秒后启动一个任务
+    }
+
+    private static class MyTimerTask extends TimerTask{
+
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+        }
+    }
+
 
     /**
      * 报警
@@ -144,13 +158,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         presenter.uploadAlarmInfo(mac, recordId,video_path,pic_path);
     }
 
-    TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            smdt.smdtWatchDogFeed();//喂狗
-        }
-    };
-
     /**
      * 展示副屏数据
      */
@@ -202,11 +209,15 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     protected void onDestroy() {
         super.onDestroy();
         smdt.smdtWatchDogEnable((char) 0);//停止喂狗
+        if ( timerTask != null ){
+            timerTask.cancel() ;
+        }
       //   stopService(new Intent(this, GPIOService.class));
         stopService(new Intent(this, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }
+
     }
 
     public void toUpdateVer(String apkurl, String version) {
