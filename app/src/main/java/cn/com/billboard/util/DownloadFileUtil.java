@@ -2,7 +2,6 @@ package cn.com.billboard.util;
 
 import android.content.Context;
 import android.util.Log;
-import java.util.ArrayList;
 import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
@@ -90,7 +89,7 @@ public class DownloadFileUtil {
             public void onNext(DownloadInfo value) {
                 super.onNext(value);
                 BusProvider.getBus().post(new ProgressModel(value.getProgress(), value.getTotal(), index+1, images.size(), value.getFileName(), screen_name));
-                Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
+            //    Log.i("sss", " finalI  " + index+1 + " videos size " + images.size() + " FileName " + value.getFileName());
             }
 
             @Override
@@ -174,94 +173,4 @@ public class DownloadFileUtil {
             callBack.onSubChangeUI();
         }
     }
-
-    /**
-     * 下载副屏图片
-     *
-     * @param context
-     * @param callBack 回调
-     */
-    public void downSubLoadPicture(Context context, List<String> images_url, List<String> videos_url, CallBack callBack) {
-
-        List<String> images  = FileUtil.getCommonFileNames(images_url, UserInfoKey.FILE_SUB_PICTURE);
-        List<String>  videos  = FileUtil.getCommonFileNames(videos_url, UserInfoKey.FILE_SUB_VIDEO);
-
-        if (images.size() > 0) {
-            List<String> files = new ArrayList<>();
-            for (String url : images) {
-                DownloadManager.getInstance().download(url, UserInfoKey.FILE_SUB_PICTURE, new DownLoadObserver() {
-                    @Override
-                    public void onNext(DownloadInfo value) {
-                        super.onNext(value);
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        if (downloadInfo != null) {
-                            files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                            if (files.size() == images.size()) {//判断图片是否下载完成
-                                files.clear();
-                                if (videos.size() > 0) {
-                                    downSubLoadVideo(context, videos, callBack);
-                                } else {
-                                    callBack.onSubChangeUI();
-                                }
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        callBack.onErrorChangeUI(e.getMessage());
-                    }
-                });
-            }
-        } else {
-            if (videos.size() > 0) {
-                downSubLoadVideo(context, videos, callBack);
-            } else {
-                callBack.onSubChangeUI();
-            }
-        }
-
-    }
-
-
-    /**
-     * 下载副屏视频
-     *
-     * @param context
-     * @param videos   视频下载url
-     * @param callBack 回调
-     */
-    public void downSubLoadVideo(Context context, List<String> videos, CallBack callBack) {
-        List<String> files = new ArrayList<>();
-        for (String url : videos) {
-            DownloadManager.getInstance().download(url, UserInfoKey.FILE_SUB_VIDEO, new DownLoadObserver() {
-                @Override
-                public void onNext(DownloadInfo value) {
-                    super.onNext(value);
-                }
-
-
-                public void onComplete() {
-                    if (downloadInfo != null) {
-                        files.add(downloadInfo.getFilePath() + "/" + downloadInfo.getFileName());
-                        if (files.size() == videos.size()) {//判断视频是否下载完成
-                            callBack.onSubChangeUI();
-                        }
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    super.onError(e);
-                    callBack.onErrorChangeUI(e.getMessage());
-                }
-            });
-        }
-    }
-
-
 }
