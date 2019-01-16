@@ -65,7 +65,7 @@ public class GPIOService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("TAG","Services onStartCommand");
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     private void init() {
