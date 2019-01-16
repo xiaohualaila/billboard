@@ -19,6 +19,9 @@ import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 
+/**
+ * 采用VideoView播放视频
+ */
 
 public class FragmentMain extends BaseFragment {
     @BindView(R.id.main_video)

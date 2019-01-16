@@ -20,6 +20,9 @@ import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 
+/**
+ * 采用MediaPlayer播放视频
+ */
 
 public class FragmentMain2 extends BaseFragment {
     @BindView(R.id.main_video)
@@ -64,7 +67,6 @@ public class FragmentMain2 extends BaseFragment {
     }
 
     private void play() {
-        videoIndex++;
         player = new MediaPlayer();
         try {
             player.setDataSource(videos.get(videoIndex));
@@ -80,6 +82,7 @@ public class FragmentMain2 extends BaseFragment {
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    videoIndex++;
                     // 在播放完毕被回调
                     if (videoIndex != videos.size()) {
                         //继续播放视频

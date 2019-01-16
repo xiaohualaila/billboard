@@ -33,6 +33,7 @@ import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
 import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
+import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
         updateFrag = new FragmentUpdate();
-        mainFrag = new FragmentMain();
+        mainFrag = new FragmentMain2();
         bigPigFrag = new FragmentPic();
 
         /**
