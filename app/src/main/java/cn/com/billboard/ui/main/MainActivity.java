@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -40,8 +41,11 @@ import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+
+import static android.os.Build.VERSION_CODES.M;
 
 
 public class MainActivity extends AppCompatActivity implements AppDownload.Callback,MainContract.View  {
@@ -81,13 +85,24 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
          * 喂狗api
          */
         smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+//        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         heartinterval();
        //   startService(new Intent(this, GPIOService.class));
         startService(new Intent(this, GPIOServiceNew.class));
         getBusDate();
         instance = this;
-        timer();//开始定时喂狗程序
+
+        mac = smdt.smdtGetEthMacAddress();
+        ipAddress = smdt.smdtGetEthIPAddress();
+
+        Runtime r = Runtime.getRuntime();
+        Log.i("sss","最大可用内存:" + r.maxMemory() / M + "M");
+        Log.i("sss","当前可用内存:" + r.totalMemory()/ M + "M");
+        Log.i("sss","当前空闲内存:" + r.freeMemory() / M + "M");
+        Log.i("sss","当前已使用内存:" + (r.totalMemory() - r.freeMemory()) / M + "M");
+//        timer();//开始定时喂狗程序
+        presenter.getScreenData(isFirst, mac, ipAddress,this);
+        isFirst = false;
     }
 
     void timer(){
@@ -95,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         new Timer().schedule( timerTask ,0,5000 );  // 1秒后启动一个任务
     }
 
-    private static class MyTimerTask extends TimerTask{
+    private  class MyTimerTask extends TimerTask{
 
         @Override
         public void run() {
@@ -142,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                     SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
                     presenter.getScreenData(isFirst, mac, ipAddress,this);
                     isFirst = false;
+                    Log.i("sss",">>>>>>>>>>>>>>>>>>>>>心跳");
                 });
 
     }
