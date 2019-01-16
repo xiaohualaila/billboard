@@ -67,7 +67,6 @@ public class FragmentMain2 extends BaseFragment {
     }
 
     private void play() {
-        Log.i("sss","play()");
         player = new MediaPlayer();
         try {
             player.setDataSource(videos.get(videoIndex));
@@ -94,7 +93,6 @@ public class FragmentMain2 extends BaseFragment {
 
             });
             player.setOnErrorListener((mp, what, extra) -> {
-                Log.i("sss","onError(MediaPlayer mp, int what, int extra)");
                 MainActivity.instance().toFragemntBigPic();
                 return false;
             });
@@ -106,7 +104,6 @@ public class FragmentMain2 extends BaseFragment {
     private class MyCallBack implements SurfaceHolder.Callback {
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-            Log.i("sss","surfaceCreated");
             player.setDisplay(holder);
         }
 
@@ -144,7 +141,6 @@ public class FragmentMain2 extends BaseFragment {
                         MainActivity.instance().toFragemntBigPic();
                     }
                 }
-               // Log.i("sss", "小图片轮播 playBanner" + position);
             }
 
             @Override
@@ -181,7 +177,6 @@ public class FragmentMain2 extends BaseFragment {
             }
             player.release();
             player = null;
-            Log.i("sss","player.stop()");
         }
     }
 }
