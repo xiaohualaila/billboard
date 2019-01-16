@@ -68,6 +68,11 @@ public class GPIOBigService extends Service {
         thread = new Thread(task);
         thread.start();
     }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("TAG","Services onStartCommand");
+        return START_STICKY;
+    }
 
     private void init() {
         serialHelper = new SerialHelper() {

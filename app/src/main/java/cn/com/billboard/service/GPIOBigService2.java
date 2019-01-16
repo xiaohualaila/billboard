@@ -86,6 +86,12 @@ public class GPIOBigService2 extends Service {
         }
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("TAG","Services onStartCommand");
+        return START_STICKY;
+    }
+
     private void dealPhone(ComBean comBean) {
         String back= ChangeTool.decodeHexStr(FuncUtil.ByteArrToHex(comBean.bRec));
         if(back.contains("NO CARRIER")){

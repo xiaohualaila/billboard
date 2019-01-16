@@ -48,7 +48,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask">
         </activity>
-
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"
@@ -60,7 +59,9 @@
                 <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
-
+        <service android:name=".service.GPIOBigServiceNew"/>
+        <service android:name=".service.GPIOBigService2"/>
+        <service android:name=".service.GPIOBigService"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="cn.com.billboard.fileprovider"
