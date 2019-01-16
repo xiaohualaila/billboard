@@ -27,7 +27,6 @@ import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
-
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
@@ -35,14 +34,12 @@ import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
 import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
-import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
