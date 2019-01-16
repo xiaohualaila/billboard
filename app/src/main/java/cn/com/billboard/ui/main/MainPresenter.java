@@ -79,7 +79,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                     @Override
                     public void onNext(BaseBean<MessageBodyBean> model) {
                         if (model.isSuccess()) {
-                            view.toFragmentUpdate();
                             dealData(model.getMessageBody(),context);
                         } else {
                             if (isRefresh) {
@@ -131,6 +130,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
             callBack.onScreenChangeUI();
             return;
         }
+        view.toFragmentUpdate();
         //图片
         List<String> lists_pic = new ArrayList<>();
 
