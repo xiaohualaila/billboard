@@ -24,7 +24,7 @@ import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.service.GPIOBigServiceNew;
 import cn.com.billboard.ui.fragment.FragmentBigScreenPic;
-import cn.com.billboard.ui.fragment.FragmentBigScreenVideo;
+import cn.com.billboard.ui.fragment.FragmentMediaPlayer;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         new MainPresenter(this);
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentBigScreenPic();
-        videoFrg = new FragmentBigScreenVideo();
+        videoFrg = new FragmentMediaPlayer();
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);

@@ -1,9 +1,7 @@
 package cn.com.billboard.ui.fragment;
 
 import android.widget.VideoView;
-
 import java.util.List;
-
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.ui.main.MainActivity;
