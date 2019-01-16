@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      */
     private void heartinterval() {
         int time =  SharedPreferencesUtil.getInt(this, "time", 10);
+        time=2;
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
