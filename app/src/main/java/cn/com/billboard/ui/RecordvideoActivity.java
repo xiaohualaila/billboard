@@ -1,6 +1,5 @@
 package cn.com.billboard.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
@@ -14,14 +13,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.io.File;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
-
 import cn.com.billboard.util.MyUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
