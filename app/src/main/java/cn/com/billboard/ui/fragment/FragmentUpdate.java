@@ -4,7 +4,6 @@ package cn.com.billboard.ui.fragment;
 import android.os.Handler;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import butterknife.BindView;
 import cn.com.billboard.R;
 import cn.com.billboard.event.BusProvider;
@@ -12,7 +11,6 @@ import cn.com.billboard.model.ProgressModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class FragmentUpdate extends BaseFragment {
-
 
     private int file_pre;
     private String file_num = "";
@@ -30,7 +28,6 @@ public class FragmentUpdate extends BaseFragment {
 
     private Handler mHandler = new Handler();
 
-
     @Override
     public int getLayoutId() {
         return R.layout.fragment_update;
@@ -40,7 +37,6 @@ public class FragmentUpdate extends BaseFragment {
     protected void init() {
         BusProvider.getBus().toFlowable(ProgressModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 progressModel -> {
-
                     int pp = (int) ((float) progressModel.progress / (float) progressModel.total * 100);
                     file_pre = pp;
                     file_num = progressModel.index + "/" + progressModel.num;
@@ -67,6 +63,4 @@ public class FragmentUpdate extends BaseFragment {
             }
         }
     };
-
-
 }

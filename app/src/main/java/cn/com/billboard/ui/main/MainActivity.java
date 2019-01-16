@@ -196,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         switchContent(mainFrag);
     }
 
-
     public int getLayoutId() {
         return R.layout.activity_fragment;
     }

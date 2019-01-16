@@ -18,7 +18,6 @@ import cn.com.billboard.util.UserInfoKey;
 import cn.com.billboard.widget.BannersAdapter;
 import cn.com.billboard.widget.BaseViewPager;
 
-
 public class FragmentPic extends BaseFragment {
 
     @BindView(R.id.main_banner)
@@ -58,12 +57,11 @@ public class FragmentPic extends BaseFragment {
 
             @Override
             public void onPageSelected(int position) {
-                Log.i("sss","大图轮播 position " + position);
+              //  Log.i("sss","大图轮播 position " + position);
                 if (position == images_big.size() - 1) {
                     if(video.size()>0){
                         mHandler.postDelayed(() -> backplay(),5000);
                     }
-
                 }
             }
 
@@ -91,7 +89,6 @@ public class FragmentPic extends BaseFragment {
         List<View> bannerView = new ArrayList<View>();
         for (int i = 0; i < urls.size(); i++) {
             ImageView guidView = (ImageView) LayoutInflater.from(getActivity()).inflate(R.layout.item_image, null);
-            //ILFactory.getLoader().loadNet(guidView, urls.get(i), null);
             Glide.with(this).load(urls.get(i)).into(guidView);
             bannerView.add(guidView);
         }

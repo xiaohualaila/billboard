@@ -57,8 +57,8 @@
             android:launchMode="singleTask">
         </activity>
 
-        <service android:name=".service.GPIOService" />
-        <service android:name=".service.GPIOServiceNew" />
+        <service android:name=".service.GPIOService" android:priority="1000"/>/>
+        <service android:name=".service.GPIOServiceNew" android:priority="1000"/> />
         <receiver android:name=".receiver.SelfOpeningReceiver"
             android:enabled="true"
             android:exported="true"

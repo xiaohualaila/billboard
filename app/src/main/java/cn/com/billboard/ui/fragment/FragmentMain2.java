@@ -73,32 +73,24 @@ public class FragmentMain2 extends BaseFragment {
             holder = surfaceView.getHolder();
             holder.addCallback(new MyCallBack());
             player.prepare();
-            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    player.start();
-                }
-            });
-            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    videoIndex++;
-                    // 在播放完毕被回调
-                    if (videoIndex != videos.size()) {
-                        //继续播放视频
-                        play();
+            player.setOnPreparedListener(mp -> player.start());
+            player.setOnCompletionListener(mp -> {
+                videoIndex++;
+                // 在播放完毕被回调
+                if (videoIndex != videos.size()) {
+                    //继续播放视频
+                    play();
+                } else {
+                    //视频播放结束  开始播放图片  复位视频索引
+                    videoIndex = 0;
+                    video_finish = true;
+                    if (images_big.size() > 0 && pic_finish) {
+                        MainActivity.instance().toFragemntBigPic();
                     } else {
-                        //视频播放结束  开始播放图片  复位视频索引
-                        videoIndex = 0;
-                        video_finish = true;
-                        if (images_big.size() > 0 && pic_finish) {
-                            MainActivity.instance().toFragemntBigPic();
-                        } else {
-                            play();
-                        }
+                        play();
                     }
-
                 }
+
             });
         } catch (IOException e) {
             e.printStackTrace();
@@ -145,7 +137,7 @@ public class FragmentMain2 extends BaseFragment {
                         MainActivity.instance().toFragemntBigPic();
                     }
                 }
-                Log.i("sss", "小图片轮播 playBanner" + position);
+               // Log.i("sss", "小图片轮播 playBanner" + position);
             }
 
             @Override

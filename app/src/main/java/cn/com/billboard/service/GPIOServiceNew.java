@@ -53,6 +53,12 @@ public class GPIOServiceNew extends Service {
         init();
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("TAG","Services onStartCommand");
+        return START_REDELIVER_INTENT;
+    }
+
     private void init() {
         serialHelper = new SerialHelper() {
             @Override
