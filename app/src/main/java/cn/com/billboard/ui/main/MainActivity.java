@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     public void switchContent(Fragment to) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fl_content, to)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     public void toFragmentUpdate() {
