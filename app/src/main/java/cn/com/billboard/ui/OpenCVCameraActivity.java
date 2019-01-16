@@ -101,23 +101,23 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
             bottom_pic.setImageResource(R.drawable.police);
         }
 
-//        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, 1000);
     }
 
     /**
-     * 如果等于3分钟还没挂断电话那就关闭页面
+     * 如果等于5分钟还没挂断电话那就关闭页面
      */
-//    private Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            count++;
-//            if(count == 180){
-//                saveFileFinishActivity();
-//                return;
-//            }
-//            handler.postDelayed(this, 1000);
-//        }
-//    };
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            count++;
+            if(count == 300){
+                saveFileFinishActivity();
+                return;
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     private void saveFileFinishActivity(){
         File file = new File(fileName);

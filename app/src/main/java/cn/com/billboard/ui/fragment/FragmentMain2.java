@@ -57,6 +57,8 @@ public class FragmentMain2 extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        pic_finish = false;
+        video_finish = false;
         playBanner();
         play();
     }

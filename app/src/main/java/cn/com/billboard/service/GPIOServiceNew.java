@@ -2,6 +2,7 @@ package cn.com.billboard.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -39,6 +40,7 @@ public class GPIOServiceNew extends Service {
         }
         return service;
     }
+    private Handler handler = new Handler();
 
     private SerialHelper serialHelper;
     String tell;
@@ -121,8 +123,12 @@ public class GPIOServiceNew extends Service {
      */
     private void stopCall() {
         sendTest("ATH\r\n"); //挂断电话
-        isCalling = false;
         BusProvider.getBus().post(new AlarmRecordModel(false, 0));
+        handler.postDelayed(() -> {
+            isCalling = false;
+            BusProvider.getBus().post(new AlarmRecordModel(false, 0));
+            Log.i("sss","再发一次停止信号");
+        },2000);
     }
 
     @Nullable
