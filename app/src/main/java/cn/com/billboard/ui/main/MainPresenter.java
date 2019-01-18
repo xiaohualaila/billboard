@@ -166,7 +166,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                     @Override
                     public void onNext(BaseBean<TwoScreenModel> model) {
                         if (model.isSuccess()) {
-                            dealData(model.getMessageBody(),context);
+                            dealData(model.getMessageBody(),context,isRefresh);
                         } else {
                             if (isRefresh) {
                                 callBack.onMainChangeUI();
@@ -183,7 +183,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 处理数据
      * @param model
      */
-    private void dealData(TwoScreenModel model,Context context){
+    private void dealData(TwoScreenModel model,Context context,boolean isRefresh){
         String s_version= model.getBuild();
         if(s_version != null){
             int v_no = APKVersionCodeUtils.getVersionCode(context);
@@ -192,6 +192,13 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                 //更新app
                 view.toUpdateVer(model.getApkurl(),s_version);
             }else {
+                if(model.getHalfdowndisplay() == null && model.getDowndisplay()== null && model.getDowndisplay() == null && model.getUpdisplay()==null ){
+                    if(isRefresh){
+                        callBack.onMainChangeUI();
+                        callBack.onSubChangeUI();
+                    }
+                    return;
+                }
                 downloadAndSaveData(model,context);
             }
         }
@@ -207,11 +214,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         SharedPreferencesUtil.putString(context, "tell", tell);
         SharedPreferencesUtil.putString(context,"tel2",tel2);
         SharedPreferencesUtil.putInt(context,"time",time);
-        if(model.getHalfdowndisplay() == null && model.getDowndisplay()== null && model.getDowndisplay() == null && model.getUpdisplay()==null ){
-            callBack.onMainChangeUI();
-            callBack.onSubChangeUI();
-            return;
-        }
+
        view.toFragemntUpdate();
 
         //下屏小图片
