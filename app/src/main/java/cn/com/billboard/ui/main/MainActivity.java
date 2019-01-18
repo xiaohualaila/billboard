@@ -11,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 import java.io.File;
 import java.util.Timer;
@@ -28,6 +29,7 @@ import cn.com.billboard.ui.fragment.FragmentMediaPlayer;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
+import cn.com.billboard.util.NetStateUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private boolean isFirst = true;
     private MainContract.Presenter presenter;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +58,15 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentPic();
         videoFrg = new FragmentMediaPlayer();
-        smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        new Timer().schedule(timerTask, 0, 5000);
+//        smdt = SmdtManager.create(this);
+//        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+//        new Timer().schedule(timerTask, 0, 5000);
+         mac =  NetStateUtil.getMacAddress();
+         ipAddress =NetStateUtil.getIpAddressString();
+//        mac = smdt.smdtGetEthMacAddress();
+//        ipAddress = smdt.smdtGetEthIPAddress();
+        Log.i("sss","mac_  " + mac);
+        Log.i("sss","ip_  " + ipAddress);
         heartinterval();
 //        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
         //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
@@ -90,12 +97,12 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         );
     }
 
-    TimerTask timerTask = new TimerTask() {
-        @Override
-        public void run() {
-            smdt.smdtWatchDogFeed();//喂狗
-        }
-    };
+//    TimerTask timerTask = new TimerTask() {
+//        @Override
+//        public void run() {
+//            smdt.smdtWatchDogFeed();//喂狗
+//        }
+//    };
 
     /**
      * 发送心跳数据
@@ -105,8 +112,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    mac = smdt.smdtGetEthMacAddress();
-                    ipAddress = smdt.smdtGetEthIPAddress();
                     if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
                         showError("Mac地址或IP地址不能为空，请检查网络！");
                         toFragmentVideo();
@@ -145,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        smdt.smdtWatchDogEnable((char) 0);
+//        smdt.smdtWatchDogEnable((char) 0);
         //  stopService(new Intent(this, GPIOBigService.class));
         //  stopService(new Intent(this, GPIOBigService2.class));
         stopService(new Intent(this, GPIOBigServiceNew.class));
