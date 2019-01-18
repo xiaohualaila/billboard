@@ -34,8 +34,7 @@
 
         <activity
             android:name=".ui.LauncherActivity"
-            android:icon="@mipmap/ic_launcher"
-            android:screenOrientation="landscape">
+            android:icon="@mipmap/ic_launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

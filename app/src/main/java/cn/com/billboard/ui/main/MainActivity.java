@@ -41,10 +41,8 @@ import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-
 import static android.os.Build.VERSION_CODES.M;
 
 
@@ -85,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
          * 喂狗api
          */
         smdt = SmdtManager.create(this);
-//        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         heartinterval();
        //   startService(new Intent(this, GPIOService.class));
         startService(new Intent(this, GPIOServiceNew.class));
@@ -94,15 +92,14 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
-
+        SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
         Runtime r = Runtime.getRuntime();
         Log.i("sss","最大可用内存:" + r.maxMemory() / M + "M");
         Log.i("sss","当前可用内存:" + r.totalMemory()/ M + "M");
         Log.i("sss","当前空闲内存:" + r.freeMemory() / M + "M");
         Log.i("sss","当前已使用内存:" + (r.totalMemory() - r.freeMemory()) / M + "M");
-//        timer();//开始定时喂狗程序
-        presenter.getScreenData(isFirst, mac, ipAddress,this);
-        isFirst = false;
+        timer();//开始定时喂狗程序
+
     }
 
     void timer(){
@@ -146,15 +143,12 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
-                    mac = smdt.smdtGetEthMacAddress();
-                    ipAddress = smdt.smdtGetEthIPAddress();
                     if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){
                         Toast.makeText(this,"Mac地址或IP地址不能为空，请检查网络！",Toast.LENGTH_LONG).show();
                         toFragemntMain();
                         isFirst = false;
                         return;
                     }
-                    SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
                     presenter.getScreenData(isFirst, mac, ipAddress,this);
                     isFirst = false;
                     Log.i("sss",">>>>>>>>>>>>>>>>>>>>>心跳");
