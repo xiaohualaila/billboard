@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                         isFirst = false;
                         return;
                     }
+                    mac = "8C:FC:A0:10:7C:99";
                     presenter.getScreenData(this,isFirst, mac, ipAddress);
                     isFirst = false;
                 });

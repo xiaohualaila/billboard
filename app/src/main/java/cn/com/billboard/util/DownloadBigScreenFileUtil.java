@@ -1,7 +1,5 @@
 package cn.com.billboard.util;
 
-import android.util.Log;
-
 import java.util.List;
 import cn.com.billboard.download.DownLoadObserver;
 import cn.com.billboard.download.DownloadInfo;
@@ -15,7 +13,6 @@ public class DownloadBigScreenFileUtil {
 
     private static DownloadBigScreenFileUtil downloadFileUtil;
     int index =0;
-    List<String> videos;
 
     public static DownloadBigScreenFileUtil getInstance() {
         if (downloadFileUtil == null) {
@@ -37,7 +34,7 @@ public class DownloadBigScreenFileUtil {
     public void down( List<String> images, List<String> videos,BigScreenCallBack callBack) {
         if (images.size() > 0) {
             index =0;
-            downBigScreenFilePic( images, callBack,UserInfoKey.PIC_BIG_IMAGE_DOWN,"图片");
+            downBigScreenFilePic( images,videos, callBack,UserInfoKey.PIC_BIG_IMAGE_DOWN,"图片");
              return;
         }
 
@@ -56,7 +53,7 @@ public class DownloadBigScreenFileUtil {
      * @param callBack
      * @param
      */
-    public void downBigScreenFilePic(List<String> images, BigScreenCallBack callBack, String url_type, String screen_name){
+    public void downBigScreenFilePic(List<String> images,List<String> videos, BigScreenCallBack callBack, String url_type, String screen_name){
 
         DownloadManager.getInstance().download(images.get(index),url_type, new DownLoadObserver() {
             @Override
@@ -74,7 +71,7 @@ public class DownloadBigScreenFileUtil {
                         index=0;
                         downBigScreenFileVideo(videos, callBack,UserInfoKey.BIG_VIDEO);
                     }else {
-                        downBigScreenFilePic(images,callBack,url_type,screen_name);
+                        downBigScreenFilePic(images,videos,callBack,url_type,screen_name);
                     }
                 }
             }
