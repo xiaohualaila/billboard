@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         updateFrag = new FragmentUpdate();
         imgFrg = new FragmentPic();
         videoFrg = new FragmentMediaPlayer();
-//        smdt = SmdtManager.create(this);
-//        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-//        new Timer().schedule(timerTask, 0, 5000);
+        smdt = SmdtManager.create(this);
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        new Timer().schedule(timerTask, 0, 5000);
          mac =  NetStateUtil.getMacAddress();
          ipAddress =NetStateUtil.getIpAddressString();
 //        mac = smdt.smdtGetEthMacAddress();
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         heartinterval();
 //        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
         //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
-  //      startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
+        startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
         getBus();
         instance = this;
 
@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         );
     }
 
-//    TimerTask timerTask = new TimerTask() {
-//        @Override
-//        public void run() {
-//            smdt.smdtWatchDogFeed();//喂狗
-//        }
-//    };
+    TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            smdt.smdtWatchDogFeed();//喂狗
+        }
+    };
 
     /**
      * 发送心跳数据
