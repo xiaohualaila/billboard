@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         heartinterval();
 //        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
         //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
-        startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
+     //   startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
         getBus();
         instance = this;
 
