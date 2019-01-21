@@ -65,7 +65,6 @@ dependencies {
     //串口
     implementation(name: 'serialport-1.0.1', ext: 'aar')
     implementation files('libs/smdt.jar')
-    implementation project(':openCVLibrary320')
 
     //权限
     implementation 'com.lovedise:permissiongen:0.0.6'

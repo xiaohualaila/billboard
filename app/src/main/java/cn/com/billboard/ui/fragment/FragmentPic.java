@@ -46,6 +46,9 @@ public class FragmentPic extends BaseFragment {
      * 播放图片轮播
      */
     private void playBanner() {
+        if(images_big.size()==0){
+            return;
+        }
         banner.setAdapter(new BannersAdapter(initBanner(images_big)));
         banner.setIsOutScroll(true);
         banner.startScroll();

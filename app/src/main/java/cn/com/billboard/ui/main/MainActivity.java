@@ -150,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        smdt.smdtWatchDogEnable((char) 0);
+        smdt.smdtWatchDogEnable((char) 0);
         //  stopService(new Intent(this, GPIOBigService.class));
         //  stopService(new Intent(this, GPIOBigService2.class));
-        stopService(new Intent(this, GPIOBigServiceNew.class));
+//        stopService(new Intent(this, GPIOBigServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

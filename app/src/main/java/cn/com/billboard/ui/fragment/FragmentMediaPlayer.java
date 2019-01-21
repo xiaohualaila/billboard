@@ -53,6 +53,10 @@ public class FragmentMediaPlayer extends BaseFragment {
     }
 
     private void play() {
+        if(videos.size()==0){
+            MainActivity.instance().toFragmentImg();
+            return;
+        }
         player = new MediaPlayer();
         try {
             player.setDataSource(videos.get(videoIndex));
