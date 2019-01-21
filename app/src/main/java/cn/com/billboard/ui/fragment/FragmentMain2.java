@@ -61,7 +61,6 @@ public class FragmentMain2 extends BaseFragment {
     public void onResume() {
         super.onResume();
         videoIndex = 0;
-
         pic_finish = false;
         video_finish = false;
         playBanner();
