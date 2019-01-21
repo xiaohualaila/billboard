@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         if (displays != null && displays.length > 1) {
             SubScreenActivity subScreenActivity = new SubScreenActivity(this, displays[1]);//displays[1]是副屏
             subScreenActivity.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
+            subScreenActivity.onDisplayChanged();
             subScreenActivity.show();
             subScreenActivity.showData();
         }

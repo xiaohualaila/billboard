@@ -60,6 +60,8 @@ public class FragmentMain2 extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        videoIndex = 0;
+
         pic_finish = false;
         video_finish = false;
         playBanner();
@@ -67,6 +69,9 @@ public class FragmentMain2 extends BaseFragment {
     }
 
     private void play() {
+        if(videos.size()==0){
+            return;
+        }
         player = new MediaPlayer();
         try {
             player.setDataSource(videos.get(videoIndex));
@@ -123,6 +128,9 @@ public class FragmentMain2 extends BaseFragment {
      * 播放图片轮播,小图片轮播
      */
     private void playBanner() {
+        if(images_small.size() ==0){
+            return;
+        }
         pic_banner.setVisibility(View.VISIBLE);
         pic_banner.setAdapter(new BannersAdapter(initBanner(images_small)));
         pic_banner.setIsOutScroll(true);
