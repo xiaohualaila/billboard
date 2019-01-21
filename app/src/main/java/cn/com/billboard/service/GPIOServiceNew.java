@@ -18,11 +18,11 @@ import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.SharedPreferencesUtil;
 
 
-//        Hold1 摘机，发送0x21， 挂机，发送0x20；
+//        Hold1 挂机，发送0x21， 摘机，发送0x20；
 //        KEY1  按下，发送0x11， 弹起，发送0x12；
 //        KEY2  按下，发送0x13， 弹起，发送0x14；
 //
-//        Hold2 摘机，发送0x31， 挂机，发送0x30；
+//        Hold2 挂机，发送0x31， 摘机，发送0x30；
 //        KEY3  按下，发送0x15， 弹起，发送0x16；
 //        KEY4  按下，发送0x17， 弹起，发送0x18；
 
@@ -60,18 +60,21 @@ public class GPIOServiceNew extends Service {
     }
 
     private void init() {
+
         serialHelper = new SerialHelper() {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String back = FuncUtil.ByteArrToHex(comBean.bRec);
                 Log.i("xxx",back);
-
-                if(back.equals("21")){
-                    stopCall();
+                if(back.equals("20")||back.equals("30")){//摘机
+                    sendHex("11");
                 }else if (back.equals("11")){
                     telephone1();
                 }else if(back.equals("13")){
                     telephone2();
+                }else if(back.equals("21")||back.equals("31")){//挂机
+                    stopCall();
+                    sendHex("10");
                 }
 
                 String back_phone = ChangeTool.decodeHexStr(back);

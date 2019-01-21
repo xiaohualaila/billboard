@@ -93,11 +93,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-//        Runtime r = Runtime.getRuntime();
-//        Log.i("sss","最大可用内存:" + r.maxMemory() / M + "M");
-//        Log.i("sss","当前可用内存:" + r.totalMemory()/ M + "M");
-//        Log.i("sss","当前空闲内存:" + r.freeMemory() / M + "M");
-//        Log.i("sss","当前已使用内存:" + (r.totalMemory() - r.freeMemory()) / M + "M");
         timer();//开始定时喂狗程序
 
     }
