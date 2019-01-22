@@ -29,7 +29,6 @@ import cn.com.billboard.ui.fragment.FragmentMediaPlayer;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
-import cn.com.billboard.util.NetStateUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -61,12 +60,10 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         new Timer().schedule(timerTask, 0, 5000);
-         mac =  NetStateUtil.getMacAddress();
-         ipAddress =NetStateUtil.getIpAddressString();
-//        mac = smdt.smdtGetEthMacAddress();
-//        ipAddress = smdt.smdtGetEthIPAddress();
-        Log.i("sss","mac_  " + mac);
-        Log.i("sss","ip_  " + ipAddress);
+        mac = smdt.smdtGetEthMacAddress();
+        ipAddress = smdt.smdtGetEthIPAddress();
+//        Log.i("sss","mac_  " + mac);
+//        Log.i("sss","ip_  " + ipAddress);
         heartinterval();
 //        startService(new Intent(context, GPIOBigService.class));//两个电话四个按键
         //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
