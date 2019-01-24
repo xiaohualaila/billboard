@@ -43,7 +43,7 @@ import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import static android.os.Build.VERSION_CODES.M;
+
 
 
 public class MainActivity extends AppCompatActivity implements AppDownload.Callback,MainContract.View  {
