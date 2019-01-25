@@ -22,6 +22,8 @@ allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
+        maven {url "http://mvn.gt.igexin.com/nexus/content/repositories/releases/"}
+        maven {url 'http://developer.huawei.com/repo/'}
         mavenCentral()
 
     }

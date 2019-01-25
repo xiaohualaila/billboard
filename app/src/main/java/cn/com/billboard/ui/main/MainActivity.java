@@ -1,5 +1,6 @@
 package cn.com.billboard.ui.main;
 
+import android.Manifest;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -17,9 +20,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import com.doormaster.vphone.config.DMCallState;
+import com.doormaster.vphone.config.DMErrorReturn;
+import com.doormaster.vphone.exception.DMException;
+import com.doormaster.vphone.inter.DMModelCallBack;
+import com.doormaster.vphone.inter.DMVPhoneModel;
+
 import java.io.File;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -29,14 +40,15 @@ import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
 import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
+import cn.com.billboard.ui.YJCallActivity;
 import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
+import cn.com.billboard.util.CheckPermissionUtils;
 import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
@@ -66,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private boolean isFirst = true;
     private Disposable mDisposable;
     private TimerTask timerTask ;
+
+    private static final int REQUEST_CODE_MAIN = 999;
+        private String account ="1023007213@qq.com";
+    private String call_account ="13289895424";
+//    private String account ="13289895424";
+//    private String call_account ="1023007213@qq.com";
+    private Handler mhandler = new Handler();
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,18 +102,21 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
          * 喂狗api
          */
         smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        heartinterval();
-       //   startService(new Intent(this, GPIOService.class));
-        startService(new Intent(this, GPIOServiceNew.class));
-        getBusDate();
-        instance = this;
-
+     //   smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
-        SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-        timer();//开始定时喂狗程序
+        heartinterval();
+        startService(new Intent(this, GPIOServiceNew.class));
+        getBusDate();
 
+
+
+        SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
+      //  timer();//开始定时喂狗程序
+        requestPermissiontest();
+        init();
+        register();
+        instance = this;
     }
 
     void timer(){
@@ -118,8 +140,10 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
-                        phoneType = recordModel.phoneType;
-                      presenter.uploadAlarm(mac, phoneType);
+                    //  presenter.uploadAlarm(mac, phoneType);
+                        call();
+                    }else {
+                        DMVPhoneModel.refuseCall();
                     }
                 }
         );
@@ -217,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         if ( timerTask != null ){
             timerTask.cancel() ;
         }
-      //   stopService(new Intent(this, GPIOService.class));
+
         stopService(new Intent(this, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
@@ -299,5 +323,140 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         this.presenter = presenter;
     }
 
+    private void init() {
+        DMVPhoneModel.setLogSwitch(true);
+        DMVPhoneModel.addLoginCallBack(statusCallback);
+    }
 
+    //注册账号
+    private void register() {
+        String token = "";
+        if (account.equals("1023007213@qq.com")) {
+            token = "5073428f6ef1b38366fc2076e38f73873f1cf8c6";
+        }else if(account.equals("13289895424")){
+            token = "2d9f677d6d92d3e12e3488198bc1bfb59a3676b9";
+        }
+        DMVPhoneModel.loginVPhoneServer(account, token, 1, this, loginCallback);
+        mhandler.postDelayed(new Runnable() {
+            public void run() {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null && getCurrentFocus() != null) {
+                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                }
+            }
+        }, 100);
+    }
+
+    private DMModelCallBack.DMCallback loginCallback = new DMModelCallBack.DMCallback() {
+        @Override
+        public void setResult(int errorCode, DMException e) {
+            Log.i("loginCallback main", "errorCode=" + errorCode);
+            if (e == null) {
+                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MainActivity.this, "登录失败，errorCode=" + errorCode + ",e=" + e.toString()
+                        , Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private DMModelCallBack.DMCallback statusCallback = new DMModelCallBack.DMCallback() {
+        @Override
+        public void setResult(int errorCode, DMException e) {
+            if (e == null) {
+                Log.i("statusCallback main", getResources().getString(R.string.status_connected));
+            } else if (errorCode == DMErrorReturn.ERROR_RegistrationProgress) {
+                Log.i("statusCallback main", getResources().getString(R.string.status_in_progress));
+            } else if (errorCode == DMErrorReturn.ERROR_RegistrationFailed) {
+                Log.i("statusCallback main", getResources().getString(R.string.status_error));
+            } else {
+                Log.i("statusCallback main", getResources().getString(R.string.status_not_connected));
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        DMVPhoneModel.addCallStateListener(callStateListener);
+        super.onResume();
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DMVPhoneModel.removeCallStateListener(callStateListener);
+    }
+
+    private DMModelCallBack.DMCallStateListener callStateListener = new DMModelCallBack.DMCallStateListener() {
+
+        @Override
+        public void callState(DMCallState state, String message) {
+            Log.i("sss", "-----------state="+state.toString());
+            Log.d("CallStateLis main", "value=" + state.value() + ",message=" + message);
+
+            if (state == DMCallState.IncomingReceived) {
+                Log.i("sss", "-----------电话打进");
+            } else if (state == DMCallState.OutgoingInit) {
+                Log.i("sss", "-----------电话打出");
+            }else  if (DMCallState.CallEnd == state) {
+                Log.i("sss", "-----------电话被挂断了");
+            }else if (DMCallState.Connected == state){
+                Log.i("sss", "-----------电话被接听了");
+                Intent intent = new Intent(MainActivity.this, YJCallActivity.class);
+                startActivity(intent);
+            }
+
+
+            if (state == DMCallState.StreamsRunning) {
+                // The following should not be needed except some devices need it.
+                DMVPhoneModel.enableSpeaker(DMVPhoneModel.isSpeakerEnable());
+            }
+        }
+    };
+    /**
+     * 呼叫
+     */
+    public void call() {
+        //参数：帐号、类型、上下文
+        DMVPhoneModel.callAccount(call_account, 1, this, account);//呼叫人是1，呼叫设备是2
+    }
+
+    /**
+     * 请求权限
+     */
+    public void requestPermissiontest() {
+        // you needer permissions
+        String[] permissions = {
+                android.Manifest.permission.RECORD_AUDIO,
+                android.Manifest.permission.CAMERA};
+        // check it is needed
+        permissions = CheckPermissionUtils.getNeededPermission(MainActivity.this, permissions);
+        // requestPermissions
+        if (permissions.length > 0) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(permissions, REQUEST_CODE_MAIN);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_MAIN:
+                Log.d("sss", "grantResults=" + Arrays.toString(grantResults));
+                if (grantResults.length > 0) {
+                    return;
+                }
+                if (!CheckPermissionUtils.isNeedAddPermission(MainActivity.this, android.Manifest.permission.RECORD_AUDIO)) {
+                    Toast.makeText(MainActivity.this, "申请权限成功:" + android.Manifest.permission.RECORD_AUDIO, Toast.LENGTH_LONG).show();
+                }
+                if (!CheckPermissionUtils.isNeedAddPermission(MainActivity.this, android.Manifest.permission.CAMERA)) {
+                    Toast.makeText(MainActivity.this, "申请权限成功:" + Manifest.permission.CAMERA, Toast.LENGTH_LONG).show();
+                }
+                break;
+
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }

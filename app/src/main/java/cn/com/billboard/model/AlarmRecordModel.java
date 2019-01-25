@@ -7,11 +7,11 @@ public class AlarmRecordModel implements IBus.IEvent{
 
     public boolean isCalling;
 
-    public int phoneType;//报警类型
+    public String phoneNo;//报警类型
 
-    public AlarmRecordModel(boolean isCalling, int phoneType) {
+    public AlarmRecordModel(boolean isCalling, String phoneNo) {
         this.isCalling = isCalling;
-        this.phoneType = phoneType;
+        this.phoneNo = phoneNo;
     }
 
 
