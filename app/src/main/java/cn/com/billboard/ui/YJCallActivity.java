@@ -52,23 +52,21 @@ public class YJCallActivity extends Activity {
         getWindow().addFlags(flags);
 
         DMVPhoneModel.fixZOrder(mVideoView, mCaptureView);
-        mVideoView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("YJCallActivity", "mVideoView onClick");
-                if (mZoomFactor == 1.f) {
-                    mZoomFactor = 1.5f;
-                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
-                } else {
-                    mZoomFactor = 1.f;
-                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
-                }
-            }
-        });
+//        mVideoView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d("YJCallActivity", "mVideoView onClick");
+//                if (mZoomFactor == 1.f) {
+//                    mZoomFactor = 1.5f;
+//                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
+//                } else {
+//                    mZoomFactor = 1.f;
+//                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
+//                }
+//            }
+//        });
         bottom_pic.setImageResource(R.drawable.police110);
     }
-
-
 
     @Override
     protected void onResume() {
@@ -103,10 +101,6 @@ public class YJCallActivity extends Activity {
         DMVPhoneModel.refuseCall();
         finish();
     }
-
-
-
-
 
     private class TimeCount extends CountDownTimer {
 

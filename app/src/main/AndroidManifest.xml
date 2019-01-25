@@ -100,14 +100,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.RecordvideoActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTask" />
-        <activity
-            android:name=".ui.OpenCVCameraActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTask"/>
-        <activity
             android:name=".ui.main.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask">

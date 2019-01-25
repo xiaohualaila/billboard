@@ -41,7 +41,6 @@ import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.service.GPIOServiceNew;
-import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
 import cn.com.billboard.ui.YJCallActivity;
 import cn.com.billboard.ui.fragment.FragmentMain2;
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     private static final int REQUEST_CODE_MAIN = 999;
         private String account ="1023007213@qq.com";
-    private String call_account ="13289895424";
+    private String call_account ="a716904256";
 //    private String account ="13289895424";
 //    private String call_account ="1023007213@qq.com";
     private Handler mhandler = new Handler();
@@ -204,10 +203,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     public void getAlarmId(String s) {
         if (!TextUtils.isEmpty(s)) {
             recordId = s;
-            Intent intent = new Intent(this,RecordvideoActivity.class);
-            intent.putExtra("mac",mac);
-            intent.putExtra("phoneType",phoneType);
-            startActivity(intent);
+
         }
     }
 
@@ -419,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      */
     public void call() {
         //参数：帐号、类型、上下文
-        DMVPhoneModel.callAccount(call_account, 1, this, account);//呼叫人是1，呼叫设备是2
+        DMVPhoneModel.callAccount(call_account, 2, this, account);//呼叫人是1，呼叫设备是2
     }
 
     /**
