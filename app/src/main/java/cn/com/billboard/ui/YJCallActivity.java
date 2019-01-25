@@ -32,7 +32,6 @@ public class YJCallActivity extends Activity {
     private SurfaceView mCaptureView;
     private TimeCount time;
     private ImageView bottom_pic;
-    private float mZoomFactor = 1.f;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +55,7 @@ public class YJCallActivity extends Activity {
         if(type==1){
             bottom_pic.setImageResource(R.drawable.police110);
         }else {
-            bottom_pic.setImageResource(R.drawable.police110);
+            bottom_pic.setImageResource(R.drawable.police);
         }
 
     }

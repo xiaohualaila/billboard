@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     private static final int REQUEST_CODE_MAIN = 999;
     private String account ="1023007213@qq.com";
-    private String call_account ="a716904256";//a716904256 设备
+    private String call_account ="13289895424";//a716904256 设备
 //    private String account ="13289895424";
 //    private String call_account ="1023007213@qq.com";
     private Handler mhandler = new Handler();
@@ -405,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      */
     public void call(String no) {
         //参数：帐号、类型、上下文
-        DMVPhoneModel.callAccount(call_account, 2, this, account);//呼叫人是1，呼叫设备是2
+        DMVPhoneModel.callAccount(call_account, 1, this, account);//呼叫人是1，呼叫设备是2
     }
 
     /**
