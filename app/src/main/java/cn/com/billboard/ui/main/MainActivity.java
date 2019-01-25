@@ -79,8 +79,8 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private TimerTask timerTask ;
 
     private static final int REQUEST_CODE_MAIN = 999;
-        private String account ="1023007213@qq.com";
-    private String call_account ="13289895424";//a716904256
+    private String account ="1023007213@qq.com";
+    private String call_account ="a716904256";//a716904256 设备
 //    private String account ="13289895424";
 //    private String call_account ="1023007213@qq.com";
     private Handler mhandler = new Handler();
@@ -333,41 +333,33 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
             token = "2d9f677d6d92d3e12e3488198bc1bfb59a3676b9";
         }
         DMVPhoneModel.loginVPhoneServer(account, token, 1, this, loginCallback);
-        mhandler.postDelayed(new Runnable() {
-            public void run() {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null && getCurrentFocus() != null) {
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
+        mhandler.postDelayed(() -> {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null && getCurrentFocus() != null) {
+                imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             }
         }, 100);
     }
 
-    private DMModelCallBack.DMCallback loginCallback = new DMModelCallBack.DMCallback() {
-        @Override
-        public void setResult(int errorCode, DMException e) {
-            Log.i("loginCallback main", "errorCode=" + errorCode);
-            if (e == null) {
-                Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "登录失败，errorCode=" + errorCode + ",e=" + e.toString()
-                        , Toast.LENGTH_SHORT).show();
-            }
+    private DMModelCallBack.DMCallback loginCallback = (errorCode, e) -> {
+        Log.i("loginCallback main", "errorCode=" + errorCode);
+        if (e == null) {
+            Toast.makeText(MainActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(MainActivity.this, "登录失败，errorCode=" + errorCode + ",e=" + e.toString()
+                    , Toast.LENGTH_SHORT).show();
         }
     };
 
-    private DMModelCallBack.DMCallback statusCallback = new DMModelCallBack.DMCallback() {
-        @Override
-        public void setResult(int errorCode, DMException e) {
-            if (e == null) {
-                Log.i("statusCallback main", getResources().getString(R.string.status_connected));
-            } else if (errorCode == DMErrorReturn.ERROR_RegistrationProgress) {
-                Log.i("statusCallback main", getResources().getString(R.string.status_in_progress));
-            } else if (errorCode == DMErrorReturn.ERROR_RegistrationFailed) {
-                Log.i("statusCallback main", getResources().getString(R.string.status_error));
-            } else {
-                Log.i("statusCallback main", getResources().getString(R.string.status_not_connected));
-            }
+    private DMModelCallBack.DMCallback statusCallback = (errorCode, e) -> {
+        if (e == null) {
+            Log.i("statusCallback main", getResources().getString(R.string.status_connected));
+        } else if (errorCode == DMErrorReturn.ERROR_RegistrationProgress) {
+            Log.i("statusCallback main", getResources().getString(R.string.status_in_progress));
+        } else if (errorCode == DMErrorReturn.ERROR_RegistrationFailed) {
+            Log.i("statusCallback main", getResources().getString(R.string.status_error));
+        } else {
+            Log.i("statusCallback main", getResources().getString(R.string.status_not_connected));
         }
     };
 
@@ -384,30 +376,26 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         DMVPhoneModel.removeCallStateListener(callStateListener);
     }
 
-    private DMModelCallBack.DMCallStateListener callStateListener = new DMModelCallBack.DMCallStateListener() {
+    private DMModelCallBack.DMCallStateListener callStateListener = (state, message) -> {
+        Log.i("sss", "-----------state="+state.toString());
+        Log.d("CallStateLis main", "value=" + state.value() + ",message=" + message);
 
-        @Override
-        public void callState(DMCallState state, String message) {
-            Log.i("sss", "-----------state="+state.toString());
-            Log.d("CallStateLis main", "value=" + state.value() + ",message=" + message);
-
-            if (state == DMCallState.IncomingReceived) {
-                Log.i("sss", "-----------电话打进");
-            } else if (state == DMCallState.OutgoingInit) {
-                Log.i("sss", "-----------电话打出");
-            }else  if (DMCallState.CallEnd == state) {
-                Log.i("sss", "-----------电话被挂断了");
-            }else if (DMCallState.Connected == state){
-                Log.i("sss", "-----------电话被接听了");
-                Intent intent = new Intent(MainActivity.this, YJCallActivity.class);
-                startActivity(intent);
-            }
+        if (state == DMCallState.IncomingReceived) {
+            Log.i("sss", "-----------电话打进");
+        } else if (state == DMCallState.OutgoingInit) {
+            Log.i("sss", "-----------电话打出");
+        }else  if (DMCallState.CallEnd == state) {
+            Log.i("sss", "-----------电话被挂断了");
+        }else if (DMCallState.Connected == state){
+            Log.i("sss", "-----------电话被接听了");
+            Intent intent = new Intent(MainActivity.this, YJCallActivity.class);
+            startActivity(intent);
+        }
 
 
-            if (state == DMCallState.StreamsRunning) {
-                // The following should not be needed except some devices need it.
-                DMVPhoneModel.enableSpeaker(DMVPhoneModel.isSpeakerEnable());
-            }
+        if (state == DMCallState.StreamsRunning) {
+            // The following should not be needed except some devices need it.
+            DMVPhoneModel.enableSpeaker(DMVPhoneModel.isSpeakerEnable());
         }
     };
     /**
