@@ -22,13 +22,10 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
 import com.doormaster.vphone.config.DMCallState;
 import com.doormaster.vphone.config.DMErrorReturn;
-import com.doormaster.vphone.exception.DMException;
 import com.doormaster.vphone.inter.DMModelCallBack;
 import com.doormaster.vphone.inter.DMVPhoneModel;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.Timer;
@@ -167,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                     }
                     presenter.getScreenData(isFirst, mac, ipAddress,this);
                     isFirst = false;
-                    Log.i("sss",">>>>>>>>>>>>>>>>>>>>>心跳");
                 });
 
     }
