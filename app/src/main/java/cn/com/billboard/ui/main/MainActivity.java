@@ -101,23 +101,20 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
          * 喂狗api
          */
         smdt = SmdtManager.create(this);
-     //   smdt.smdtWatchDogEnable((char) 1);//开启看门狗
+        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
         heartinterval();
         startService(new Intent(this, GPIOServiceNew.class));
         getBusDate();
-
-
-
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-      //  timer();//开始定时喂狗程序
+        timer();
         requestPermissiontest();
         init();
         register();
         instance = this;
     }
-
+    //开始定时喂狗程序
     void timer(){
         timerTask = new MyTimerTask() ;
         new Timer().schedule( timerTask ,0,5000 );  // 1秒后启动一个任务
