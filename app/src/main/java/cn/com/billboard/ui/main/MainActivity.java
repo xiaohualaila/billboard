@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     private static final int REQUEST_CODE_MAIN = 999;
         private String account ="1023007213@qq.com";
-    private String call_account ="a716904256";
+    private String call_account ="13289895424";//a716904256
 //    private String account ="13289895424";
 //    private String call_account ="1023007213@qq.com";
     private Handler mhandler = new Handler();
