@@ -78,7 +78,7 @@ public class GPIOServiceNew extends Service {
                 Log.i("xxx",back_phone);
                 if(back_phone.contains("NO CARRIER")||back_phone.contains("ERROR")||back_phone.contains("NO DIALTONE")){
                     isCalling =false;
-                    BusProvider.getBus().post(new AlarmRecordModel(false, ""));
+                    BusProvider.getBus().post(new AlarmRecordModel(false, "",0));
                 }else if(back_phone.contains("RING")){//不予许接外来电话
                     sendTest("ATH\r\n");
                 }
@@ -104,7 +104,7 @@ public class GPIOServiceNew extends Service {
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
         }else {
             isCalling = true;
-            BusProvider.getBus().post(new AlarmRecordModel(true, tell));
+            BusProvider.getBus().post(new AlarmRecordModel(true, tell,1));
         }
     }
 
@@ -118,7 +118,7 @@ public class GPIOServiceNew extends Service {
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
         }else {
             isCalling = true;
-            BusProvider.getBus().post(new AlarmRecordModel(true, tel2));
+            BusProvider.getBus().post(new AlarmRecordModel(true, tel2,2));
         }
     }
 
@@ -127,10 +127,10 @@ public class GPIOServiceNew extends Service {
      */
     private void stopCall() {
         sendTest("ATH\r\n"); //挂断电话
-        BusProvider.getBus().post(new AlarmRecordModel(false, ""));
+        BusProvider.getBus().post(new AlarmRecordModel(false, "",0));
         handler.postDelayed(() -> {
             isCalling = false;
-            BusProvider.getBus().post(new AlarmRecordModel(false, ""));
+            BusProvider.getBus().post(new AlarmRecordModel(false, "",0));
             Log.i("sss","再发一次停止信号");
         },2000);
     }

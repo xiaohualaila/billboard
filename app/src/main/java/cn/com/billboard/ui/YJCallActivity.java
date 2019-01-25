@@ -1,6 +1,7 @@
 package cn.com.billboard.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -50,22 +51,14 @@ public class YJCallActivity extends Activity {
         // set this flag so this activity will stay in front of the keyguard
         int flags = WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
         getWindow().addFlags(flags);
-
         DMVPhoneModel.fixZOrder(mVideoView, mCaptureView);
-//        mVideoView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("YJCallActivity", "mVideoView onClick");
-//                if (mZoomFactor == 1.f) {
-//                    mZoomFactor = 1.5f;
-//                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
-//                } else {
-//                    mZoomFactor = 1.f;
-//                    DMVPhoneModel.zoomVideo(mZoomFactor, 0.5f, 0.5f);
-//                }
-//            }
-//        });
-        bottom_pic.setImageResource(R.drawable.police110);
+        int type = getIntent().getIntExtra("type",1);
+        if(type==1){
+            bottom_pic.setImageResource(R.drawable.police110);
+        }else {
+            bottom_pic.setImageResource(R.drawable.police110);
+        }
+
     }
 
     @Override

@@ -140,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
                     //  presenter.uploadAlarm(mac, phoneType);
-                        call();
+                        call(recordModel.phoneNo);
+                        phoneType =recordModel.phoneType;
                     }else {
                         DMVPhoneModel.refuseCall();
                     }
@@ -389,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         }else if (DMCallState.Connected == state){
             Log.i("sss", "-----------电话被接听了");
             Intent intent = new Intent(MainActivity.this, YJCallActivity.class);
+            intent.putExtra("type",phoneType);
             startActivity(intent);
         }
 
@@ -401,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     /**
      * 呼叫
      */
-    public void call() {
+    public void call(String no) {
         //参数：帐号、类型、上下文
         DMVPhoneModel.callAccount(call_account, 2, this, account);//呼叫人是1，呼叫设备是2
     }
