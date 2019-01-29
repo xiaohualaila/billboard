@@ -105,8 +105,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      * 发送心跳数据
      */
     private void heartinterval() {
-        int time =  SharedPreferencesUtil.getInt(this, "time", 10);
-        mDisposable = Flowable.interval(0, time, TimeUnit.MINUTES)
+        mDisposable = Flowable.interval(0, 10, TimeUnit.MINUTES)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> {
                     if(TextUtils.isEmpty(mac) && TextUtils.isEmpty(ipAddress)){

@@ -26,7 +26,6 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainPresenter extends BasePresenter implements MainContract.Presenter {
     private MainContract.View view;
-    private boolean isFirst = true;
 
     public MainPresenter(MainContract.View view) {
         this.view = view;
@@ -60,7 +59,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
      * 获取数据
      */
     public void getScreenData(Context context,boolean isRefresh, String mac, String ipAddress) {
-        isFirst = isRefresh;
         Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
         request.getBigScreenData(mac, ipAddress)
                 .subscribeOn(Schedulers.io())
