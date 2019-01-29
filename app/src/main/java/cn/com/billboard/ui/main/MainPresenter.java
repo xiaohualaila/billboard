@@ -7,7 +7,6 @@ import java.util.List;
 import cn.com.billboard.model.BaseBean;
 import cn.com.billboard.model.BigScreenCallBack;
 import cn.com.billboard.model.MessageBodyBean;
-import cn.com.billboard.retrofitdemo.BillboardApi;
 import cn.com.billboard.retrofitdemo.Request_Interface;
 import cn.com.billboard.retrofitdemo.RetrofitManager;
 import cn.com.billboard.ui.base.BasePresenter;
