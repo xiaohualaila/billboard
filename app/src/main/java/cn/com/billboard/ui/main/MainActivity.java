@@ -29,7 +29,6 @@ import cn.com.billboard.ui.fragment.FragmentMediaPlayer;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
-import cn.com.billboard.util.SharedPreferencesUtil;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
