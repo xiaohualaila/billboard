@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
 import cn.com.billboard.util.Kits;
+import cn.com.billboard.util.NetUtil;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
 import io.reactivex.Flowable;
@@ -85,13 +87,22 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         heartinterval();
+
+
+        String mac_2 = NetUtil.smdtGetEthMacAddress();
+        String ip =  NetUtil.smdtGetEthIPAddress();
+
+        Log.i("sss","+++++mac_2 " + mac_2);
+        Log.i("sss","+++++ip" + ip);
        //   startService(new Intent(this, GPIOService.class));
-        startService(new Intent(this, GPIOServiceNew.class));
+      //  startService(new Intent(this, GPIOServiceNew.class));
         getBusDate();
         instance = this;
 
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
+        Log.i("sss","mac" + mac);
+        Log.i("sss","ip" + ipAddress);
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
         timer();//开始定时喂狗程序
 
@@ -218,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
             timerTask.cancel() ;
         }
       //   stopService(new Intent(this, GPIOService.class));
-        stopService(new Intent(this, GPIOServiceNew.class));
+      //  stopService(new Intent(this, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }
