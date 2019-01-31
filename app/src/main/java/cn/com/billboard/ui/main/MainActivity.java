@@ -1,6 +1,6 @@
 package cn.com.billboard.ui.main;
 
-import android.app.smdt.SmdtManager;
+
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.display.DisplayManager;
@@ -18,21 +18,11 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import java.io.File;
-import java.net.InetAddress;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
-import cn.com.billboard.event.BusProvider;
-import cn.com.billboard.model.AlarmRecordModel;
-import cn.com.billboard.model.EventMessageModel;
-import cn.com.billboard.service.GPIOService;
-import cn.com.billboard.service.GPIOServiceNew;
-import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
 import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
@@ -56,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     DisplayManager displayManager;//屏幕管理类
     Display[] displays;//屏幕数组
 
-    private static SmdtManager smdt;
     private String mac = "";
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
@@ -67,7 +56,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     private boolean isFirst = true;
     private Disposable mDisposable;
-    private TimerTask timerTask ;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,65 +68,13 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         updateFrag = new FragmentUpdate();
         mainFrag = new FragmentMain2();
         bigPigFrag = new FragmentPic();
-
-        /**
-         * 喂狗api
-         */
-        smdt = SmdtManager.create(this);
-        smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         heartinterval();
-
-
-        String mac_2 = NetUtil.smdtGetEthMacAddress();
-        String ip =  NetUtil.smdtGetEthIPAddress();
-
-        Log.i("sss","+++++mac_2 " + mac_2);
-        Log.i("sss","+++++ip" + ip);
-       //   startService(new Intent(this, GPIOService.class));
-      //  startService(new Intent(this, GPIOServiceNew.class));
-        getBusDate();
         instance = this;
-
-        mac = smdt.smdtGetEthMacAddress();
-        ipAddress = smdt.smdtGetEthIPAddress();
-        Log.i("sss","mac" + mac);
-        Log.i("sss","ip" + ipAddress);
+         mac = NetUtil.smdtGetEthMacAddress();
+         ipAddress =  NetUtil.smdtGetEthIPAddress();
+//        Log.i("sss","mac" + mac);
+//        Log.i("sss","ip" + ipAddress);
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-        timer();//开始定时喂狗程序
-
-    }
-
-    void timer(){
-        timerTask = new MyTimerTask() ;
-        new Timer().schedule( timerTask ,0,5000 );  // 1秒后启动一个任务
-    }
-
-    private  class MyTimerTask extends TimerTask{
-
-        @Override
-        public void run() {
-            smdt.smdtWatchDogFeed();//喂狗
-        }
-    }
-
-
-    /**
-     * 报警
-     */
-    private void getBusDate() {
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                (AlarmRecordModel recordModel) -> {
-                    if (recordModel.isCalling) {
-                        phoneType = recordModel.phoneType;
-                      presenter.uploadAlarm(mac, phoneType);
-                    }
-                }
-        );
-        BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                messageModel -> {
-                    Toast.makeText(this,messageModel.message,Toast.LENGTH_LONG).show();
-                }
-        );
     }
 
     /**
@@ -162,17 +98,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
 
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        /**
-         * 上传报警信息图片，视频
-         */
-        String video_path =  SharedPreferencesUtil.getString(this, "videoFile", "");
-        String pic_path =  SharedPreferencesUtil.getString(this, "picFile", "");
-        presenter.uploadAlarmInfo(mac, recordId,video_path,pic_path);
-    }
 
     /**
      * 展示副屏数据
@@ -188,15 +113,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         }
     }
 
-    public void getAlarmId(String s) {
-        if (!TextUtils.isEmpty(s)) {
-            recordId = s;
-            Intent intent = new Intent(this,RecordvideoActivity.class);
-            intent.putExtra("mac",mac);
-            intent.putExtra("phoneType",phoneType);
-            startActivity(intent);
-        }
-    }
 
     public void switchContent(Fragment to) {
         getSupportFragmentManager().beginTransaction()
@@ -224,12 +140,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        smdt.smdtWatchDogEnable((char) 0);//停止喂狗
-        if ( timerTask != null ){
-            timerTask.cancel() ;
-        }
-      //   stopService(new Intent(this, GPIOService.class));
-      //  stopService(new Intent(this, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }

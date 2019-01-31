@@ -113,35 +113,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
 
 
     /**
-     * 上传报警
-     */
-    public void uploadAlarm(String macAddress,int telkey) {
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.uploadAlarm(macAddress, telkey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        view.showError("网络异常！");
-                    }
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            String str = (String) model.getMessageBody();
-                            view.getAlarmId(str);//返回报警ID
-                        } else {
-                            view.showError("未获取到报警ID");
-                        }
-                    }
-                });
-    }
-
-    /**
      * 获取数据
      */
     public void getScreenData(boolean isRefresh, String mac, String ipAddress, Context context) {
@@ -265,73 +236,6 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
         DownloadFileUtil.getInstance().downMainLoadPicture(context, lists_pic_small_dowm,lists_pic_big_dowm,lists_pic_up,lists_video, callBack);//下载
     }
 
-    /**
-     * 上传打电话人员的视频
-     */
-    public void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path) {
-        Log.i("sss","准备上传");
-        if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
-            return;
-        }
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-        RequestBody requestBody = null;
-        if(!TextUtils.isEmpty(video_path)){
-            File v_file =new File(video_path);
-            if(v_file.exists()){
-                requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), v_file);
-                builder.addFormDataPart("video", v_file.getName(), requestBody);
-            }
-        }
-        if(!TextUtils.isEmpty(pic_path)){
-            File p_file =new File(pic_path);
-            if (p_file.exists()){
-                builder.addPart( Headers.of("Content-Disposition", "form-data; name=\"pic\";filename=\"file.jpeg\""),
-                        RequestBody.create(MediaType.parse("image/png"),p_file)).build();
-
-            }
-        }
-        List<MultipartBody.Part> list = null;
-        try {
-            list = builder.build().parts();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.i("sss","开始上传");
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.uploadAlarmInfo(macAddress,recordId,list)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        view.showError("网络异常！");
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-                        Log.i("sss","上传失败");
-                        Log.i("sss",e.getMessage());
-                    }
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            view.showError("上报成功！");
-                            Log.i("sss","上报成功");
-                        } else {
-                            view.showError("上报失败！");
-                            Log.i("sss","上传失败");
-                        }
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-
-                    }
-                });
-
-
-
-    }
 
 
 
