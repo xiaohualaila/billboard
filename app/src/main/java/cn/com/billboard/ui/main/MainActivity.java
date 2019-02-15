@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         heartinterval();
 
        //   startService(new Intent(this, GPIOService.class));
-      //  startService(new Intent(this, GPIOServiceNew.class));
+        startService(new Intent(this, GPIOServiceNew.class));
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
         timer();//开始定时喂狗程序
         getBusDate();
@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
             timerTask.cancel() ;
         }
       //   stopService(new Intent(this, GPIOService.class));
-      //  stopService(new Intent(this, GPIOServiceNew.class));
+        stopService(new Intent(this, GPIOServiceNew.class));
         if (mDisposable != null) {
             mDisposable.dispose();
         }
