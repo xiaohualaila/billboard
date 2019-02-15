@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
 
-    private int phoneType = 1;
-    private String recordId = "";
     private static MainActivity instance;
 
     private boolean isFirst = true;
