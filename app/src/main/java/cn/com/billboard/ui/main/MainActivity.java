@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         instance = this;
          mac = NetUtil.smdtGetEthMacAddress();
          ipAddress =  NetUtil.smdtGetEthIPAddress();
-//        Log.i("sss","mac" + mac);
-//        Log.i("sss","ip" + ipAddress);
+        Log.i("sss","mac" + mac);
+        Log.i("sss","ip" + ipAddress);
         SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
     }
 
