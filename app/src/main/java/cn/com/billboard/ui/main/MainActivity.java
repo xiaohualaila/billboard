@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         videoFrg = new FragmentMediaPlayer();
         smdt = SmdtManager.create(this);
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
-        new Timer().schedule(timerTask, 0, 5000);
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
         Log.i("sss","mac_  " + mac);
@@ -68,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         //  startService(new Intent(context, GPIOBigService2.class));//一个电话四个按键
        // startService(new Intent(this, GPIOBigServiceNew.class));//采用了新的接线板子
         getBus();
+        new Timer().schedule(timerTask, 0, 5000);
         instance = this;
 
     }
