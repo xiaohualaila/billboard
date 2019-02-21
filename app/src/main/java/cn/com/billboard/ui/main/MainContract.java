@@ -26,14 +26,13 @@ public interface MainContract {
 
         void showSubData();
 
-        void getAlarmId(String alarmId);
     }
 
     interface Presenter extends IBasePresenter {
-        void uploadAlarm(String macAddress,int telkey);
+
 
         void getScreenData(boolean isRefresh, String mac, String ipAddress, Context context);
 
-        void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path);
+        void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path,Context context);
     }
 }

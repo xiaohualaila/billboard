@@ -14,6 +14,7 @@ import java.io.IOException;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
+import cn.com.billboard.model.TipModel;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.SharedPreferencesUtil;
 
@@ -65,13 +66,19 @@ public class GPIOServiceNew extends Service {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String back = FuncUtil.ByteArrToHex(comBean.bRec);
-                Log.i("xxx",back);
+                Log.i("aaa",back);
                 if (back.equals("11")){
                     telephone1();
                 }else if(back.equals("13")){
                     telephone2();
-                }else if(back.equals("20")||back.equals("30")){//挂机
-                    stopCall();
+                }else if(back.equals("20")){//挂机
+                    if(isCalling){
+                        stopCall();
+                    }
+                        BusProvider.getBus().post(new TipModel(false));
+
+                }else if(back.equals("21")){//摘机
+                    BusProvider.getBus().post(new TipModel(true));
                 }
 
                 String back_phone = ChangeTool.decodeHexStr(back);

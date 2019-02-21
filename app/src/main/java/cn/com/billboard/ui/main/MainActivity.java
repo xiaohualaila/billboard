@@ -31,10 +31,12 @@ import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
 import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
+import cn.com.billboard.model.TipModel;
 import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
 import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
+import cn.com.billboard.ui.TipActivity;
 import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
@@ -62,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     public DownloadAPKDialog dialog_app;
 
     private int phoneType = 1;
-    private String recordId = "";
     private static MainActivity instance;
 
     private boolean isFirst = true;
@@ -116,17 +117,19 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      * 报警
      */
     private void getBusDate() {
-        BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                (AlarmRecordModel recordModel) -> {
-                    if (recordModel.isCalling) {
-                        phoneType = recordModel.phoneType;
-                      presenter.uploadAlarm(mac, phoneType);
-                    }
-                }
-        );
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     Toast.makeText(this,messageModel.message,Toast.LENGTH_LONG).show();
+                }
+        );
+        BusProvider.getBus().toFlowable(TipModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                (TipModel model) -> {
+                    if (model.isHandup) {
+                        Intent intent = new Intent(this, TipActivity.class);
+                        intent.putExtra("mac",mac);
+                        intent.putExtra("phoneType",phoneType);
+                        startActivity(intent);
+                    }
                 }
         );
     }
@@ -149,19 +152,20 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
                     isFirst = false;
                     Log.i("sss",">>>>>>>>>>>>>>>>>>>>>心跳");
                 });
-
     }
 
+    /**
+     * 上传报警信息图片，视频
+     */
     @Override
     protected void onRestart() {
         super.onRestart();
-
-        /**
-         * 上传报警信息图片，视频
-         */
-        String video_path =  SharedPreferencesUtil.getString(this, "videoFile", "");
-        String pic_path =  SharedPreferencesUtil.getString(this, "picFile", "");
-        presenter.uploadAlarmInfo(mac, recordId,video_path,pic_path);
+        String alarmId =  SharedPreferencesUtil.getString(this,"alarmId","");
+        if(!TextUtils.isEmpty(alarmId)){
+            String video_path =  SharedPreferencesUtil.getString(this, "videoFile", "");
+            String pic_path =  SharedPreferencesUtil.getString(this, "picFile", "");
+            presenter.uploadAlarmInfo(mac, alarmId,video_path,pic_path,this);
+        }
     }
 
     /**
@@ -178,15 +182,6 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         }
     }
 
-    public void getAlarmId(String s) {
-        if (!TextUtils.isEmpty(s)) {
-            recordId = s;
-            Intent intent = new Intent(this,RecordvideoActivity.class);
-            intent.putExtra("mac",mac);
-            intent.putExtra("phoneType",phoneType);
-            startActivity(intent);
-        }
-    }
 
     public void switchContent(Fragment to) {
         getSupportFragmentManager().beginTransaction()

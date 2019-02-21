@@ -108,38 +108,8 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
 
                     }
                 });
-
     }
 
-
-    /**
-     * 上传报警
-     */
-    public void uploadAlarm(String macAddress,int telkey) {
-        Request_Interface request = RetrofitManager.getInstance().create(Request_Interface.class);
-        request.uploadAlarm(macAddress, telkey)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<BaseBean>() {
-                    @Override
-                    public void onComplete() {
-
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        view.showError("网络异常！");
-                    }
-                    @Override
-                    public void onNext(BaseBean model) {
-                        if (model.isSuccess()) {
-                            String str = (String) model.getMessageBody();
-                            view.getAlarmId(str);//返回报警ID
-                        } else {
-                            view.showError("未获取到报警ID");
-                        }
-                    }
-                });
-    }
 
     /**
      * 获取数据
@@ -268,7 +238,7 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
     /**
      * 上传打电话人员的视频
      */
-    public void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path) {
+    public void uploadAlarmInfo(String macAddress,String recordId,String video_path,String pic_path,Context context) {
         Log.i("sss","准备上传");
         if(TextUtils.isEmpty(video_path) && TextUtils.isEmpty(pic_path)){
             return;
@@ -304,15 +274,19 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                 .subscribe(new DisposableObserver<BaseBean>() {
                     @Override
                     public void onComplete() {
-
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                        SharedPreferencesUtil.putString(context,"alarmId","");
+                        Log.i("sss","onComplete");
                     }
                     @Override
                     public void onError(Throwable e) {
                         view.showError("网络异常！");
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
                         Log.i("sss","上传失败");
                         Log.i("sss",e.getMessage());
+                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
+                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
+                        SharedPreferencesUtil.putString(context,"alarmId","");
                     }
                     @Override
                     public void onNext(BaseBean model) {
@@ -323,16 +297,8 @@ public class MainPresenter extends BasePresenter implements MainContract.Present
                             view.showError("上报失败！");
                             Log.i("sss","上传失败");
                         }
-                        Kits.File.deleteFile(UserInfoKey.RECORD_VIDEO_PATH);
-                        Kits.File.deleteFile(UserInfoKey.BILLBOARD_PICTURE_FACE_PATH);
-
                     }
                 });
-
-
-
     }
-
-
 
 }
