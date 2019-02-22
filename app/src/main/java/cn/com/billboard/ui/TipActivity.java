@@ -74,10 +74,8 @@ public class TipActivity  extends AppCompatActivity {
                         if (model.isSuccess()) {
                             String str = (String) model.getMessageBody();
                             getAlarmId(str);//返回报警ID
-
                         } else {
                             Toast.makeText(TipActivity.this,"未获取到报警ID！",Toast.LENGTH_LONG).show();
-                            finish();
                         }
                     }
                 });
@@ -91,8 +89,6 @@ public class TipActivity  extends AppCompatActivity {
             intent.putExtra("mac",mac);
             intent.putExtra("phoneType",phoneType);
             startActivity(intent);
-        }else {
-            finish();
         }
     }
 

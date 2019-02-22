@@ -75,8 +75,7 @@ public class GPIOServiceNew extends Service {
                     if(isCalling){
                         stopCall();
                     }
-                        BusProvider.getBus().post(new TipModel(false));
-
+                    BusProvider.getBus().post(new TipModel(false));
                 }else if(back.equals("21")){//摘机
                     BusProvider.getBus().post(new TipModel(true));
                 }
