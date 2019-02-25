@@ -2,7 +2,6 @@ package cn.com.billboard.ui.fragment;
 
 import android.media.MediaPlayer;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,7 +23,7 @@ import cn.com.billboard.widget.BaseViewPager;
  * 采用MediaPlayer播放视频
  */
 
-public class FragmentMain2 extends BaseFragment {
+public class FragmentMain extends BaseFragment {
     @BindView(R.id.main_video)
     SurfaceView surfaceView;
     @BindView(R.id.pic_banner)
@@ -42,7 +41,7 @@ public class FragmentMain2 extends BaseFragment {
 
     @Override
     public int getLayoutId() {
-        return R.layout.fragment_main2;
+        return R.layout.fragment_main;
     }
 
     @Override

@@ -21,7 +21,6 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -29,15 +28,12 @@ import butterknife.ButterKnife;
 import cn.com.billboard.R;
 import cn.com.billboard.dialog.DownloadAPKDialog;
 import cn.com.billboard.event.BusProvider;
-import cn.com.billboard.model.AlarmRecordModel;
 import cn.com.billboard.model.EventMessageModel;
 import cn.com.billboard.model.TipModel;
-import cn.com.billboard.service.GPIOService;
 import cn.com.billboard.service.GPIOServiceNew;
-import cn.com.billboard.ui.RecordvideoActivity;
 import cn.com.billboard.ui.SubScreenActivity;
 import cn.com.billboard.ui.TipActivity;
-import cn.com.billboard.ui.fragment.FragmentMain2;
+import cn.com.billboard.ui.fragment.FragmentMain;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
@@ -79,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
         updateFrag = new FragmentUpdate();
-        mainFrag = new FragmentMain2();
+        mainFrag = new FragmentMain();
         bigPigFrag = new FragmentPic();
 
         /**
