@@ -1,6 +1,5 @@
 package cn.com.billboard.ui.main;
 
-import android.Manifest;
 import android.app.smdt.SmdtManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -27,7 +25,6 @@ import com.doormaster.vphone.config.DMErrorReturn;
 import com.doormaster.vphone.inter.DMModelCallBack;
 import com.doormaster.vphone.inter.DMVPhoneModel;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -44,7 +41,6 @@ import cn.com.billboard.ui.fragment.FragmentMain2;
 import cn.com.billboard.ui.fragment.FragmentPic;
 import cn.com.billboard.ui.fragment.FragmentUpdate;
 import cn.com.billboard.util.AppDownload;
-import cn.com.billboard.util.CheckPermissionUtils;
 import cn.com.billboard.util.Kits;
 import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.UserInfoKey;
@@ -101,14 +97,14 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         smdt.smdtWatchDogEnable((char) 1);//开启看门狗
         mac = smdt.smdtGetEthMacAddress();
         ipAddress = smdt.smdtGetEthIPAddress();
-        heartinterval();
-        startService(new Intent(this, GPIOServiceNew.class));
-        getBusDate();
-        SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
-        timer();
-        requestPermissiontest();
+
         init();
         register();
+        getBusDate();
+        SharedPreferencesUtil.putString(this, UserInfoKey.MAC, mac);
+        startService(new Intent(this, GPIOServiceNew.class));
+        heartinterval();
+        timer();
         instance = this;
     }
     //开始定时喂狗程序
@@ -401,41 +397,5 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         DMVPhoneModel.callAccount(call_account, 1, this, account);//呼叫人是1，呼叫设备是2
     }
 
-    /**
-     * 请求权限
-     */
-    public void requestPermissiontest() {
-        // you needer permissions
-        String[] permissions = {
-                android.Manifest.permission.RECORD_AUDIO,
-                android.Manifest.permission.CAMERA};
-        // check it is needed
-        permissions = CheckPermissionUtils.getNeededPermission(MainActivity.this, permissions);
-        // requestPermissions
-        if (permissions.length > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(permissions, REQUEST_CODE_MAIN);
-            }
-        }
-    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_CODE_MAIN:
-                Log.d("sss", "grantResults=" + Arrays.toString(grantResults));
-                if (grantResults.length > 0) {
-                    return;
-                }
-                if (!CheckPermissionUtils.isNeedAddPermission(MainActivity.this, android.Manifest.permission.RECORD_AUDIO)) {
-                    Toast.makeText(MainActivity.this, "申请权限成功:" + android.Manifest.permission.RECORD_AUDIO, Toast.LENGTH_LONG).show();
-                }
-                if (!CheckPermissionUtils.isNeedAddPermission(MainActivity.this, android.Manifest.permission.CAMERA)) {
-                    Toast.makeText(MainActivity.this, "申请权限成功:" + Manifest.permission.CAMERA, Toast.LENGTH_LONG).show();
-                }
-                break;
-
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 }
