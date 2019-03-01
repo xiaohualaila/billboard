@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
-                    //  presenter.uploadAlarm(mac, phoneType);
+                      presenter.uploadAlarm(mac, phoneType);
                         call(recordModel.phoneNo);
                         phoneType =recordModel.phoneType;
                     }else {
