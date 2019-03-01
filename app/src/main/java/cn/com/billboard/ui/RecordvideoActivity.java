@@ -44,7 +44,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
     private String path;
 
     private int text = 0;
-    private Handler handler = new Handler();
+    private static Handler handler = new Handler();
 
     private String mac="";
     private int phoneType;
@@ -227,6 +227,9 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
         return R.layout.activity_record_video;
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
 }
