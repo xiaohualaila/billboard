@@ -20,7 +20,7 @@ import cn.com.billboard.util.SharedPreferencesUtil;
 import cn.com.billboard.util.ChangeTool;
 import cn.com.billboard.util.GpioUtill;
 
-
+//没有转接板的
 public class GPIOService extends Service {
 
     private static GPIOService service;
