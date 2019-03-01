@@ -49,7 +49,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
     private String fileName = "";
     int faceSerialCount = 0;
     private boolean isPhoteTakingPic = false;
-    private Handler handler = new Handler();
+    private static Handler handler = new Handler();
     private int count = 0;
     private String path="";
     private void initializeOpenCVDependencies() {
@@ -200,5 +200,10 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
+    }
 
 }
