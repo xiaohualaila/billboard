@@ -1,10 +1,9 @@
 apply plugin: 'com.android.application'
-
+def appPackageName = project.getProperties().get("PACKAGE_NAME")?:"cn.com.billboard"
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.3"
     defaultConfig {
-        applicationId 'cn.com.billboard'
+        applicationId appPackageName
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 3
@@ -12,19 +11,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [
                 //个人个推
-                GETUI_APP_ID : "d2BSQnEL7dAGF6Gn9u2eS9",
-                GETUI_APP_KEY : "pVscocVLz56baD9qSBveN8",
-                GETUI_APP_SECRET : "rZku5KKhXmATUJUHcgd959",
+                GETUI_APP_ID    : "d2BSQnEL7dAGF6Gn9u2eS9",
+                GETUI_APP_KEY   : "pVscocVLz56baD9qSBveN8",
+                GETUI_APP_SECRET: "rZku5KKhXmATUJUHcgd959",
 
-                HUAWEI_APPID : "100308457",
-                MEIZU_APP_ID : "",
-                MEIZU_APP_KEY : "",
-                MIPUSH_APP_ID : "2882303761517811975",
-                MIPUSH_APP_KEY : "5531781183975",
-                PACKAGE_NAME: "cn.com.billboard"
+                HUAWEI_APPID    : "100308457",
+                MEIZU_APP_ID    : "",
+                MEIZU_APP_KEY   : "",
+                MIPUSH_APP_ID   : "2882303761517811975",
+                MIPUSH_APP_KEY  : "5531781183975",
+                PACKAGE_NAME    : appPackageName
         ]
         ndk {
-            abiFilters 'armeabi-v7a','arm64-v8a '
+            abiFilters 'armeabi-v7a', 'arm64-v8a '
         }
     }
     buildTypes {
@@ -34,7 +33,7 @@ android {
         }
     }
     //开启Java1.8 能够使用lambda表达式
-    compileOptions{
+    compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -43,13 +42,11 @@ android {
             dirs 'libs'
         }
     }
-
     //Add the following configuration不添加打不了正式包
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
     }
-
 }
 
 dependencies {
