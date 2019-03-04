@@ -24,7 +24,7 @@ import cn.com.billboard.util.SharedPreferencesUtil;
 
 
 /**
- * 一个电话四个按键,例如给望城小区这种情况
+ * 一个电话四个按键,例如给望城小区这种情况，没有转接板
  */
 
 public class GPIOBigService2 extends Service {

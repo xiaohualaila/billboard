@@ -24,7 +24,7 @@ import cn.com.billboard.util.SharedPreferencesUtil;
 
 
 /**
- * 两个电话四个按键,例如给和平春天这种情况
+ * 两个电话四个按键,例如给和平春天这种情况,没有转接板的情况
  */
 public class GPIOBigService extends Service {
 
