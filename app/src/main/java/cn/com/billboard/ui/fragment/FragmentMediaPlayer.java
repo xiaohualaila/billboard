@@ -68,13 +68,27 @@ public class FragmentMediaPlayer extends BaseFragment {
                 videoIndex++;
                 if (videoIndex != videos.size()) {
                     //继续播放视频
-                    play();
+                    try {
+                        mp.reset();
+                        mp.setDataSource(videos.get(videoIndex));
+                        mp.setDisplay(surfaceView.getHolder());
+                        mp.prepareAsync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     videoIndex = 0;
                     if(images.size()>0){
                         MainActivity.instance().toFragmentImg();
                     }else {
-                        play();
+                        try {
+                            mp.reset();
+                            mp.setDataSource(videos.get(videoIndex));
+                            mp.setDisplay(surfaceView.getHolder());
+                            mp.prepareAsync();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -85,6 +99,7 @@ public class FragmentMediaPlayer extends BaseFragment {
             });
         } catch (IOException e) {
             e.printStackTrace();
+            MainActivity.instance().toFragmentImg();
         }
     }
 
