@@ -140,7 +140,7 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
          mRecorder.reset();
 
         try {
-            camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+            camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);//更换摄像头
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this,"请检查摄像头！",Toast.LENGTH_LONG).show();

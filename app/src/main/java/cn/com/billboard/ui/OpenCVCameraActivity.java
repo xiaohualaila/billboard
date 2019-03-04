@@ -81,7 +81,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         openCvCameraView =  findViewById(R.id.jcv);
-        openCvCameraView.setCameraIndex(1);
+        openCvCameraView.setCameraIndex(1);//更换摄像头1前置摄像头
         openCvCameraView.setCvCameraViewListener(this);
         openCvCameraView.setPhotoSuccessCallback(this);
         Intent intent = getIntent();
