@@ -82,7 +82,15 @@ public class FragmentMain extends BaseFragment {
                 // 在播放完毕被回调
                 if (videoIndex != videos.size()) {
                     //继续播放视频
-                    play();
+                    try {
+                        mp.reset();
+                        mp.setDataSource(videos.get(videoIndex));
+                        mp.setDisplay(surfaceView.getHolder());
+                        mp.prepareAsync();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     //视频播放结束  开始播放图片  复位视频索引
                     videoIndex = 0;
@@ -90,7 +98,14 @@ public class FragmentMain extends BaseFragment {
                     if (images_big.size() > 0 && pic_finish) {
                         MainActivity.instance().toFragemntBigPic();
                     } else {
-                        play();
+                        try {
+                            mp.reset();
+                            mp.setDataSource(videos.get(videoIndex));
+                            mp.setDisplay(surfaceView.getHolder());
+                            mp.prepareAsync();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
@@ -101,8 +116,11 @@ public class FragmentMain extends BaseFragment {
             });
         } catch (IOException e) {
             e.printStackTrace();
+            MainActivity.instance().toFragemntBigPic();
         }
     }
+
+
 
     private class MyCallBack implements SurfaceHolder.Callback {
         @Override
