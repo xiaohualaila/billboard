@@ -59,12 +59,13 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
     private String ipAddress = "";
     public DownloadAPKDialog dialog_app;
 
-    private int phoneType = 1;
     private static MainActivity instance;
 
     private boolean isFirst = true;
     private Disposable mDisposable;
     private TimerTask timerTask ;
+    private Intent intent;
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,8 +73,10 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
         setContentView(getLayoutId());
         ButterKnife.bind(this);
         new MainPresenter(this);
+
         displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         displays = displayManager.getDisplays();
+
         updateFrag = new FragmentUpdate();
         mainFrag = new FragmentMain();
         bigPigFrag = new FragmentPic();
@@ -113,17 +116,18 @@ public class MainActivity extends AppCompatActivity implements AppDownload.Callb
      * 报警
      */
     private void getBusDate() {
+
         BusProvider.getBus().toFlowable(EventMessageModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 messageModel -> {
                     Toast.makeText(this,messageModel.message,Toast.LENGTH_LONG).show();
                 }
         );
+
         BusProvider.getBus().toFlowable(TipModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 (TipModel model) -> {
                     if (model.isHandup) {
                         Intent intent = new Intent(this, TipActivity.class);
                         intent.putExtra("mac",mac);
-                        intent.putExtra("phoneType",phoneType);
                         startActivity(intent);
                     }
                 }

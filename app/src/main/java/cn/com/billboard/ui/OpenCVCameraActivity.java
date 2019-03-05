@@ -80,14 +80,17 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         ButterKnife.bind(this);
+
         openCvCameraView =  findViewById(R.id.jcv);
         openCvCameraView.setCameraIndex(1);//更换摄像头1前置摄像头
         openCvCameraView.setCvCameraViewListener(this);
         openCvCameraView.setPhotoSuccessCallback(this);
+
         Intent intent = getIntent();
         phoneType = intent.getIntExtra(PHONETYPE,0);
         mac = intent.getStringExtra(MAC);
         path = UserInfoKey.BILLBOARD_PICTURE_FACE_PATH;
+
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
                     if(!model.isCalling){
@@ -95,6 +98,7 @@ public class OpenCVCameraActivity extends AppCompatActivity implements CameraBri
                     }
                 }
         );
+
         if(phoneType==1){
             bottom_pic.setImageResource(R.drawable.police110);
         }else {

@@ -28,7 +28,7 @@ public class LauncherActivity extends AppCompatActivity {
     @BindView(R.id.ver_name)
     TextView ver_name;
 
-    Handler handler = new Handler();
+    private static Handler handler = new Handler();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,6 +110,12 @@ public class LauncherActivity extends AppCompatActivity {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(Uri.parse("package:" + getPackageName()));
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 
 }

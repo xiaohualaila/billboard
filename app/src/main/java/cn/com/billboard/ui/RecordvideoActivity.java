@@ -13,7 +13,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import java.io.File;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.billboard.R;
@@ -28,12 +30,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 /**
  * 录制视频的页面
  */
-public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHolder.Callback {
+public class RecordvideoActivity extends AppCompatActivity implements SurfaceHolder.Callback {
 
     private static final String TAG = "RecordvideoActivity";
 
-     @BindView(R.id.surfaceview)
-     SurfaceView mSurfaceview;
+    @BindView(R.id.surfaceview)
+    SurfaceView mSurfaceview;
     @BindView(R.id.bottom_pic)
     ImageView bottom_pic;
     private boolean mStartedFlg = false;//是否正在录像
@@ -46,39 +48,40 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
     private int text = 0;
     private static Handler handler = new Handler();
 
-    private String mac="";
+    private String mac = "";
     private int phoneType;
     public static final String MAC = "mac";
     public static final String PHONETYPE = "phoneType";
     private boolean isCalling = true;//是否是因为挂断电话停止的视频
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutId() );
+        setContentView(getLayoutId());
         ButterKnife.bind(this);
         SurfaceHolder holder = mSurfaceview.getHolder();
         holder.addCallback(this);
 
         Intent intent = getIntent();
-        phoneType = intent.getIntExtra(PHONETYPE,1);//1消防 2监督
+        phoneType = intent.getIntExtra(PHONETYPE, 1);//1消防 2监督
         mac = intent.getStringExtra(MAC);
         mRecorder = new MediaRecorder();
         handler.postDelayed(() -> {
             startRecord();
             handler.postDelayed(runnable, 1000);
-        },500);
+        }, 500);
 
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 model -> {
-                    if(!model.isCalling){
-                        isCalling  = false;
+                    if (!model.isCalling) {
+                        isCalling = false;
                         stopRecordVideo();
                     }
                 }
         );
-        if(phoneType==1){
+        if (phoneType == 1) {
             bottom_pic.setImageResource(R.drawable.police110);
-        }else {
+        } else {
             bottom_pic.setImageResource(R.drawable.police);
         }
     }
@@ -88,15 +91,13 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
         @Override
         public void run() {
             text++;
-            if(text==11){
+            if (text == 11) {
                 stopRecordVideo();
                 return;
             }
             handler.postDelayed(this, 1000);
         }
     };
-
-
 
 
     @Override
@@ -133,18 +134,18 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
     /**
      * 录制视频
      */
-    public void startRecord(){
+    public void startRecord() {
         if (mRecorder == null) {
             mRecorder = new MediaRecorder();
         }
-         mRecorder.reset();
+        mRecorder.reset();
 
         try {
             camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);//更换摄像头
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this,"请检查摄像头！",Toast.LENGTH_LONG).show();
-            SharedPreferencesUtil.putString(this,"videoFile","");
+            Toast.makeText(this, "请检查摄像头！", Toast.LENGTH_LONG).show();
+            SharedPreferencesUtil.putString(this, "videoFile", "");
             finish();
         }
         if (camera != null) {
@@ -173,27 +174,27 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
             mRecorder.setMaxDuration(30 * 1000);
             mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());//设置使用哪个SurfaceView来显示视频预览。
 
-                File dir = new File(UserInfoKey.RECORD_VIDEO_PATH);
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-                path = dir + "/" + MyUtil.getDate() + ".mp4";
-                mRecorder.setOutputFile(path);//设置录制的音频文件的保存位置。
-                mRecorder.prepare();
-                mRecorder.start();
-                mStartedFlg = true;
+            File dir = new File(UserInfoKey.RECORD_VIDEO_PATH);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            path = dir + "/" + MyUtil.getDate() + ".mp4";
+            mRecorder.setOutputFile(path);//设置录制的音频文件的保存位置。
+            mRecorder.prepare();
+            mRecorder.start();
+            mStartedFlg = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void stopRecordVideo(){
+    private void stopRecordVideo() {
         //stop
         if (mStartedFlg) {
             try {
 
                 handler.removeCallbacks(runnable);
-                if(mRecorder != null){
+                if (mRecorder != null) {
                     mRecorder.stop();
                     mRecorder.reset();
                     mRecorder.release();
@@ -205,17 +206,17 @@ public class RecordvideoActivity  extends AppCompatActivity implements SurfaceHo
                 }
                 File file = new File(path);
                 if (file.exists()) {
-                    SharedPreferencesUtil.putString(this,"videoFile",path);
-                }else {
-                    SharedPreferencesUtil.putString(this,"videoFile","");
+                    SharedPreferencesUtil.putString(this, "videoFile", path);
+                } else {
+                    SharedPreferencesUtil.putString(this, "videoFile", "");
                 }
-                if(isCalling){
-                    Intent intent = new Intent(this,OpenCVCameraActivity.class);
-                    intent.putExtra(MAC,mac);
-                    intent.putExtra(PHONETYPE,phoneType);
+                if (isCalling) {
+                    Intent intent = new Intent(this, OpenCVCameraActivity.class);
+                    intent.putExtra(MAC, mac);
+                    intent.putExtra(PHONETYPE, phoneType);
                     startActivity(intent);
                 }
-                    finish();
+                finish();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -7,8 +7,10 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.bjw.utils.FuncUtil;
 import com.bjw.utils.SerialHelper;
+
 import java.io.IOException;
 
 import cn.com.billboard.event.BusProvider;
@@ -41,12 +43,14 @@ public class GPIOServiceNew extends Service {
         }
         return service;
     }
+
     private Handler handler = new Handler();
 
     private SerialHelper serialHelper;
     String tell;
     String tel2;
     private boolean isCalling = false;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -56,7 +60,7 @@ public class GPIOServiceNew extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("TAG","Services onStartCommand");
+        Log.i("TAG", "Services onStartCommand");
         return START_STICKY;
     }
 
@@ -66,26 +70,26 @@ public class GPIOServiceNew extends Service {
             @Override
             protected void onDataReceived(final com.bjw.bean.ComBean comBean) {
                 String back = FuncUtil.ByteArrToHex(comBean.bRec);
-                Log.i("aaa",back);
-                if (back.equals("11")){
+                Log.i("aaa", back);
+                if (back.equals("11")) {
                     telephone1();
-                }else if(back.equals("13")){
+                } else if (back.equals("13")) {
                     telephone2();
-                }else if(back.equals("20")){//挂机
-                    if(isCalling){
+                } else if (back.equals("20")) {//挂机
+                    if (isCalling) {
                         stopCall();
                     }
                     BusProvider.getBus().post(new TipModel(false));
-                }else if(back.equals("21")){//摘机
+                } else if (back.equals("21")) {//摘机
                     BusProvider.getBus().post(new TipModel(true));
                 }
 
                 String back_phone = ChangeTool.decodeHexStr(back);
-                Log.i("xxx",back_phone);
-                if(back_phone.contains("NO CARRIER")||back_phone.contains("ERROR")||back_phone.contains("NO DIALTONE")){
-                    isCalling =false;
+                Log.i("xxx", back_phone);
+                if (back_phone.contains("NO CARRIER") || back_phone.contains("ERROR") || back_phone.contains("NO DIALTONE")) {
+                    isCalling = false;
                     BusProvider.getBus().post(new AlarmRecordModel(false, 0));
-                }else if(back_phone.contains("RING")){//不予许接外来电话
+                } else if (back_phone.contains("RING")) {//不予许接外来电话
                     sendTest("ATH\r\n");
                 }
             }
@@ -101,31 +105,32 @@ public class GPIOServiceNew extends Service {
     }
 
     private void telephone1() {
-        if(isCalling){
+        if (isCalling) {
             return;
         }
-        tell =  SharedPreferencesUtil.getString(this,"tell","");
-        Log.i("sss","tel1  "+tell);
-        if(TextUtils.isEmpty(tell)){
+        tell = SharedPreferencesUtil.getString(this, "tell", "");
+        Log.i("sss", "tel1  " + tell);
+
+        if (TextUtils.isEmpty(tell)) {
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-        }else {
+        } else {
             isCalling = true;
-            sendTest("ATD"+tell+";\r\n");
+            sendTest("ATD" + tell + ";\r\n");
             BusProvider.getBus().post(new AlarmRecordModel(true, 1));
         }
     }
 
     private void telephone2() {
-        if(isCalling){
+        if (isCalling) {
             return;
         }
-        tel2 =  SharedPreferencesUtil.getString(this,"tel2","");
-        Log.i("sss","tel2  "+tel2);
-        if(TextUtils.isEmpty(tel2)){
+        tel2 = SharedPreferencesUtil.getString(this, "tel2", "");
+        Log.i("sss", "tel2  " + tel2);
+        if (TextUtils.isEmpty(tel2)) {
             BusProvider.getBus().post(new EventMessageModel("没有报警电话"));
-        }else {
+        } else {
             isCalling = true;
-            sendTest("ATD"+tel2+";\r\n");
+            sendTest("ATD" + tel2 + ";\r\n");
             BusProvider.getBus().post(new AlarmRecordModel(true, 2));
         }
     }
@@ -139,8 +144,8 @@ public class GPIOServiceNew extends Service {
         handler.postDelayed(() -> {
             isCalling = false;
             BusProvider.getBus().post(new AlarmRecordModel(false, 0));
-            Log.i("sss","再发一次停止信号");
-        },2000);
+            Log.i("sss", "再发一次停止信号");
+        }, 2000);
     }
 
     @Nullable
@@ -150,27 +155,27 @@ public class GPIOServiceNew extends Service {
     }
 
     //发送Test
-    public void sendTest(String text){
-        if(serialHelper.isOpen()){
+    public void sendTest(String text) {
+        if (serialHelper.isOpen()) {
             serialHelper.sendTxt(text);
-        }else {
-            Log.i("sss","串口都没打开！");
+        } else {
+            Log.i("sss", "串口都没打开！");
         }
     }
 
     //发送Hex
-    public void sendHex(String text){
-        if(serialHelper.isOpen()){
+    public void sendHex(String text) {
+        if (serialHelper.isOpen()) {
             serialHelper.sendHex(text);
-        }else {
-            Log.i("sss","串口都没打开！");
+        } else {
+            Log.i("sss", "串口都没打开！");
         }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(serialHelper.isOpen()){
+        if (serialHelper.isOpen()) {
             serialHelper.close();
         }
     }

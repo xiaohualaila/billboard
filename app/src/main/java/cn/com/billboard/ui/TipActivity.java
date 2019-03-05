@@ -35,6 +35,7 @@ public class TipActivity  extends AppCompatActivity {
         Intent intent = getIntent();
 
         mac = intent.getStringExtra(MAC);
+
         BusProvider.getBus().toFlowable(AlarmRecordModel.class).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 (AlarmRecordModel recordModel) -> {
                     if (recordModel.isCalling) {
@@ -89,6 +90,7 @@ public class TipActivity  extends AppCompatActivity {
             intent.putExtra("mac",mac);
             intent.putExtra("phoneType",phoneType);
             startActivity(intent);
+            finish();
         }
     }
 
